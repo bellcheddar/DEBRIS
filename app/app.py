@@ -22,7 +22,10 @@ from flask import Flask, Response, abort, g, jsonify, render_template, request
 
 ROOT = Path(__file__).resolve().parents[1]
 DB_PATH = Path(os.environ.get("DEBRIS_DB", ROOT / "data" / "debris.sqlite"))
-STATIC_DATA = Path(__file__).resolve().parent / "static" / "data"
+# DEBRIS_STATIC_DATA lets a preview run against bundles built outside the repo, so a
+# visualisation can be looked at with data in it before the corpus is tagged.
+STATIC_DATA = Path(os.environ.get("DEBRIS_STATIC_DATA",
+                                  Path(__file__).resolve().parent / "static" / "data"))
 
 app = Flask(__name__)
 app.config["JSON_SORT_KEYS"] = False

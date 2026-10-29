@@ -731,3 +731,67 @@ how every stage decides what to skip, so a test that writes one tells the next r
 work it has never done is already finished: on a full corpus pass that is silently missing
 papers. `c.MANIFESTS` is now redirected to a temporary directory for every test, and the
 stray line is removed. Nothing else had been affected, because no stage had run since.
+
+## D34 The Atlas and the Body rebuilt as four and three linked panels
+
+Marc picked four of the ten concepts for the Atlas (cluster, chemistry packing, pair matrix,
+exact combinations) and three for the Body (the pinned figure as the feature, the ranked rail
+and the tissue cards), asked for real organ artwork rather than a bare silhouette, and asked
+that the panels on each tab drive one another.
+
+**Why the Venn had to go.** Three sets give seven regions, four need ellipses, and the eleven
+named polymers in the vocabulary would need 2,047. The old code drew a fixed three-set Venn of
+PET, PS and PE+PP and a two-set Venn of PVC against everything else, with the sets written into
+`aggregate.py` as `MAIN_SETS` and `SECONDARY_SETS`. That is not a diagram that grows. The four
+panels each keep a different part of what a Venn does: overlap as position, as hierarchy, as a
+cell, and as an explicit row. Only the last of them can state a three-way combination
+truthfully, which is why it is on the tab beside the cluster rather than instead of it.
+
+**One selection across a tab.** Picking a polymer anywhere sets one piece of state and every
+panel repaints from it: the cluster raises that circle and draws its overlap lenses with their
+counts, the packing lifts its chemical family, the matrix lights its row and column, the bars
+mark every combination containing it. A matrix cell or a cluster lens selects a pair instead,
+which narrows the bars to the combinations holding both. The same on the Body: a tissue chosen
+in any of the three panels lights its organ on the figure, raises its pin above its neighbours,
+marks its rail row and brings its card forward. Selection is a filter, not a navigation: a
+selection bar states what is selected, how many papers it stands for, and offers the link into
+the Papers tab, which keeps a single click from throwing the reader off the page.
+
+**Everything is now data.** `aggregate.py` sends polymer rows, every pair that has any papers,
+and the exact combinations; the old membership-code `venn_counts` is gone. The body map used to
+carry nine sites with their coordinates written into the Python; they are now `[[body_nodes]]`
+in `config/vocab.toml`, each with its anchor, its organ systems, its body region and the organ
+drawing it belongs to. Colours moved the same way: a `--poly-<key>` token per polymer in
+theme.css rather than a map of five in JavaScript. Going to the 11 polymers and 18 tissues of
+the paper Marc linked is an edit to the vocabulary and nothing else.
+
+Writing that roster turned up an omission: `systemic` had no anatomical site, so papers tagged
+to it were missing from the body map entirely rather than merely absent. It has a node now,
+drawn against the whole figure. `endocrine_metabolic` and `immune` had no site either, and now
+do. `tests/test_roster.py` holds the line: every organ system has a site, every site points at
+a drawing that exists, every drawing belongs to a site, every anchor lands on the figure, every
+polymer has a family, a short name and a colour token, and a tissue the code has never heard of
+still reaches the bundle correctly counted.
+
+**The artwork.** `_anatomy.html` draws brain, thyroid, lungs and airway, heart, lymph nodes,
+liver, stomach, kidneys, gut, vessels, placenta and skin on the same 360 x 720 space the
+anchors use, each group tagged `data-art` so the renderer lights an organ without knowing its
+shape. Anatomical tints sit at rest and the data lives in the pins: the drawing says where, the
+pins say how much, and colour never has to mean two things at once. One transform in `body.js`
+places both the drawing and the pins, so they cannot drift apart when the figure is scaled.
+
+**Built against synthetic tags.** Nothing is tagged yet, so all four Atlas panels and every pin
+would have read zero. Rather than ship a visualisation I had never seen with data in it, a
+throwaway copy of the corpus was filled with plausible tags from a fixed seed, a realistic long
+tail rather than flat counts so no layout got flattered, and the panels were rendered against
+it. That is what turned up the label pile-up in the cluster, the family names buried under the
+next family's ring, the clipped thirteenth card and the rail labels running off the left edge.
+`DEBRIS_STATIC_DATA` exists for that preview and defaults to the real bundles.
+
+Which left the empty state, the one state that actually ships tonight: four blank frames that
+read as a broken page. Each panel now says what will appear there and why it is empty, and the
+body figure needed nothing because the anatomy and the labelled pins carry it on their own.
+
+**Reversing it.** The panels are independent renderers over two bundles; removing one is
+deleting its figure and its block in the JavaScript. The rosters reverse by editing
+`config/vocab.toml`.

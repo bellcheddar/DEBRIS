@@ -197,3 +197,7 @@
   nine corpus papers that mention a scanner also name a plastic. 970 papers that never name
   a plastic demoted to tier 6 and the controls to tier 7, both still tagged. `pixi run
   screen` reports the split. 107 tests, QC clean, deployed, landing-page count corrected.
+- 2026-10-29 15:42 aggregate: wrote 5 bundles, 8 kB total; verified 9323, tagged 0
+- 2026-10-29 15:59 aggregate: wrote 5 bundles, 9 kB total; verified 9323, tagged 0
+- 2026-10-29 15:59 qc ui: pass, 8 page renders, 0 serious or critical axe violations, 0 console errors, 0 failed requests
+- 2026-10-29 16:01 qc ui: pass, 8 page renders, 0 serious or critical axe violations, 0 console errors, 0 failed requests

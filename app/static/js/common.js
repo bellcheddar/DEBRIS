@@ -13,11 +13,10 @@ const DEBRIS = (() => {
     other: css('--other'), new: css('--new'),
   };
 
-  // PET is --pet in every chart (spec 6.2); the rest fall back to the Elora ramp.
-  const POLYMER_COLOUR = {
-    PET: T.pet, PS: T.ps, PE: T.pepp, PP: T.pepp, PVC: T.pvc,
-  };
-  const colourFor = (key) => POLYMER_COLOUR[key] || T.other;
+  // Every controlled polymer has a --poly-<key> token in theme.css, so a vocabulary that
+  // grows to 11 named polymers and beyond gets its colours from the design system rather
+  // than from a map in here. An uncontrolled other:<text> value falls back to --other.
+  const colourFor = (key) => css('--poly-' + key) || T.other;
 
   const FONT = { family: 'Montserrat, Helvetica, Arial, sans-serif', size: 12, color: T.fg };
   const layout = (extra = {}) => Object.assign({

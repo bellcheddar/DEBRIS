@@ -19,7 +19,9 @@
 
 <section class="card">
   <h2>Polymer field</h2>
-  <p class="sub">Verified papers by polymer. Click any region for those papers. Counts are papers, so a paper naming two polymers appears in their overlap, never twice.</p>
+  <p class="sub">Four readings of the same papers. Select a polymer in any panel and all four
+    follow it: the cluster brings it forward, the packing lifts its chemistry, the matrix lights
+    its row and column, and the bars mark every combination it belongs to.</p>
   <div class="chiprow" role="group" aria-label="Organ system filter">
     {% for chip in vocab.organ_chips %}
     <button class="chip organ-chip" type="button" data-value="{{ chip.key }}"
@@ -27,24 +29,48 @@
     {% endfor %}
     <label class="switch"><input type="checkbox" id="pet-only"> PET-specific only</label>
   </div>
-  <div class="grid two">
-    <figure>
-      <svg id="venn-main" class="bodymap" viewBox="0 0 440 360" role="group"
-           aria-label="Three-set Venn of PET, PS and PE plus PP papers"></svg>
-      <figcaption>PET, PS and PE+PP. Region counts are verified papers.</figcaption>
+  <div class="selbar" id="selbar" role="status" aria-live="polite"></div>
+  <div class="panelgrid">
+    <figure class="panel" id="panel-cluster">
+      <div class="panelhead"><h3>Set cluster</h3>
+        <span class="pcount">overlap is shared papers</span></div>
+      <div class="panelstage">
+        <svg id="venn-cluster" viewBox="0 0 620 390" role="group"
+             aria-label="Polymer circles clustered by how often they are reported together"></svg>
+      </div>
+      <figcaption>Circle area is papers naming that polymer; the deeper two circles cut into
+        each other, the more papers name both. Drag a circle and the rest give way.</figcaption>
     </figure>
-    <figure>
-      <svg id="venn-secondary" class="bodymap" viewBox="0 0 440 360" role="group"
-           aria-label="Two-set Venn of PVC and other polymers"></svg>
-      <figcaption>PVC and every other polymer in the vocabulary, including mixed or unspecified.</figcaption>
+    <figure class="panel" id="panel-packing">
+      <div class="panelhead"><h3>By chemistry</h3>
+        <span class="pcount">area is papers</span></div>
+      <div class="panelstage">
+        <svg id="venn-packing" viewBox="0 0 620 390" role="group"
+             aria-label="Polymers packed into their chemical families"></svg>
+      </div>
+      <figcaption>The same papers grouped by what the polymers are rather than by what they
+        co-occur with. Families come from the vocabulary, so regrouping is a config change.</figcaption>
     </figure>
-  </div>
-  <div class="legend">
-    <span><i style="background:var(--pet)"></i>PET</span>
-    <span><i style="background:var(--ps)"></i>PS</span>
-    <span><i style="background:var(--pe-pp)"></i>PE and PP</span>
-    <span><i style="background:var(--pvc)"></i>PVC</span>
-    <span><i style="background:var(--other)"></i>Other polymers</span>
+    <figure class="panel" id="panel-matrix">
+      <div class="panelhead"><h3>Pair matrix</h3>
+        <span class="pcount">white is nothing published</span></div>
+      <div class="panelstage">
+        <svg id="venn-matrix" viewBox="0 0 620 420" role="group"
+             aria-label="Polymer by polymer co-occurrence matrix"></svg>
+      </div>
+      <figcaption>Every pair in the vocabulary. An empty cell is an absence of published work
+        on that pairing, never evidence that the pairing is safe.</figcaption>
+    </figure>
+    <figure class="panel" id="panel-bars">
+      <div class="panelhead"><h3>Exact combinations</h3>
+        <span class="pcount">papers reporting precisely this set</span></div>
+      <div class="panelstage">
+        <svg id="venn-bars" viewBox="0 0 620 420" role="group"
+             aria-label="Bars of exact polymer combination sizes with a membership matrix"></svg>
+      </div>
+      <figcaption>The reading a Venn region actually has: papers naming these polymers and no
+        others. The only panel that can state a three-way combination without rounding it off.</figcaption>
+    </figure>
   </div>
 </section>
 

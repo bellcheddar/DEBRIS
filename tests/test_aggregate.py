@@ -26,27 +26,38 @@ def test_meta_matches_sql(corpus):
     assert meta["review_queue"] == 1
 
 
-def test_venn_regions_sum_to_papers_with_those_polymers(corpus):
+def test_polymer_rows_match_sql(corpus):
     conn = c.connect(corpus)
-    bundle = aggregate.atlas_bundle(conn)
-    cell = bundle["cells"]["all"]["all"]
-    regions = cell["venn_main"]
-    main_members = {m for _, members in aggregate.MAIN_SETS for m in members}
-    marks = ",".join("?" * len(main_members))
-    expected = conn.execute(
+    cell = aggregate.atlas_bundle(conn)["cells"]["all"]["all"]
+    for row in cell["polymers"]:
+        expected = conn.execute(
+            f"""SELECT COUNT(DISTINCT p.pmid) FROM papers p JOIN tags t USING (pmid)
+                JOIN tag_polymers pl ON pl.pmid=p.pmid
+                WHERE p.doi_status='verified' AND t.relevant=1 AND {NOT_CONTROL}
+                  AND pl.polymer = ?""", (row["k"],)).fetchone()[0]
+        assert row["n"] == expected, row["k"]
+
+
+def test_a_two_polymer_paper_makes_a_pair_and_one_exact_combination(corpus):
+    """1002 carries PET and PS: one pair, and one combination that is exactly those two."""
+    conn = c.connect(corpus)
+    cell = aggregate.atlas_bundle(conn)["cells"]["all"]["all"]
+    pair = next(p for p in cell["pairs"] if {p["a"], p["b"]} == {"PET", "PS"})
+    assert pair["n"] == 1
+    assert {"k": ["PET", "PS"], "n": 1} in cell["combos"]
+    # and PET alone is its own combination, not folded into the pair
+    assert {"k": ["PET"], "n": 1} in cell["combos"]
+
+
+def test_every_paper_lands_in_exactly_one_combination(corpus):
+    """The combinations partition the corpus, which is the one thing a Venn region does."""
+    conn = c.connect(corpus)
+    cell = aggregate.atlas_bundle(conn)["cells"]["all"]["all"]
+    tagged = conn.execute(
         f"""SELECT COUNT(DISTINCT p.pmid) FROM papers p JOIN tags t USING (pmid)
             JOIN tag_polymers pl ON pl.pmid=p.pmid
-            WHERE p.doi_status='verified' AND t.relevant=1 AND {NOT_CONTROL}
-              AND pl.polymer IN ({marks})""", list(main_members)).fetchone()[0]
-    assert sum(regions.values()) == expected, "a paper is counted in exactly one region"
-
-
-def test_venn_puts_a_two_polymer_paper_in_the_overlap(corpus):
-    conn = c.connect(corpus)
-    regions = aggregate.atlas_bundle(conn)["cells"]["all"]["all"]["venn_main"]
-    # 1002 carries PET and PS, so it must land in '110' and nowhere else.
-    assert regions.get("110", 0) == 1
-    assert regions.get("100", 0) == 1  # 1001, PET only
+            WHERE p.doi_status='verified' AND t.relevant=1 AND {NOT_CONTROL}""").fetchone()[0]
+    assert sum(cmb["n"] for cmb in cell["combos"]) == tagged
 
 
 def test_organ_chip_narrows_the_corpus(corpus):

@@ -15,24 +15,6 @@ import datetime as dt
 from pipeline import common as c
 
 V = c.vocab()
-MAIN_SETS = [("PET", ["PET"]), ("PS", ["PS"]), ("PE+PP", ["PE", "PP"])]
-SECONDARY_SETS = [("PVC", ["PVC"]),
-                  ("Other", [p for p in V["polymers"] if p not in ("PET", "PS", "PE", "PP", "PVC")])]
-
-# Body map node geometry: an inline SVG silhouette on a 360 x 720 viewBox (spec 6.2).
-BODY_NODES = [
-    ("brain", "Brain", ["neurological", "sleep"], 180, 54),
-    ("lung", "Lung", ["respiratory"], 134, 212),
-    ("heart", "Heart", ["cardiovascular"], 196, 220),
-    ("blood", "Blood", ["hematologic"], 292, 286),
-    ("liver", "Liver", ["hepatic"], 148, 300),
-    ("kidney", "Kidney", ["renal"], 214, 322),
-    ("colon", "Gut", ["gastrointestinal"], 180, 362),
-    ("placenta", "Placenta", ["reproductive_placental"], 180, 420),
-    ("skin", "Skin", ["dermal"], 96, 470),
-]
-
-
 CORPUS = c.corpus_clause()
 CORPUS_ANY = c.corpus_clause("")
 
@@ -63,20 +45,48 @@ def polymer_map(conn) -> dict[str, set[str]]:
     return out
 
 
-def venn_counts(pmids: set[str], polymers: dict[str, set[str]],
-                sets: list[tuple[str, list[str]]]) -> dict[str, int]:
-    """Membership-code counts: '101' is in set 1 and set 3 and not set 2.
+# Controlled polymers only. A tagger may propose `other:<text>`, and an uncontrolled
+# value cannot be a set in a diagram whose sets come from the vocabulary.
+VOCAB_POLYMERS = set(V["polymers"])
+COMBO_LIMIT = 24
 
-    A paper lands in exactly one region, so the regions sum to the number of
-    papers carrying at least one of the polymers in question (no double counting).
-    """
+
+def polymer_rows(pmids: set[str], polymers: dict[str, set[str]],
+                 pet_pmids: set[str]) -> list[dict]:
+    """One row per polymer: papers naming it, and how many of those are PET-specific."""
     counts: collections.Counter = collections.Counter()
+    pet: collections.Counter = collections.Counter()
     for pmid in pmids:
-        tagged = polymers.get(pmid, set())
-        code = "".join("1" if tagged & set(members) else "0" for _, members in sets)
-        if "1" in code:
-            counts[code] += 1
-    return dict(counts)
+        for polymer in polymers.get(pmid, ()):
+            if polymer in VOCAB_POLYMERS:
+                counts[polymer] += 1
+                if pmid in pet_pmids:
+                    pet[polymer] += 1
+    return [{"k": key, "n": counts[key], "pet": pet[key]}
+            for key in V["polymers"] if counts[key]]
+
+
+def polymer_pairs(pmids: set[str], polymers: dict[str, set[str]]) -> list[dict]:
+    """Papers naming both polymers, for every pair that has any. A pair with none is
+    left out rather than sent as a zero: the matrix panel draws absence from the gap."""
+    pair: collections.Counter = collections.Counter()
+    for pmid in pmids:
+        named = sorted(p for p in polymers.get(pmid, ()) if p in VOCAB_POLYMERS)
+        for i, a in enumerate(named):
+            for b in named[i + 1:]:
+                pair[(a, b)] += 1
+    return [{"a": a, "b": b, "n": n} for (a, b), n in pair.most_common()]
+
+
+def polymer_combos(pmids: set[str], polymers: dict[str, set[str]]) -> list[dict]:
+    """Exact combinations. A paper counts once, for the precise set of polymers it names
+    and nothing else, which is the one reading a Venn region actually has."""
+    combo: collections.Counter = collections.Counter()
+    for pmid in pmids:
+        named = tuple(sorted(p for p in polymers.get(pmid, ()) if p in VOCAB_POLYMERS))
+        if named:
+            combo[named] += 1
+    return [{"k": list(keys), "n": n} for keys, n in combo.most_common(COMBO_LIMIT)]
 
 
 def ladder_rows(conn, pet_only: bool) -> list[dict]:
@@ -118,12 +128,14 @@ def atlas_bundle(conn) -> dict:
             organ_count = conn.execute(f"""SELECT COUNT(DISTINCT organ_system) FROM tag_organs
                                           WHERE pmid IN (SELECT pmid FROM papers
                                           WHERE {CORPUS_ANY})""").fetchone()[0]
+            pet_pmids = verified_pmids(conn, pet_only=True, organs=organs or None)
             cells[chip["key"]][variant] = {
                 "verified": len(pmids),
-                "pet": len(pmids & verified_pmids(conn, pet_only=True, organs=organs or None)),
+                "pet": len(pmids & pet_pmids),
                 "organs": organ_count,
-                "venn_main": venn_counts(pmids, polymers, MAIN_SETS),
-                "venn_secondary": venn_counts(pmids, polymers, SECONDARY_SETS),
+                "polymers": polymer_rows(pmids, polymers, pet_pmids),
+                "pairs": polymer_pairs(pmids, polymers),
+                "combos": polymer_combos(pmids, polymers),
             }
     years = conn.execute(f"""
         SELECT p.year AS year, COUNT(*) AS n,
@@ -135,10 +147,10 @@ def atlas_bundle(conn) -> dict:
     return {
         "cells": cells,
         "organ_map": {chip["key"]: chip["organs"] for chip in chips},
-        "venn_main_sets": [name for name, _ in MAIN_SETS],
-        "venn_main_keys": [members for _, members in MAIN_SETS],
-        "venn_secondary_sets": [name for name, _ in SECONDARY_SETS],
-        "venn_secondary_keys": [members for _, members in SECONDARY_SETS],
+        "polymer_order": V["polymers"],
+        "polymer_labels": V["polymer_labels"],
+        "polymer_short": V["polymer_short"],
+        "polymer_families": V["polymer_families"],
         "ladder": {"all": ladder_rows(conn, False), "pet": ladder_rows(conn, True)},
         "rung_labels": {str(r["rung"]): r["label"] for r in V["rungs"]},
         "years": [{"year": r["year"], "n": r["n"], "pet_n": r["pet_n"] or 0} for r in years],
@@ -148,7 +160,10 @@ def atlas_bundle(conn) -> dict:
 def body_bundle(conn) -> dict:
     run = latest_run(conn)
     nodes = []
-    for key, label, organs, x, y in BODY_NODES:
+    for site in V["body_nodes"]:
+        key, label, organs = site["key"], site["label"], site["organs"]
+        base = {"key": key, "label": label, "organs": organs,
+                "x": site["x"], "y": site["y"], "region": site["region"], "art": site["art"]}
         marks = ",".join("?" * len(organs))
         pmids = [r[0] for r in conn.execute(
             f"""SELECT DISTINCT p.pmid FROM papers p JOIN tags t USING (pmid)
@@ -156,9 +171,8 @@ def body_bundle(conn) -> dict:
                 WHERE {CORPUS} AND t.relevant=1
                   AND o.organ_system IN ({marks})""", organs)]
         if not pmids:
-            nodes.append({"key": key, "label": label, "organs": organs, "x": x, "y": y,
-                          "count": 0, "pet_count": 0, "polymers": [], "pathways": [],
-                          "novel": False, "papers": []})
+            nodes.append({**base, "count": 0, "pet_count": 0, "polymers": [], "pathways": [],
+                          "mix": [], "max_rung": None, "novel": False, "papers": []})
             continue
         pm = ",".join("?" * len(pmids))
         pet_count = conn.execute(
@@ -177,9 +191,16 @@ def body_bundle(conn) -> dict:
                        (SELECT MAX(rung) FROM tag_rungs WHERE pmid=p.pmid) AS max_rung
                 FROM papers p JOIN tags t USING (pmid) WHERE p.pmid IN ({pm})
                 ORDER BY max_rung DESC NULLS LAST, p.year DESC LIMIT 5""", pmids).fetchall()
+        highest = conn.execute(
+            f"SELECT MAX(rung) FROM tag_rungs WHERE pmid IN ({pm})", pmids).fetchone()[0]
+        # The polymer mix is a share of the site's own papers, so two tissues with very
+        # different totals can still be compared band for band on the cards panel.
+        named = sum(r["n"] for r in polys if r["polymer"] in VOCAB_POLYMERS) or 1
         nodes.append({
-            "key": key, "label": label, "organs": organs, "x": x, "y": y,
-            "count": len(pmids), "pet_count": pet_count,
+            **base,
+            "count": len(pmids), "pet_count": pet_count, "max_rung": highest,
+            "mix": [{"k": r["polymer"], "n": r["n"], "share": round(r["n"] / named, 4)}
+                    for r in polys if r["polymer"] in VOCAB_POLYMERS][:8],
             "polymers": [{"key": r["polymer"], "n": r["n"]} for r in polys],
             "pathways": [{"key": r["pathway"], "label": V["pathway_labels"].get(r["pathway"], r["pathway"]),
                           "n": r["n"]} for r in paths],
@@ -188,6 +209,9 @@ def body_bundle(conn) -> dict:
         })
     return {"nodes": nodes,
             "polymer_labels": V["polymer_labels"],
+            "polymer_order": V["polymers"],
+            "polymer_short": V["polymer_short"],
+            "regions": list(dict.fromkeys(n["region"] for n in nodes)),
             "max_count": max([n["count"] for n in nodes] or [0])}
 
 

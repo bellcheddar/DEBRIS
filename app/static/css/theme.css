@@ -248,3 +248,95 @@ footer.site .mono{font-size:11px}
   .kpi .value{font-size:25px}
   .drawer{width:100vw}
 }
+
+/* ------------------------------------------------------------------- polymers
+   One token per controlled polymer, so a vocabulary of 13 (and the 18-tissue, 11-polymer
+   roster coming after it) has a colour without any of them being invented in JavaScript.
+   The first five keep the values the original five-polymer palette used. */
+:root{
+  --poly-PET:#C8872B; --poly-PS:#2C8C86; --poly-PE:#B84C62; --poly-PP:#4F7CC4;
+  --poly-PVC:#6E5BA6; --poly-PA:#3F8F5A; --poly-PU:#A8632B; --poly-PMMA:#C2557F;
+  --poly-PC:#2E6E8E; --poly-PLA:#7E9B3F; --poly-PTFE:#8A93AD;
+  --poly-tyre_wear:#5C5A57; --poly-mixed_unspecified:#AFB6C6;
+}
+
+/* ------------------------------------------------------------------- panels
+   Two panels to a row on the Atlas, one full-width figure over two panels on the Body.
+   Every panel is a peer: the same head, the same frame, the same focus treatment. */
+.panelgrid{display:grid;gap:var(--gap);grid-template-columns:repeat(2,minmax(0,1fr));margin-top:4px}
+.panelgrid.one{grid-template-columns:minmax(0,1fr)}
+.panel{margin:0;min-width:0;border:1px solid var(--el-line);background:var(--el-card);
+  clip-path:var(--chamfer);display:flex;flex-direction:column}
+.panel > figcaption{order:3;padding:10px 14px 12px;font-size:11.5px;color:var(--el-muted);
+  border-top:1px solid var(--el-line)}
+.panelhead{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;padding:12px 14px 8px}
+.panelhead h3{font-size:14px;color:var(--el-ink)}
+.panelhead .pcount{font-family:var(--mono);font-size:11.5px;color:var(--el-muted)}
+.panelstage{flex:1;padding:4px 10px 8px;min-width:0}
+.panelstage svg{display:block;width:100%;height:auto;touch-action:none}
+.panel.lit{border-color:var(--el-ink)}
+
+/* The one line that says what is selected and what clicking through will give you. */
+.selbar{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin:12px 0 2px;
+  padding:9px 14px;border:1px solid var(--el-line);background:var(--el-tint);
+  clip-path:var(--chamfer);min-height:42px}
+.selbar .what{font-weight:600;font-size:13.5px}
+.selbar .what i{display:inline-block;width:10px;height:10px;border-radius:50%;
+  margin-right:7px;vertical-align:baseline}
+.selbar .howmany{font-family:var(--mono);font-size:12.5px;color:var(--el-muted)}
+.selbar .idle{font-size:13px;color:var(--el-muted)}
+.selbar .spacer{flex:1}
+
+/* ------------------------------------------------------------------- anatomy */
+.figure .silhouette{fill:var(--el-soft);opacity:0.55}
+.organ{transition:opacity 140ms ease}
+.organ .stroked{fill:none;stroke:var(--el-muted);stroke-opacity:0.45;stroke-width:2.4;
+  stroke-linecap:round;stroke-linejoin:round}
+.organ .stroked.thin{stroke-width:1.6}
+.organ .trachea{stroke:#9AA6BC;stroke-opacity:0.85;stroke-width:5}
+.organ .bronchi{stroke:#9AA6BC;stroke-opacity:0.7;stroke-width:2}
+.organ .lung{fill:#D99A9A;fill-opacity:0.62;stroke:#B97A7A;stroke-width:1}
+.organ .muscle{fill:#C05F63;fill-opacity:0.78;stroke:#9E4A4E;stroke-width:1}
+.organ .vessel{stroke:#9E4A4E;stroke-opacity:0.7;stroke-width:2}
+.organ .cortex{fill:#C9B6CB;fill-opacity:0.72;stroke:#A491A8;stroke-width:1}
+.organ .fold{stroke:#A491A8;stroke-opacity:0.8;stroke-width:1.4}
+.organ .cerebellum{fill:#B6A3BA;fill-opacity:0.8;stroke:#A491A8;stroke-width:1}
+.organ .stem{fill:#B6A3BA;fill-opacity:0.85}
+.organ .gland{fill:#B98FA0;fill-opacity:0.72;stroke:#9B7386;stroke-width:1}
+.organ .lobe{fill:#A5705E;fill-opacity:0.68;stroke:#875A4B;stroke-width:1}
+.organ .seam{stroke:#875A4B;stroke-opacity:0.55;stroke-width:1.4}
+.organ .sac{fill:#C9A273;fill-opacity:0.68;stroke:#A98455;stroke-width:1}
+.organ .bean{fill:#9C6B52;fill-opacity:0.72;stroke:#7E5440;stroke-width:1}
+.organ .ureter{stroke:#7E5440;stroke-opacity:0.5;stroke-width:1.6}
+.organ .colon{fill:none;stroke:#8FA3C4;stroke-width:11;stroke-linecap:round;
+  stroke-linejoin:round;stroke-opacity:0.72}
+.organ .gutcoil{fill:none;stroke:#A9BBD8;stroke-width:6;stroke-linecap:round;stroke-opacity:0.78}
+.organ .disc{fill:#C08A8F;fill-opacity:0.7;stroke:#A06B70;stroke-width:1}
+.organ .cord{stroke:#A06B70;stroke-opacity:0.7;stroke-width:2.4}
+.organ .node{fill:#8FAFA6;fill-opacity:0.85;stroke:#6E8D84;stroke-width:1}
+.organ .dermis{fill:none;stroke:var(--el-muted);stroke-opacity:0;stroke-width:3}
+.organ .wash{fill:var(--el-blue);fill-opacity:0}
+
+/* Selection: the chosen organ keeps its own colour and gains an outline, everything
+   else recedes. Colour never encodes the data here, the pins do that. */
+.figure.hasfocus .organ{opacity:0.3}
+.figure.hasfocus .organ.on{opacity:1}
+.organ.on .dermis{stroke-opacity:0.9;stroke:var(--el-ink)}
+.organ.on .wash{fill-opacity:0.16}
+.organ.on > *{filter:drop-shadow(0 0 3px rgba(42,60,120,0.45))}
+
+.pin .halo{color:var(--el-blue)}
+.pin .core{stroke:var(--el-card);stroke-width:1.5}
+.pin.on .core{stroke:var(--el-ink);stroke-width:2.5}
+.pinlabel{font-size:11.5px;font-weight:600;fill:var(--el-fg)}
+.pinsub{font-size:10px;fill:var(--el-muted);font-family:var(--mono)}
+.leaderline{fill:none;stroke:var(--el-line);stroke-width:1.2}
+.leaderline.on{stroke:var(--el-ink);stroke-width:1.8}
+
+@media (max-width:900px){
+  .panelgrid{grid-template-columns:minmax(0,1fr)}
+}
+@media (prefers-reduced-motion:no-preference){
+  .pin.pulse .halo{animation:el-pin 2.6s ease-in-out infinite}
+  @keyframes el-pin{0%,100%{opacity:0.75}50%{opacity:0.3}}
+}

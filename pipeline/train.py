@@ -301,17 +301,19 @@ def log_to_wandb(metrics: dict, q4_metrics: dict | None, config: dict,
     # parsed and replayed here so the run always carries loss against iteration.
     for point in parse_training_log(log_path) if log_path.exists() else []:
         run_.log(point, step=point["iter"])
+    # wandb fixes a Table column's type from the first row, and these rows mix numbers
+    # with the model path, so every cell goes in as text.
     table = wandb.Table(columns=["field", "value", "floor", "meets"])
     for field, value in metrics.items():
         floor = FLOOR.get(field)
-        table.add_data(field, value, floor if floor else "",
-                       "" if floor is None else bool(value >= floor))
+        table.add_data(field, str(value), "" if floor is None else str(floor),
+                       "" if floor is None else ("yes" if value >= floor else "no"))
     run_.log({"test_metrics": table})
     if q4_metrics:
         comparison = wandb.Table(columns=["field", "fused", "q4"])
         for field in metrics:
             if field in q4_metrics:
-                comparison.add_data(field, metrics[field], q4_metrics[field])
+                comparison.add_data(field, str(metrics[field]), str(q4_metrics[field]))
         run_.log({"fused_vs_q4": comparison})
     if (c.ROOT / "MODEL_CARD.md").exists():
         artifact = wandb.Artifact("debris-tagger-card", type="model-card")

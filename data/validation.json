@@ -2,9 +2,9 @@
  "funnel": {
   "doi_status": {
    "missing": 248,
-   "title_mismatch": 2368,
-   "unresolved": 89,
-   "verified": 7427
+   "title_mismatch": 134,
+   "unresolved": 66,
+   "verified": 9685
   },
   "hit_strategy": {
    "mesh": 3190,
@@ -13,9 +13,9 @@
    "negative": 368,
    "textword": 4713,
    "textword,negative": 30,
-   "unknown": 1
+   "unknown": 2
   },
-  "retracted": 14,
+  "retracted": 13,
   "no_abstract": 404,
   "tagged": 0,
   "relevant": 0,
@@ -35,9 +35,9 @@
   },
   {
    "key": "blood_detection",
-   "pmid": "35932534",
+   "pmid": "35367073",
    "expect": "Environment International 2022 blood detection (Leslie et al.)",
-   "title": "Letter to the editor, discovery and quantification of plastic particle pollution in human blood.",
+   "title": "Discovery and quantification of plastic particle pollution in human blood.",
    "doi_status": "verified",
    "problems": [
     "not tagged"
@@ -57,9 +57,9 @@
   },
   {
    "key": "brain_accumulation",
-   "pmid": "41233598",
+   "pmid": "39901044",
    "expect": "Nature Medicine 2025 brain accumulation (Nihart et al.)",
-   "title": "Reply to: Challenges in studying microplastics in human brain.",
+   "title": "Bioaccumulation of microplastics in decedent human brains.",
    "doi_status": "verified",
    "problems": [
     "not tagged"
@@ -88,19 +88,19 @@
   },
   {
    "key": "colorectal_2",
-   "pmid": "39272937",
+   "pmid": "30176444",
    "expect": "second colorectal or intestinal migration/inflammation study",
-   "title": "Orally Ingested Micro- and Nano-Plastics: A Hidden Driver of Inflammatory Bowel Disease and Colorectal Cancer.",
-   "doi_status": "title_mismatch",
+   "title": "Impacts of polystyrene microplastic on the gut barrier, microbiota and metabolism of mice.",
+   "doi_status": "verified",
    "problems": [],
    "tag": null
   },
   {
    "key": "pet_leachate",
-   "pmid": "38587644",
+   "pmid": "37755792",
    "expect": "PET leachate toxicity study",
-   "title": "Targeting CXCR4/CXCL12 axis via [177Lu]Lu-DOTAGA.(SA.FAPi)2 with CXCR4 antagonist in triple-negative breast cancer.",
-   "doi_status": "title_mismatch",
+   "title": "Toxicological Profile of Polyethylene Terephthalate (PET) Microplastic in Ingested Drosophila melanogaster (Oregon R+) a",
+   "doi_status": "verified",
    "problems": [],
    "tag": null
   },

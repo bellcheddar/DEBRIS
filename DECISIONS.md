@@ -140,3 +140,56 @@ document and the chart cannot disagree.
 Drift recommendations are appended to FINDINGS.md by `pipeline/drift.py` (spec 5.7).
 Regeneration keeps everything from the first `## Drift recommendation` heading onwards,
 so a generated refresh never discards them.
+
+## D19 The gold controls are pinned, and three of the nine were the wrong paper
+
+Probing the nine gold controls against the trained model showed `brain_accumulation`
+tagged as not relevant. The model was right: that slot held PMID 41233598, a Letter
+titled "Reply to: Challenges in studying microplastics in human brain", with no abstract
+at all. Two more were wrong. `blood_detection` held a Letter commenting on Leslie et al.
+rather than Leslie et al. `pet_leachate` held a nuclear medicine paper about
+`[177Lu]Lu-DOTAGA` and the CXCR4 axis, because its query contained the one term the spec
+forbids, bare `PET[tiab]`, and `NOT "positron emission"[tiab]` does not exclude a paper
+that writes PET/CT.
+
+The resolver took the first search hit on trust. A letter about a landmark paper carries
+the same words and a later date, so it wins a date sort; a review carries them all and
+wins a relevance sort. Three changes:
+
+1. A control must have an abstract, since a paper without one is never tagged, and must
+   not be a Letter, Comment, Editorial, Erratum or News item. `prefer = "review"` wants a
+   review and anything else wants a primary study, but the preference ranks rather than
+   rejects: PubMed types Ragusa's placenta paper as a Review, and a hard filter lost that
+   control entirely.
+2. Two consecutive resolves of the same relevance-sorted term returned different first
+   hits, once putting a study of organ damage in a fish into the PET slot. A control that
+   moves between harvests is not a control, so the seven entries that name a specific
+   paper now pin its PMID. The two that ask for "the most-cited" or "a broad review" keep
+   their search and gain a `title_must_match` pattern that rejects a wrong record.
+3. The `pet_leachate` term names the polymer in full and requires a biological system in
+   the record, since a toxicity word alone ranked a thermo-oxidative materials paper
+   first.
+
+`harvest.py --gold-only` re-resolves the controls without re-running the whole harvest.
+All nine now resolve to the intended paper, each with an abstract, and the title found is
+recorded in `gold_set.title`, which was previously always written empty.
+
+## D20 The stored DOI was sometimes a cited paper's
+
+Two of the corrected gold papers came back `title_mismatch`: Crossref returned a
+commission report for the Nihart brain paper and an African catfish study for the PET
+Drosophila paper. Neither DOI belonged to the paper it was stored against.
+
+`parse_article` read the DOI with `art.findall(".//ArticleIdList/ArticleId")`. That is a
+descendant search over the whole `PubmedArticle`, and `PubmedData/ReferenceList` carries
+an `ArticleIdList` for every citation that has one. The loop kept overwriting, so the
+stored DOI was the last DOI anywhere in the record: usually the paper's own, but a cited
+paper's whenever the publisher deposited references. It now reads
+`PubmedData/ArticleIdList` only and takes the first DOI, with `ELocationID` as the
+fallback.
+
+This matters beyond two papers: `title_mismatch` was 23 % of the corpus and only verified
+papers are counted anywhere, so an unknown share of that funnel was a parsing artefact
+rather than an unverifiable DOI. The corpus was re-harvested with `--refetch`, the upsert
+now resets `doi_status` to `pending` when a paper's DOI changes, and verification was run
+again. A regression test parses a record whose reference list carries two other DOIs.

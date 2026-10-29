@@ -1,0 +1,286 @@
+{
+ "fused": {
+  "n": 162,
+  "relevant_f1": 0.9438,
+  "polymers_f1": 0.8316,
+  "organ_systems_f1": 0.7095,
+  "pathways_f1": 0.6095,
+  "disease_categories_f1": 0.8492,
+  "rungs_exact": 0.7531,
+  "rungs_within_one": 0.7963,
+  "model_type_accuracy": 0.8457,
+  "valid_json": 0.9938,
+  "seconds_per_paper": 1.86,
+  "model": "/Users/dellboy/Documents/Vibe_Coding/debris/data/adapters/debris_v1_fused"
+ },
+ "q4": {
+  "n": 162,
+  "relevant_f1": 0.7928,
+  "polymers_f1": 0.624,
+  "organ_systems_f1": 0.5339,
+  "pathways_f1": 0.4173,
+  "disease_categories_f1": 0.8085,
+  "rungs_exact": 0.5,
+  "rungs_within_one": 0.6667,
+  "model_type_accuracy": 0.784,
+  "valid_json": 1.0,
+  "seconds_per_paper": 1.43,
+  "model": "/Users/dellboy/Documents/Vibe_Coding/debris/data/adapters/debris_v1_q4"
+ },
+ "floor": {
+  "relevant_f1": 0.95,
+  "polymers_f1": 0.85,
+  "organ_systems_f1": 0.85,
+  "pathways_f1": 0.75,
+  "rungs_exact": 0.7,
+  "rungs_within_one": 0.9,
+  "model_type_accuracy": 0.9,
+  "valid_json": 0.98
+ },
+ "shortfall": [
+  "relevant_f1 0.944 < 0.95",
+  "polymers_f1 0.832 < 0.85",
+  "organ_systems_f1 0.710 < 0.85",
+  "pathways_f1 0.610 < 0.75",
+  "rungs_within_one 0.796 < 0.9",
+  "model_type_accuracy 0.846 < 0.9"
+ ],
+ "curve": [
+  {
+   "iter": 1,
+   "val_loss": 2.447
+  },
+  {
+   "iter": 20,
+   "train_loss": 1.497,
+   "learning_rate": 1e-05
+  },
+  {
+   "iter": 40,
+   "train_loss": 0.855,
+   "learning_rate": 1e-05
+  },
+  {
+   "iter": 60,
+   "train_loss": 0.81,
+   "learning_rate": 1e-05
+  },
+  {
+   "iter": 80,
+   "train_loss": 0.829,
+   "learning_rate": 1e-05
+  },
+  {
+   "iter": 100,
+   "val_loss": 0.813
+  },
+  {
+   "iter": 100,
+   "train_loss": 0.804,
+   "learning_rate": 1e-05
+  },
+  {
+   "iter": 120,
+   "train_loss": 0.81,
+   "learning_rate": 1e-05
+  },
+  {
+   "iter": 140,
+   "train_loss": 0.809,
+   "learning_rate": 1e-05
+  },
+  {
+   "iter": 160,
+   "train_loss": 0.818,
+   "learning_rate": 1e-05
+  },
+  {
+   "iter": 180,
+   "train_loss": 0.793,
+   "learning_rate": 1e-05
+  },
+  {
+   "iter": 200,
+   "val_loss": 0.798
+  },
+  {
+   "iter": 200,
+   "train_loss": 0.789,
+   "learning_rate": 1e-05
+  },
+  {
+   "iter": 220,
+   "train_loss": 0.796,
+   "learning_rate": 1e-05
+  },
+  {
+   "iter": 240,
+   "train_loss": 0.796,
+   "learning_rate": 1e-05
+  },
+  {
+   "iter": 260,
+   "train_loss": 0.805,
+   "learning_rate": 1e-05
+  },
+  {
+   "iter": 280,
+   "train_loss": 0.779,
+   "learning_rate": 1e-05
+  },
+  {
+   "iter": 300,
+   "val_loss": 0.801
+  },
+  {
+   "iter": 300,
+   "train_loss": 0.793,
+   "learning_rate": 1e-05
+  },
+  {
+   "iter": 320,
+   "train_loss": 0.797,
+   "learning_rate": 1e-05
+  },
+  {
+   "iter": 340,
+   "train_loss": 0.796,
+   "learning_rate": 1e-05
+  },
+  {
+   "iter": 360,
+   "train_loss": 0.779,
+   "learning_rate": 1e-05
+  },
+  {
+   "iter": 380,
+   "train_loss": 0.768,
+   "learning_rate": 1e-05
+  },
+  {
+   "iter": 400,
+   "val_loss": 0.797
+  },
+  {
+   "iter": 400,
+   "train_loss": 0.767,
+   "learning_rate": 1e-05
+  },
+  {
+   "iter": 420,
+   "train_loss": 0.737,
+   "learning_rate": 1e-05
+  },
+  {
+   "iter": 440,
+   "train_loss": 0.756,
+   "learning_rate": 1e-05
+  },
+  {
+   "iter": 460,
+   "train_loss": 0.763,
+   "learning_rate": 1e-05
+  },
+  {
+   "iter": 480,
+   "train_loss": 0.769,
+   "learning_rate": 1e-05
+  },
+  {
+   "iter": 500,
+   "val_loss": 0.778
+  },
+  {
+   "iter": 500,
+   "train_loss": 0.754,
+   "learning_rate": 1e-05
+  },
+  {
+   "iter": 520,
+   "train_loss": 0.752,
+   "learning_rate": 1e-05
+  },
+  {
+   "iter": 540,
+   "train_loss": 0.733,
+   "learning_rate": 1e-05
+  },
+  {
+   "iter": 560,
+   "train_loss": 0.777,
+   "learning_rate": 1e-05
+  },
+  {
+   "iter": 580,
+   "train_loss": 0.782,
+   "learning_rate": 1e-05
+  },
+  {
+   "iter": 600,
+   "val_loss": 0.791
+  },
+  {
+   "iter": 600,
+   "train_loss": 0.773,
+   "learning_rate": 1e-05
+  },
+  {
+   "iter": 620,
+   "train_loss": 0.752,
+   "learning_rate": 1e-05
+  },
+  {
+   "iter": 640,
+   "train_loss": 0.764,
+   "learning_rate": 1e-05
+  },
+  {
+   "iter": 660,
+   "train_loss": 0.745,
+   "learning_rate": 1e-05
+  },
+  {
+   "iter": 680,
+   "train_loss": 0.74,
+   "learning_rate": 1e-05
+  },
+  {
+   "iter": 700,
+   "val_loss": 0.783
+  },
+  {
+   "iter": 700,
+   "train_loss": 0.748,
+   "learning_rate": 1e-05
+  },
+  {
+   "iter": 720,
+   "train_loss": 0.745,
+   "learning_rate": 1e-05
+  },
+  {
+   "iter": 740,
+   "train_loss": 0.745,
+   "learning_rate": 1e-05
+  },
+  {
+   "iter": 760,
+   "train_loss": 0.727,
+   "learning_rate": 1e-05
+  },
+  {
+   "iter": 780,
+   "train_loss": 0.726,
+   "learning_rate": 1e-05
+  },
+  {
+   "iter": 800,
+   "val_loss": 0.765
+  },
+  {
+   "iter": 800,
+   "train_loss": 0.768,
+   "learning_rate": 1e-05
+  }
+ ]
+}

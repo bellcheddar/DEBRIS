@@ -45,6 +45,7 @@ aggregate = "python pipeline/aggregate.py"
 weekly = "python pipeline/weekly.py"
 drift = "python pipeline/drift.py"
 findings = "python tools/findings.py"
+readme = "python tools/readme.py"
 smoke = "python tools/smoke_test.py"
 # QC drives the app venv's Playwright; pixi only supplies the entry point.
 qc = ".venv/bin/python tools/qc_ui.py"

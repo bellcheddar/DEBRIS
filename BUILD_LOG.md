@@ -54,3 +54,75 @@
 - 2026-10-29 02:39 train: mlx_lm.convert --hf-path /Users/dellboy/Documents/Vibe_Coding/debris/data/adapters/debris_v1_fused -q --mlx-path /Users/dellboy/Documents/Vibe_Coding/debris/data/adapters/debris_v1_q4
 - 2026-10-29 02:39 train: fused and quantised
 - 2026-10-29 02:45 bootstrap ingest: 1600/1600 labelled (868 relevant, 732 not), 0 problems, 11 vocabulary candidates
+- 2026-10-29 02:48 train: q4 vs fused relevant F1 gap +0.151
+- 2026-10-29 02:50 train: mlx_lm.lora --model Qwen/Qwen2.5-3B-Instruct --train --data /Users/dellboy/Documents/Vibe_Coding/debris/data/train ...
+- 2026-10-29 02:55 harvest: start harvest-20261029T065519Z (no NCBI key, 3 req/s)
+- 2026-10-29 02:55 harvest: gold 'carotid_plaque_cohort' -> 38446676 'Microplastics and Nanoplastics in Atheromas and Cardiovascular Events.'
+- 2026-10-29 02:55 harvest: gold 'blood_detection' skipped 1 hit(s) to reach 35367073
+- 2026-10-29 02:55 harvest: gold 'blood_detection' -> 35367073 'Discovery and quantification of plastic particle pollution in human bl'
+- 2026-10-29 02:55 harvest: gold 'lung_tissue' -> 35364151 'Detection of microplastics in human lung tissue using μFTIR spectrosco'
+- 2026-10-29 02:55 harvest: gold 'brain_accumulation' skipped 4 hit(s) to reach 39901044
+- 2026-10-29 02:55 harvest: gold 'brain_accumulation' -> 39901044 'Bioaccumulation of microplastics in decedent human brains.'
+- 2026-10-29 02:55 harvest: gold 'placenta_detection' had 1 hits but none was a research paper with an abstract (Environment International 2021 placenta detection (Ragusa et al.))
+- 2026-10-29 02:55 harvest: gold 'colorectal_1' -> 40602120 'Associations between microplastics in human feces and colorectal cance'
+- 2026-10-29 02:55 harvest: gold 'colorectal_2' skipped 1 hit(s) to reach 30176444
+- 2026-10-29 02:55 harvest: gold 'colorectal_2' -> 30176444 'Impacts of polystyrene microplastic on the gut barrier, microbiota and'
+- 2026-10-29 02:55 harvest: gold 'pet_leachate' -> 34300752 'Properties of Polyethylene Terephthalate (PET) after Thermo-Oxidative '
+- 2026-10-29 02:55 harvest: gold 'broad_review' -> 38460665 'The potential impact of nano- and microplastics on human health: Under'
+- 2026-10-29 02:55 harvest: gold set resolved 8/9, negatives 0
+- 2026-10-29 02:55 harvest: union 8 PMIDs, 8 to fetch
+- 2026-10-29 02:55 harvest: done harvest-20261029T065519Z: fetched 8, new 1, updated 7, table {'harvested': 9729, 'no_abstract': 404}
+- 2026-10-29 02:56 harvest: start harvest-20261029T065611Z (no NCBI key, 3 req/s)
+- 2026-10-29 02:56 harvest: gold 'carotid_plaque_cohort' -> 38446676 'Microplastics and Nanoplastics in Atheromas and Cardiovascular Events.'
+- 2026-10-29 02:56 harvest: gold 'blood_detection' skipped 1 hit(s) to reach 35367073
+- 2026-10-29 02:56 harvest: gold 'blood_detection' -> 35367073 'Discovery and quantification of plastic particle pollution in human bl'
+- 2026-10-29 02:56 harvest: gold 'lung_tissue' -> 35364151 'Detection of microplastics in human lung tissue using μFTIR spectrosco'
+- 2026-10-29 02:56 harvest: gold 'brain_accumulation' skipped 4 hit(s) to reach 39901044
+- 2026-10-29 02:56 harvest: gold 'brain_accumulation' -> 39901044 'Bioaccumulation of microplastics in decedent human brains.'
+- 2026-10-29 02:56 harvest: gold 'placenta_detection' -> 33395930 'Plasticenta: First evidence of microplastics in human placenta.'
+- 2026-10-29 02:56 harvest: gold 'colorectal_1' -> 40602120 'Associations between microplastics in human feces and colorectal cance'
+- 2026-10-29 02:56 harvest: gold 'colorectal_2' skipped 1 hit(s) to reach 39158845
+- 2026-10-29 02:56 harvest: gold 'colorectal_2' -> 39158845 'Fragile Guts Make Fragile Brains: Intestinal Epithelial Nrf2 Deficienc'
+- 2026-10-29 02:56 harvest: gold 'pet_leachate' -> 41417108 'Microplastic exposure causes organ damage in Puntius sophore.'
+- 2026-10-29 02:56 harvest: gold 'broad_review' -> 38460665 'The potential impact of nano- and microplastics on human health: Under'
+- 2026-10-29 02:56 harvest: gold set resolved 9/9, negatives 0
+- 2026-10-29 02:56 harvest: union 9 PMIDs, 9 to fetch
+- 2026-10-29 02:56 harvest: done harvest-20261029T065611Z: fetched 9, new 0, updated 9, table {'harvested': 9729, 'no_abstract': 404}
+- 2026-10-29 02:57 harvest: start harvest-20261029T065725Z (no NCBI key, 3 req/s)
+- 2026-10-29 02:57 harvest: gold 'carotid_plaque_cohort' pinned 38446676 'Microplastics and Nanoplastics in Atheromas and Cardiovascular Events.'
+- 2026-10-29 02:57 harvest: gold 'blood_detection' pinned 35367073 'Discovery and quantification of plastic particle pollution in human bl'
+- 2026-10-29 02:57 harvest: gold 'lung_tissue' pinned 35364151 'Detection of microplastics in human lung tissue using μFTIR spectrosco'
+- 2026-10-29 02:57 harvest: gold 'brain_accumulation' pinned 39901044 'Bioaccumulation of microplastics in decedent human brains.'
+- 2026-10-29 02:57 harvest: gold 'placenta_detection' pinned 33395930 'Plasticenta: First evidence of microplastics in human placenta.'
+- 2026-10-29 02:57 harvest: gold 'colorectal_1' -> 40602120 'Associations between microplastics in human feces and colorectal cance'
+- 2026-10-29 02:57 harvest: gold 'colorectal_2' pinned 30176444 'Impacts of polystyrene microplastic on the gut barrier, microbiota and'
+- 2026-10-29 02:57 harvest: gold 'pet_leachate' pinned 37755792 'Toxicological Profile of Polyethylene Terephthalate (PET) Microplastic'
+- 2026-10-29 02:57 harvest: gold 'broad_review' -> 38460665 'The potential impact of nano- and microplastics on human health: Under'
+- 2026-10-29 02:57 harvest: gold set resolved 9/9, negatives 0
+- 2026-10-29 02:57 harvest: union 9 PMIDs, 9 to fetch
+- 2026-10-29 02:57 harvest: done harvest-20261029T065725Z: fetched 9, new 0, updated 9, table {'harvested': 9729, 'no_abstract': 404}
+- 2026-10-29 02:59 harvest: start harvest-20261029T065911Z (no NCBI key, 3 req/s)
+- 2026-10-29 02:59 harvest: strategy A (MeSH) returned 5020 PMIDs
+- 2026-10-29 02:59 harvest: strategy B (text word) returned 6573 PMIDs
+- 2026-10-29 02:59 harvest: gold 'carotid_plaque_cohort' pinned 38446676 'Microplastics and Nanoplastics in Atheromas and Cardiovascular Events.'
+- 2026-10-29 02:59 harvest: gold 'blood_detection' pinned 35367073 'Discovery and quantification of plastic particle pollution in human bl'
+- 2026-10-29 02:59 harvest: gold 'lung_tissue' pinned 35364151 'Detection of microplastics in human lung tissue using μFTIR spectrosco'
+- 2026-10-29 02:59 harvest: gold 'brain_accumulation' pinned 39901044 'Bioaccumulation of microplastics in decedent human brains.'
+- 2026-10-29 02:59 harvest: gold 'placenta_detection' pinned 33395930 'Plasticenta: First evidence of microplastics in human placenta.'
+- 2026-10-29 02:59 harvest: gold 'colorectal_1' -> 40602120 'Associations between microplastics in human feces and colorectal cance'
+- 2026-10-29 02:59 harvest: gold 'colorectal_2' pinned 30176444 'Impacts of polystyrene microplastic on the gut barrier, microbiota and'
+- 2026-10-29 02:59 harvest: gold 'pet_leachate' pinned 37755792 'Toxicological Profile of Polyethylene Terephthalate (PET) Microplastic'
+- 2026-10-29 02:59 harvest: gold 'broad_review' -> 38460665 'The potential impact of nano- and microplastics on human health: Under'
+- 2026-10-29 02:59 harvest: negatives 'pet_scan_oncology' returned 120 PMIDs
+- 2026-10-29 02:59 harvest: negatives 'marine_ecology' returned 120 PMIDs
+- 2026-10-29 02:59 harvest: negatives 'polymer_chemistry_recycling' returned 90 PMIDs
+- 2026-10-29 02:59 harvest: negatives 'analytical_methods' returned 90 PMIDs
+- 2026-10-29 02:59 harvest: gold set resolved 9/9, negatives 402
+- 2026-10-29 02:59 harvest: union 10131 PMIDs, 10131 to fetch
+- 2026-10-29 03:00 harvest: done harvest-20261029T065911Z: fetched 10131, new 0, updated 10131, table {'harvested': 9729, 'no_abstract': 404}
+- 2026-10-29 03:00 verify: 2722 papers to check at Crossref (polite pool, 10 req/s)
+- 2026-10-29 03:05 verify: funnel {'missing': 248, 'title_mismatch': 134, 'unresolved': 66, 'verified': 9685}, retracted 13, verified total 9685
+- 2026-10-29 03:05 aggregate: wrote 5 bundles, 6 kB total; verified 9685, tagged 0
+- 2026-10-29 03:05 validate: gold controls 3/9 clean, negatives misclassified 0/0, headline failures 4
+- 2026-10-29 03:05 validate: headline control failures: carotid_plaque_cohort: not tagged | blood_detection: not tagged | lung_tissue: not tagged | brain_accumulation: not tagged
+- 2026-10-29 03:06 qc ui: pass, 8 page renders, 0 serious or critical axe violations, 0 console errors, 0 failed requests

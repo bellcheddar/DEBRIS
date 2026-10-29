@@ -103,14 +103,21 @@ def parse_article(art: ET.Element) -> dict | None:
         elif coll := a.findtext("CollectiveName"):
             authors.append(coll)
 
+    # PubmedData/ArticleIdList holds the record's own identifiers. A reference list
+    # carries ArticleIdList elements of its own, so a descendant search reached into
+    # the citations and, taking the last match, stored a cited paper's DOI as this
+    # paper's: the Nihart brain paper was recorded under the DOI of a commission report
+    # it cites. Read the article's own list, and take the first DOI in it.
     doi = None
-    for eid in art.findall(".//ArticleIdList/ArticleId"):
+    for eid in art.findall("PubmedData/ArticleIdList/ArticleId"):
         if eid.get("IdType") == "doi" and eid.text:
             doi = eid.text.strip().lower()
+            break
     if not doi:
         for eloc in article.findall("ELocationID"):
             if eloc.get("EIdType") == "doi" and eloc.text:
                 doi = eloc.text.strip().lower()
+                break
 
     mesh = [text_of(d.find("DescriptorName")) for d in citation.findall(".//MeshHeadingList/MeshHeading")]
     pub_types = [text_of(p) for p in article.findall(".//PublicationTypeList/PublicationType")]
@@ -157,20 +164,85 @@ def efetch(pmids: list[str], lim: c.RateLimiter, batch: int = 200) -> list[dict]
     return out
 
 
+# A search hit is not the paper. A letter about a landmark study carries the same words
+# and a later date, so it wins a date sort; a review carries them all and wins a
+# relevance sort. The first hit was trusted once and put a reply letter in the brain
+# slot, a comment in the blood slot and a nuclear-medicine paper in the PET slot.
+SECONDARY_TYPES = ("Letter", "Comment", "Editorial", "Published Erratum", "News",
+                   "Retraction of Publication", "Retracted Publication")
+REVIEW_TYPES = ("Review", "Systematic Review", "Meta-Analysis")
+
+
+def gold_usable(entry: dict, rec: dict | None) -> bool:
+    """A control needs an abstract, because a paper without one is never tagged, and it
+    must not be a letter or a comment about the paper it stands in for. Where the entry
+    gives `title_must_match`, the title has to match it."""
+    if rec is None or not rec.get("abstract"):
+        return False
+    if any(t in (rec.get("pub_types") or []) for t in SECONDARY_TYPES):
+        return False
+    pattern = entry.get("title_must_match")
+    return not pattern or re.search(pattern, rec.get("title") or "", re.I) is not None
+
+
+def gold_candidate(entry: dict, records: list[dict], order: list[str]) -> dict | None:
+    """The best search hit for a control that names no single paper.
+
+    Search order decides, after a preference for the kind of paper wanted: `prefer =
+    "review"` wants a review and anything else wants a primary study. The preference
+    ranks rather than rejects, because PubMed types some primary papers as reviews,
+    Ragusa's placenta paper among them.
+    """
+    want_review = entry.get("prefer", "research") == "review"
+    by_pmid = {r["pmid"]: r for r in records}
+    best: tuple[tuple[int, int], dict] | None = None
+    for rank, pmid in enumerate(order):
+        rec = by_pmid.get(pmid)
+        if not gold_usable(entry, rec):
+            continue
+        is_review = any(t in (rec.get("pub_types") or []) for t in REVIEW_TYPES)
+        score = ((0 if is_review == want_review else 1), rank)
+        if best is None or score < best[0]:
+            best = (score, rec)
+    return best[1] if best else None
+
+
 def resolve_gold(lim: c.RateLimiter, conn) -> list[dict]:
     """Resolve the gold seed set by search; log what was found (spec 5.3)."""
     q = c.load_toml("query.toml")
     found = []
     for entry in q.get("gold", []):
+        if pinned := entry.get("pmid"):
+            rec = next(iter(efetch([pinned], lim)), None)
+            if not gold_usable(entry, rec):
+                title = (rec or {}).get("title", "no record")
+                c.log(f"harvest: gold '{entry['key']}' pinned to {pinned} but that record "
+                      f"does not fit the control: {title[:70]!r}")
+                continue
+            c.log(f"harvest: gold '{entry['key']}' pinned {pinned} {rec['title'][:70]!r}")
+            found.append({"key": entry["key"], "pmid": pinned, "expect": entry["expect"],
+                          "title": rec["title"], "candidates": [pinned]})
+            continue
         try:
-            pmids = esearch(entry["term"], lim, retmax=5, sort=entry.get("sort"))
+            pmids = esearch(entry["term"], lim, retmax=8, sort=entry.get("sort"))
         except Exception as exc:
             c.log(f"harvest: gold '{entry['key']}' search failed ({exc})")
             continue
         if not pmids:
             c.log(f"harvest: gold '{entry['key']}' not found ({entry['expect']})")
             continue
-        found.append({"key": entry["key"], "pmid": pmids[0], "expect": entry["expect"],
+        chosen = gold_candidate(entry, efetch(pmids, lim), pmids)
+        if chosen is None:
+            c.log(f"harvest: gold '{entry['key']}' had {len(pmids)} hits but none was a "
+                  f"primary record with an abstract ({entry['expect']})")
+            continue
+        if chosen["pmid"] != pmids[0]:
+            c.log(f"harvest: gold '{entry['key']}' skipped {pmids.index(chosen['pmid'])} "
+                  f"hit(s) to reach {chosen['pmid']}")
+        c.log(f"harvest: gold '{entry['key']}' -> {chosen['pmid']} "
+              f"{chosen['title'][:70]!r}")
+        found.append({"key": entry["key"], "pmid": chosen["pmid"],
+                      "expect": entry["expect"], "title": chosen["title"],
                       "candidates": pmids})
     return found
 
@@ -227,6 +299,8 @@ def store(records: list[dict], strategies: dict[str, set[str]], negatives: set[s
                  month=excluded.month, authors=excluded.authors, mesh=excluded.mesh,
                  pub_types=excluded.pub_types, edat=excluded.edat,
                  hit_strategy=excluded.hit_strategy,
+                 doi_status=CASE WHEN excluded.doi IS NOT NULL AND excluded.doi <> papers.doi
+                                 THEN 'pending' ELSE papers.doi_status END,
                  status=CASE WHEN papers.status IN ('harvested','no_abstract')
                              THEN excluded.status ELSE papers.status END""", rows)
     return new, updated
@@ -238,6 +312,10 @@ def main() -> None:
                     help="only records entered in the last N days (weekly mode)")
     ap.add_argument("--run-id", default=None)
     ap.add_argument("--skip-negatives", action="store_true")
+    ap.add_argument("--gold-only", action="store_true",
+                    help="re-resolve the gold controls and fetch only those, nothing else")
+    ap.add_argument("--refetch", action="store_true",
+                    help="fetch every PMID again, ignoring the harvest manifest")
     args = ap.parse_args()
 
     c.init_db()
@@ -247,7 +325,8 @@ def main() -> None:
     key_note = "with NCBI key" if c.api_key("NCBI_API_KEY") else "no NCBI key, 3 req/s"
     c.log(f"harvest: start {ingest_run} ({key_note})")
 
-    strategies = {name: set(pmids) for name, pmids in strategy_pmids(lim, args.since).items()}
+    strategies = ({} if args.gold_only else
+                  {name: set(pmids) for name, pmids in strategy_pmids(lim, args.since).items()})
     union = set().union(*strategies.values()) if strategies else set()
 
     gold = []
@@ -256,17 +335,20 @@ def main() -> None:
         gold = resolve_gold(lim, conn)
         with conn:
             conn.executemany(
-                "INSERT INTO gold_set (key,pmid,expect,title,resolved_at) VALUES (?,?,?,'',?) "
-                "ON CONFLICT(key) DO UPDATE SET pmid=excluded.pmid, resolved_at=excluded.resolved_at",
-                [(g["key"], g["pmid"], g["expect"], c.now()) for g in gold])
+                "INSERT INTO gold_set (key,pmid,expect,title,resolved_at) VALUES (?,?,?,?,?) "
+                "ON CONFLICT(key) DO UPDATE SET pmid=excluded.pmid, title=excluded.title, "
+                "resolved_at=excluded.resolved_at",
+                [(g["key"], g["pmid"], g["expect"], g.get("title", ""), c.now())
+                 for g in gold])
         union |= {g["pmid"] for g in gold}
-        if not args.skip_negatives:
+        if not (args.skip_negatives or args.gold_only):
             negatives = set(negatives_pmids(lim))
             union |= negatives
         c.log(f"harvest: gold set resolved {len(gold)}/9, negatives {len(negatives)}")
 
     # Resume: skip PMIDs already fetched in a previous pass of this same run.
-    done = c.manifest_done("harvest", key="pmid")
+    done = (set() if (args.gold_only or args.refetch)
+            else c.manifest_done("harvest", key="pmid"))
     todo = sorted(union - done) if args.since is None else sorted(union)
     c.log(f"harvest: union {len(union)} PMIDs, {len(todo)} to fetch")
 

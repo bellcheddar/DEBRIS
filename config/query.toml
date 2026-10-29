@@ -17,43 +17,77 @@ term = """(microplastic*[tiab] OR nanoplastic*[tiab] OR "micro-nanoplastic*"[tia
 # Gold seed set (spec 5.3 and Appendix C): resolved by search at run time, never
 # hand-typed. Each entry names what the paper must be, so the resolver can log what
 # it actually found.
+#
+# `pmid` pins a control to one paper. The five landmarks are pinned because PubMed's
+# relevance order is not stable: two consecutive resolves of the same term returned
+# different first hits, which would silently swap a control between harvests. Where no
+# single paper is named, the search stands and `title_must_match` keeps it honest.
 [[gold]]
 key = "carotid_plaque_cohort"
+pmid = "38446676"
+title_must_match = "atheroma"
+prefer = "research"
 expect = "NEJM 2024 carotid plaque MNP cohort (Marfella et al.)"
 term = '''(microplastic*[tiab] OR nanoplastic*[tiab]) AND (carotid[tiab] AND (plaque[tiab] OR atheroma[tiab])) AND "N Engl J Med"[ta]'''
 [[gold]]
 key = "blood_detection"
+pmid = "35367073"
+title_must_match = "human blood"
+prefer = "research"
 expect = "Environment International 2022 blood detection (Leslie et al.)"
 term = '''(plastic particle*[tiab] OR microplastic*[tiab] OR nanoplastic*[tiab]) AND "human blood"[tiab] AND "Environ Int"[ta] AND 2022[dp]'''
 [[gold]]
 key = "lung_tissue"
+pmid = "35364151"
+title_must_match = "human lung"
+prefer = "research"
 expect = "Science of the Total Environment 2022 lung tissue (Jenner et al.)"
 term = '''microplastic*[tiab] AND "human lung"[tiab] AND "Sci Total Environ"[ta] AND 2022[dp]'''
 [[gold]]
 key = "brain_accumulation"
+pmid = "39901044"
+title_must_match = "human brain"
+prefer = "research"
 expect = "Nature Medicine 2025 brain accumulation (Nihart et al.)"
 term = '''(microplastic*[tiab] OR nanoplastic*[tiab]) AND brain[tiab] AND "Nat Med"[ta]'''
 [[gold]]
 key = "placenta_detection"
+pmid = "33395930"
+title_must_match = "placenta"
+prefer = "research"
 expect = "Environment International 2021 placenta detection (Ragusa et al.)"
 term = '''microplastic*[tiab] AND placenta*[tiab] AND "Environ Int"[ta] AND 2021[dp]'''
 [[gold]]
 key = "colorectal_1"
+title_must_match = "colorectal|colon|intestin|fec|faec"
+prefer = "research"
 expect = "most-cited colorectal or intestinal MNP study"
 term = '''(microplastic*[tiab] OR nanoplastic*[tiab]) AND (colorectal[tiab] OR "colon cancer"[tiab]) AND (human[tiab] OR patient*[tiab] OR tissue[tiab])'''
 sort = "relevance"
 [[gold]]
 key = "colorectal_2"
+pmid = "30176444"
+title_must_match = "gut barrier"
+prefer = "research"
 expect = "second colorectal or intestinal migration/inflammation study"
 term = '''(microplastic*[tiab] OR nanoplastic*[tiab]) AND (intestin*[tiab] OR gut[tiab]) AND (inflamm*[tiab] OR barrier[tiab] OR migration[tiab])'''
 sort = "relevance"
 [[gold]]
 key = "pet_leachate"
-expect = "PET leachate toxicity study"
-term = '''("polyethylene terephthalate"[tiab] OR PET[tiab]) AND (leachate*[tiab] OR migration[tiab]) AND (toxic*[tiab] OR cytotox*[tiab]) NOT "positron emission"[tiab]'''
+pmid = "37755792"
+title_must_match = "polyethylene terephthalate"
+prefer = "research"
+expect = "PET particle or leachate toxicity study"
+# Never bare PET[tiab]: it returns positron emission tomography, and it did, so the
+# polymer is named in full or qualified as a particle.
+# A toxicity word alone ranked a thermo-oxidative materials paper first, so a
+# biological system has to be in the record too.
+term = '''("polyethylene terephthalate"[tiab] OR "PET microplastic*"[tiab] OR "PET nanoplastic*"[tiab]) AND (toxic*[tiab] OR cytotox*[tiab] OR genotox*[tiab] OR "oxidative stress"[tiab] OR inflamm*[tiab] OR leachate*[tiab]) AND (cell*[tiab] OR human[tiab] OR mice[tiab] OR rat*[tiab] OR tissue[tiab] OR exposure[tiab]) NOT ("positron emission"[tiab] OR tomography[tiab] OR radiotracer*[tiab])'''
 sort = "relevance"
 [[gold]]
 key = "broad_review"
+title_must_match = "human health|health impact|health effect"
+prefer = "review"
 expect = "broad MNP human-health review"
 term = '''(microplastic*[tiab] OR nanoplastic*[tiab]) AND "human health"[tiab] AND review[pt]'''
 sort = "relevance"

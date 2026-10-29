@@ -9,10 +9,12 @@ Rewritten after every phase and at least every 30 minutes during compute.
 - [x] `tools/hwprobe.py` -> config/hardware.toml, config/tuning.toml (M2 Ultra, 128 GB, 60 GPU cores)
 - [x] `pipeline/harvest.py`: 10,132 PMIDs (MeSH 5,020, text word 6,573, 402 negatives, 9/9 gold)
 - [x] `pipeline/verify_doi.py`: Crossref funnel, case-folded title match, retraction flag
+- [x] DOI parser corrected (D20): the stored DOI was sometimes a cited paper's; corpus re-harvested
+- [x] Gold controls pinned and corrected (D19): three of nine were the wrong paper
 - [x] SQLite schema with every index, `papers` populated
 - [x] Elora design system, four tabs, Papers tab live with the untagged corpus
 - [x] `pipeline/aggregate.py` and the five static bundles
-- [x] 57 tests green (schema, DOI with mocked HTTP, aggregate totals vs SQL, novelty, routes)
+- [x] 68 tests green (schema, DOI with mocked HTTP, aggregate totals vs SQL, novelty, routes)
 - [x] Bootstrap labels (1,600: 868 relevant, 732 not) and the wandb dataset artifact (offline)
 - [x] Phase 1 deploy to debris.mdeller.com (live over HTTPS, ingest banner shown)
 
@@ -26,7 +28,9 @@ Rewritten after every phase and at least every 30 minutes during compute.
 - [x] Smoke test: 11.2 papers/min, 10.6 h projected for 7,113 untagged, inside the 24 h budget
 - [x] Training run: debris_v1, LoRA 800 iterations in 53.5 min, validation loss 0.813 to 0.765
 - [x] Stale 5.x transformers files cleared from the pixi environment (D15), train stages resumable
-- [ ] Fuse, q4 convert and the 5.5 acceptance floor on the 162-paper test split
+- [x] Fused and q4 converted; q4 lost 15 F1 points on relevance, so `USE_FUSED` is set
+- [ ] The 5.5 acceptance floor: 800 iterations missed six of eight, retraining at 1,600
+      (spec 5.5 fallback ladder: 1,600 iters, then 32 layers, then 7B, then collapse pathways)
 - [ ] Full corpus tagged
 
 ## Phase 3 App polish (85 %)
@@ -42,6 +46,7 @@ Rewritten after every phase and at least every 30 minutes during compute.
 - [x] `pipeline/weekly.py`, `deploy/weekly.sh`, systemd service and timer, launchd plist
 - [x] `deploy/deploy.sh` (code, data, `--data-only`, `--provision`), nginx vhost, provision script
 - [ ] Timer installed and enabled on the droplet, dry weekly run
-- [ ] README, FINDINGS.md
+- [x] `tools/findings.py` and `tools/readme.py`, both generated from the database and the forge
+- [ ] Final README and FINDINGS.md regenerated against the tagged corpus
 
 Open gates: none

@@ -37,3 +37,10 @@ format (branded header, shields, section emoji, author footer) and emits the Ele
 HTML. DEBRIS supplies `readme_meta.json` with the tagline and the "why it matters"
 paragraph, which the script cannot invent. The sibling was not modified and nothing is
 imported across folders.
+
+It is driven by `tools/readme.py` (`pixi run readme`) rather than called directly. The
+forge reads a crude `README.md` beside itself and writes `README.polished.md` plus
+Elementor HTML and a CSS file, none of which belong in this repo, so the wrapper copies
+`README.source.md` into a scratch directory, runs the forge there and brings only the
+polished markdown back as `README.md`. The copied script itself stays byte-identical to
+the sibling's.

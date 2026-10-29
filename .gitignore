@@ -4,6 +4,9 @@ data/raw/
 data/adapters/
 data/snapshots/
 *.sqlite
+# WAL and shared-memory files are transient and change on every read.
+*.sqlite-shm
+*.sqlite-wal
 .pixi/
 .venv/
 __pycache__/

@@ -2,3 +2,5 @@
 # Chromium (never `playwright install`) and axe-core-python supplies the audit script.
 playwright==1.64.1
 axe-core-python==0.1.0
+# scripts/readme_forge.py (lifted from marcs-vibe-coding) renders the polished README.
+markdown==3.7

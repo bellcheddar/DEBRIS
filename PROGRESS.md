@@ -44,6 +44,11 @@ Rewritten after every phase and at least every 30 minutes during compute.
 - [x] The two stubborn metrics measured rather than guessed (D25): model_type is limited by
       a cell_line / human_in_vitro boundary the labels do not hold to, and pathways is
       over-prediction on oxidative_stress as much as missed barrier_disruption signal
+- [x] Corpus precision screened (D32): the 362 negative controls were being published as
+      corpus papers, so the published count was 9,685 rather than 9,323; excluded on
+      provenance now, not on the tagger agreeing. No imaging filter, because seven of the
+      nine corpus papers that mention a scanner also name a plastic. 970 papers that never
+      name a plastic and the controls are demoted to tiers 6 and 7, still tagged
 - [ ] The 5.5 acceptance floor: organs 0.804, pathways 0.633, rungs within one 0.864 and
       model_type 0.852 short; Qwen2.5-7B rung running (then G2 for what is label-limited)
 - [ ] Full corpus tagged

@@ -191,3 +191,9 @@
 - 2026-10-29 14:41 aggregate: wrote 5 bundles, 6 kB total; verified 9323, tagged 0
 - 2026-10-29 14:48 findings: wrote FINDINGS.md, 1107 words
 - 2026-10-29 14:48 qc ui: pass, 8 page renders, 0 serious or critical axe violations, 0 console errors, 0 failed requests
+- 2026-10-29 14:50 corpus: the 362 negative controls were being published as corpus papers
+  (D32). Excluded on provenance through `common.corpus_clause()`; published count 9,685 to
+  9,323; nine tests, seven of which fail without the fix. No imaging filter: seven of the
+  nine corpus papers that mention a scanner also name a plastic. 970 papers that never name
+  a plastic demoted to tier 6 and the controls to tier 7, both still tagged. `pixi run
+  screen` reports the split. 107 tests, QC clean, deployed, landing-page count corrected.

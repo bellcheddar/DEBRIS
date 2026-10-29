@@ -204,3 +204,14 @@
 - 2026-10-29 16:04 train: LoRA finished in 297.0 min
 - 2026-10-29 16:20 train: checkpoint 400: 3/8 floors, score 0.9549, relevant 0.9432, organs 0.7292, pathways 0.6481
 - 2026-10-29 16:37 train: checkpoint 800: 3/8 floors, score 0.9593, relevant 0.9461, organs 0.7599, pathways 0.6779
+- 2026-10-29 16:54 train: checkpoint 1200: 5/8 floors, score 0.9722, relevant 0.954, organs 0.7329, pathways 0.7179
+- 2026-10-29 17:10 train: checkpoint 1600: 4/8 floors, score 0.9714, relevant 0.954, organs 0.7431, pathways 0.7237
+- 2026-10-29 17:10 train: fusing checkpoint 1200 of [400, 800, 1200, 1600], chosen on the validation split
+- 2026-10-29 17:10 train: mlx_lm.fuse --model Qwen/Qwen2.5-7B-Instruct --adapter-path /Users/dellboy/Documents/Vibe_Coding/debris/data/adapters/debris_v1 --save-path ...
+- 2026-10-29 17:10 train: fused
+- 2026-10-29 17:10 train: mlx_lm.convert --hf-path /Users/dellboy/Documents/Vibe_Coding/debris/data/adapters/debris_v1_fused -q --mlx-path /Users/dellboy/Documents/Vibe_Coding/debris/data/adapters/debris_v1_q4
+- 2026-10-29 17:10 train: quantised
+- 2026-10-29 17:26 train: q4 vs fused relevant F1 gap +0.004
+- 2026-10-29 17:26 train: q4 now matches the fused model, cleared USE_FUSED
+- 2026-10-29 17:26 train: metrics {"n": 162, "relevant_f1": 0.954, "polymers_f1": 0.8778, "organ_systems_f1": 0.7782, "pathways_f1": 0.7047, "disease_categories_f1": 0.9141, "rungs_exact": 0.8704, "rungs_within_one": 0.8827, "model_type_accuracy": 0.8636, "model_type_n": 88, "valid_json": 1.0, "seconds_per_paper": 3.38, "model": "/Users/dellboy/Documents/Vibe_Coding/debris/data/adapters/debris_v1_fused"}
+- 2026-10-29 17:26 train: BELOW FLOOR: organ_systems_f1 0.778 < 0.85; pathways_f1 0.705 < 0.75; rungs_within_one 0.883 < 0.9; model_type_accuracy 0.864 < 0.9

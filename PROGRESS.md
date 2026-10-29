@@ -49,6 +49,9 @@ Rewritten after every phase and at least every 30 minutes during compute.
       provenance now, not on the tagger agreeing. No imaging filter, because seven of the
       nine corpus papers that mention a scanner also name a plastic. 970 papers that never
       name a plastic and the controls are demoted to tiers 6 and 7, still tagged
+- [x] Round 05, Qwen2.5-7B (D35): four of eight floors on test, same as the 3B. Paired
+      bootstrap: only pathways improves for real (+0.071); every other difference is noise
+      at 162 papers. Adapter archived at data/adapters/debris_v1_7b_round05
 - [ ] The 5.5 acceptance floor: organs 0.804, pathways 0.633, rungs within one 0.864 and
       model_type 0.852 short; Qwen2.5-7B rung running (then G2 for what is label-limited)
 - [ ] Full corpus tagged

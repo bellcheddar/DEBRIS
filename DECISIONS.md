@@ -795,3 +795,37 @@ body figure needed nothing because the anatomy and the labelled pins carry it on
 **Reversing it.** The panels are independent renderers over two bundles; removing one is
 deleting its figure and its block in the JavaScript. The rosters reverse by editing
 `config/vocab.toml`.
+
+## D35 Round 05: the 7B buys pathways and nothing else we can measure, and the test split cannot see small effects
+
+The 7B rung of the ladder (Qwen2.5-7B-Instruct, all 28 layers, 1,600 iterations, checkpoint
+1200 chosen on the validation split with five floors there) clears four of eight floors on
+the frozen test split, the same count as the 3B 32-layer model of round 04. By the rule set
+before it ran, that sends the shortfalls to G2 rather than buying the 7B: it did not clear
+organ systems or rungs within one.
+
+A paired bootstrap over the 162 test papers (2,000 resamples, the same papers drawn for both
+models) says more than the point estimates do. Only one difference is real: pathways,
++0.071, 95 % interval [+0.010, +0.134]. Relevance (-0.017), organ systems (-0.026), rungs
+within one (+0.019), model type (+0.011) and polymers (+0.008) all have intervals straddling
+zero. The organ result is the clearest case: the 7B was 5.6 points ahead on validation and
+2.6 points behind on test, and both are noise.
+
+That changes how the next experiments have to be judged. On a split of this size the 95 %
+interval on a single model's score is roughly plus or minus five points for most fields and
+plus or minus seven for polymers and model type, the latter scored on only the 88 relevant
+papers. An experiment that improves a field by two or three points cannot be told apart from
+one that does nothing. It also means a floor met at 0.954 against 0.95 and a floor missed at
+0.946 are the same result, which matters for how G2 reads the shortfalls.
+
+Two smaller findings. The quantised 7B lost 5.9 pathway points against the fused model, which
+is the size of the 7B's one real gain, but `train.py` cleared USE_FUSED because the relevance
+gap alone was within tolerance; that rule should look at every field. And the round 05 loss
+curve was not lost as feared: the streaming `run()` captured it in the training log and the
+eval stage logged it, so the synced wandb run (`debris-qwen-2.5-7b-round05`) has all 81 steps.
+Validation loss bottoms around iteration 500 to 700 and climbs to 0.829 by 1600 while the
+field metrics keep improving, which is D24 again: the loss is computed over the prompt as well
+as the answer, so it mostly measures how well the model reproduces text it was given.
+
+The chosen adapter is archived at `data/adapters/debris_v1_7b_round05`, since the 7B fused and
+q4 directories replaced the 3B's. Round 04's adapter is still at `debris_v1_32layer1600`.

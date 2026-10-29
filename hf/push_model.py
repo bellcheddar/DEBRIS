@@ -9,6 +9,7 @@ uses path B (the Studio launchd job); this script stays ready for the token.
 from __future__ import annotations
 
 import argparse
+import json
 import shutil
 import sys
 from pathlib import Path
@@ -65,16 +66,17 @@ def main() -> int:
         c.log(f"hf: pushed {model_repo}")
 
     if not args.model_only:
-        # The Space validates against the same vocabulary the tagger was trained on,
-        # so schema.py and vocab.toml travel with it.
+        # The Space validates against the same vocabulary the tagger was trained on, so
+        # schema.py travels with it, reading the vocabulary from a JSON copy rather than
+        # the TOML source: Spaces run Python 3.10, where tomllib is not in the standard
+        # library, and shipping a JSON file needs nothing on either side.
         shutil.copy(c.ROOT / "pipeline" / "schema.py", SPACE_DIR / "schema.py")
-        shutil.copy(c.CONFIG / "vocab.toml", SPACE_DIR / "vocab.toml")
-        # schema.py imports pipeline.common for the vocabulary; the Space copy reads
-        # the TOML beside it instead.
+        (SPACE_DIR / "vocab.json").write_text(json.dumps(c.vocab(), indent=1))
+        (SPACE_DIR / "vocab.toml").unlink(missing_ok=True)
         text = (SPACE_DIR / "schema.py").read_text().replace(
             "from pipeline import common as c\n\nV = c.vocab()",
-            "import tomllib, pathlib\n\n"
-            "V = tomllib.loads((pathlib.Path(__file__).parent / 'vocab.toml').read_text())")
+            "import pathlib\n\n"
+            "V = json.loads((pathlib.Path(__file__).parent / 'vocab.json').read_text())")
         (SPACE_DIR / "schema.py").write_text(text)
         # Hardware is requested at creation; an existing Space keeps whatever it has,
         # so the log below says where to check it.

@@ -10,9 +10,9 @@ import json
 import re
 from typing import Any
 
-import tomllib, pathlib
+import pathlib
 
-V = tomllib.loads((pathlib.Path(__file__).parent / 'vocab.toml').read_text())
+V = json.loads((pathlib.Path(__file__).parent / 'vocab.json').read_text())
 
 LIST_FIELDS = ("polymers", "organ_systems", "disease_categories", "disease_terms",
                "pathways", "evidence_rungs")

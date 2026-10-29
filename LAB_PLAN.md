@@ -227,6 +227,12 @@ Estimated 3 to 4 hours, then 6 to 9 hours of tagging.
 
 ## Decisions needed from Marc
 
+**Decided 2026-10-29.** No API key: every label in Phases 2 and 3 is written by the build
+session, and the cached Qwen2.5-32B serves as the second, independent labeller for the
+label ceiling. No manual spot checks. The full 11 and 18 are on their way from the paper.
+The original list follows for the record.
+
+
 1. **The full roster.** The 18 tissues and 11 polymers exactly as Liu et al. list them, from
    the paper's methods or tables: the abstract gives six and three, and the plan will not
    guess the rest. Phase 2 cannot start without them; Phases 0 and 1 can.

@@ -215,3 +215,10 @@
 - 2026-10-29 17:26 train: q4 now matches the fused model, cleared USE_FUSED
 - 2026-10-29 17:26 train: metrics {"n": 162, "relevant_f1": 0.954, "polymers_f1": 0.8778, "organ_systems_f1": 0.7782, "pathways_f1": 0.7047, "disease_categories_f1": 0.9141, "rungs_exact": 0.8704, "rungs_within_one": 0.8827, "model_type_accuracy": 0.8636, "model_type_n": 88, "valid_json": 1.0, "seconds_per_paper": 3.38, "model": "/Users/dellboy/Documents/Vibe_Coding/debris/data/adapters/debris_v1_fused"}
 - 2026-10-29 17:26 train: BELOW FLOOR: organ_systems_f1 0.778 < 0.85; pathways_f1 0.705 < 0.75; rungs_within_one 0.883 < 0.9; model_type_accuracy 0.864 < 0.9
+- 2026-10-29 18:08 lab folds: Counter({0: 480, 1: 479, 2: 479})
+- 2026-10-29 18:09 lab smoke f0 s42: training 20 iterations
+- 2026-10-29 18:09 train: mlx_lm.lora --model Qwen/Qwen2.5-1.5B-Instruct --train --data /Users/dellboy/Documents/Vibe_Coding/debris/data/lab/smoke/f0-s42/data ...
+- 2026-10-29 18:10 lab smoke f0 s42: trained in 1.6 min
+- 2026-10-29 18:11 lab smoke f0 s42 @ 20: relevant_f1 0.0, polymers_f1 0.0, organ_systems_f1 0.0, pathways_f1 0.0, rungs_exact 0.7917, rungs_within_one 0.7917, model_type_accuracy 0.0, valid_json 0.9583, 0.64 s/paper
+- 2026-10-29 18:11 lab smoke: done
+- 2026-10-29 18:11 lab report: 0 experiments written to LAB_REPORT.md

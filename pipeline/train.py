@@ -263,10 +263,8 @@ def score(model_path: str, adapter_path: str | None = None, split: str = "test",
         raise SystemExit(f"no {split}_meta.jsonl: run `pixi run bootstrap split` first")
     tagger = LocalTagger(model_path, adapter_path)
 
-    truth_rel, pred_rel = [], []
-    poly, organ, path_pairs, disease = [], [], [], []
-    rung_exact = rung_within = valid_json = 0
-    model_ok = model_n = 0
+    pairs: list[tuple[dict, dict]] = []
+    valid_json = 0
     predictions = []
     started = time.monotonic()
     for i, row in enumerate(rows, 1):
@@ -276,9 +274,7 @@ def score(model_path: str, adapter_path: str | None = None, split: str = "test",
         valid_json += 1 if raw is not None else 0
         pred, problems, _ = schema.validate(raw)
         if pred is None:
-            pred = {"relevant": False, "polymers": [], "organ_systems": [], "pathways": [],
-                    "disease_categories": [], "evidence_rungs": [],
-                    "model_type": "not_applicable"}
+            pred = dict(UNPARSED)
         # What the model emitted, beside what the schema made of it. validate() repairs as
         # well as checks, and without the raw field an error breakdown cannot tell a value
         # the model claimed from one the schema supplied on its behalf: a polymers list
@@ -286,12 +282,39 @@ def score(model_path: str, adapter_path: str | None = None, split: str = "test",
         # fill standing in for it, and those are different failures (D30).
         predictions.append({"pmid": row["pmid"], "gold": gold, "pred": pred,
                             "raw": raw, "problems": problems, "parsed": raw is not None})
-        truth_rel.append(bool(gold["relevant"]))
-        pred_rel.append(bool(pred["relevant"]))
-        poly.append((set(gold["polymers"]), set(pred["polymers"])))
-        organ.append((set(gold["organ_systems"]), set(pred["organ_systems"])))
-        path_pairs.append((set(gold["pathways"]), set(pred["pathways"])))
-        disease.append((set(gold["disease_categories"]), set(pred["disease_categories"])))
+        pairs.append((gold, pred))
+        if i % 20 == 0:
+            print(f"  scored {i}/{len(rows)}", flush=True)
+    n = len(rows)
+    c.jsonl_write(c.TRAIN / f"predictions_{label}.jsonl", predictions)
+    return {
+        "n": n,
+        **field_metrics(pairs),
+        "valid_json": round(valid_json / n, 4),
+        "seconds_per_paper": round((time.monotonic() - started) / n, 2),
+        "model": model_path + (f"+{adapter_path}" if adapter_path else ""),
+    }
+
+
+# The prediction scored for an answer that would not parse: nothing claimed, so every
+# field counts against the model rather than being skipped.
+UNPARSED = {"relevant": False, "polymers": [], "organ_systems": [], "pathways": [],
+            "disease_categories": [], "evidence_rungs": [], "model_type": "not_applicable"}
+
+
+def field_metrics(pairs: list[tuple[dict, dict]]) -> dict:
+    """Every field's score from (gold, prediction) pairs.
+
+    The one definition of the metrics: the production scorer, the lab (LAB_PLAN.md) and
+    any bootstrap over stored predictions all call this, so a lab number and a floor
+    number can never quietly mean different things.
+    """
+    truth_rel = [bool(g["relevant"]) for g, _ in pairs]
+    pred_rel = [bool(p["relevant"]) for _, p in pairs]
+    sets = lambda field: [(set(g[field]), set(p[field])) for g, p in pairs]
+    rung_exact = rung_within = 0
+    model_ok = model_n = 0
+    for gold, pred in pairs:
         gold_rungs, pred_rungs = set(gold["evidence_rungs"]), set(pred["evidence_rungs"])
         rung_exact += 1 if gold_rungs == pred_rungs else 0
         rung_within += 1 if rungs_within_one(gold_rungs, pred_rungs) else 0
@@ -302,24 +325,17 @@ def score(model_path: str, adapter_path: str | None = None, split: str = "test",
         if gold["relevant"]:
             model_n += 1
             model_ok += 1 if gold["model_type"] == pred["model_type"] else 0
-        if i % 20 == 0:
-            print(f"  scored {i}/{len(rows)}", flush=True)
-    n = len(rows)
-    c.jsonl_write(c.TRAIN / f"predictions_{label}.jsonl", predictions)
+    n = len(pairs) or 1
     return {
-        "n": n,
         "relevant_f1": round(binary_f1(truth_rel, pred_rel), 4),
-        "polymers_f1": round(micro_f1(poly), 4),
-        "organ_systems_f1": round(micro_f1(organ), 4),
-        "pathways_f1": round(micro_f1(path_pairs), 4),
-        "disease_categories_f1": round(micro_f1(disease), 4),
+        "polymers_f1": round(micro_f1(sets("polymers")), 4),
+        "organ_systems_f1": round(micro_f1(sets("organ_systems")), 4),
+        "pathways_f1": round(micro_f1(sets("pathways")), 4),
+        "disease_categories_f1": round(micro_f1(sets("disease_categories")), 4),
         "rungs_exact": round(rung_exact / n, 4),
         "rungs_within_one": round(rung_within / n, 4),
         "model_type_accuracy": round(model_ok / model_n, 4) if model_n else 1.0,
         "model_type_n": model_n,
-        "valid_json": round(valid_json / n, 4),
-        "seconds_per_paper": round((time.monotonic() - started) / n, 2),
-        "model": model_path + (f"+{adapter_path}" if adapter_path else ""),
     }
 
 

@@ -1,0 +1,15 @@
+# Not an experiment: proves every stage runs end to end before a long round is committed.
+description = "Smoke test: 20 iterations, 24 papers scored"
+iters = 20
+save_every = 10
+folds = [0]
+seeds = [42]
+score_iters = [20]
+score_limit = 24
+report = false
+
+[switches]
+mask_prompt = true
+types = true
+order = true
+drop_confidence = true

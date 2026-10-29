@@ -1,0 +1,11 @@
+# Phase 0 (LAB_PLAN.md): the current recipe on the lab model. Every fold trains to 800
+# iterations with a checkpoint every 100; fold 0 is also scored at 200, 400 and 600 to draw
+# the learning curve that sets the iteration count for everything after it.
+description = "Phase 0: the current recipe, three folds, learning curve on fold 0"
+iters = 800
+folds = [0, 1, 2]
+seeds = [42]
+score_iters = [800]
+curve_iters = [200, 400, 600]
+
+[switches]

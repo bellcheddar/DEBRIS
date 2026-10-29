@@ -25,12 +25,24 @@ def main() -> int:
     ap = argparse.ArgumentParser(description="Push the DEBRIS tagger to Hugging Face")
     ap.add_argument("--model-only", action="store_true")
     ap.add_argument("--space-only", action="store_true")
+    ap.add_argument("--allow-expiring", action="store_true",
+                    help="push with a credential that expires, for a one-off test of the Space")
     args = ap.parse_args()
 
     token = c.api_key("HF_TOKEN")
     cfg = c.load_toml("hf.toml")
     if not token:
         c.log("hf: no HF_TOKEN; model and Space not pushed, weekly inference stays on path B")
+        return 1
+
+    # A browser login leaves a credential good for a few days. Pushing with it would work
+    # today and strand the droplet's weekly timer next week, silently, because the weekly
+    # runner logs a failed stage and carries on (D26).
+    expires = c.token_expiry(token)
+    if expires and not args.allow_expiring:
+        c.log(f"hf: this token expires {expires}, which is too soon for a weekly timer. "
+              f"Create one at https://huggingface.co/settings/tokens with write scope, or "
+              f"pass --allow-expiring to push with it anyway and stay on path B.")
         return 1
 
     from huggingface_hub import HfApi

@@ -160,7 +160,35 @@ def http_get(url: str, params: dict | None = None, limiter: RateLimiter | None =
 
 def api_key(name: str) -> str | None:
     value = os.environ.get(name, "").strip()
-    return value or None
+    if value:
+        return value
+    if name == "HF_TOKEN":
+        # `hf auth login` stores its token under the Hugging Face cache rather than in the
+        # environment, and it is the route that keeps the secret out of a shell history or
+        # a file in the repo, so honour it.
+        try:
+            from huggingface_hub import get_token
+        except ImportError:
+            return None
+        return (get_token() or "").strip() or None
+    return None
+
+
+def token_expiry(token: str) -> str | None:
+    """When a Hugging Face credential stops working, or None if it does not.
+
+    An OAuth credential from a browser login carries an expiry a few days out. That is
+    fine for a one-off push and useless for a timer that has to fire every Sunday, and
+    the weekly runner logs a failed stage and carries on, so the symptom of an expired
+    token is a site quietly serving untagged papers rather than an error (D26).
+    """
+    try:
+        from huggingface_hub import HfApi
+        auth = HfApi().whoami(token=token).get("auth", {})
+    except Exception as exc:
+        log(f"hf: could not check the token's expiry ({type(exc).__name__})")
+        return None
+    return auth.get("expiresAt")
 
 
 # --------------------------------------------------------------------------- sqlite

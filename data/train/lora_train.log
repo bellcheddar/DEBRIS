@@ -2,317 +2,597 @@ Loading pretrained model
 Loading datasets
 Training
 Trainable parameters: 0.216% (6.652M/3085.939M)
-Starting training..., iters: 800
-Iter 1: Val loss 2.447, Val took 55.226s
-Iter 20: Train loss 1.497, Learning Rate 1.000e-05, It/sec 0.275, Tokens/sec 1048.370, Trained Tokens 76252, Peak mem 29.768 GB
-Iter 40: Train loss 0.855, Learning Rate 1.000e-05, It/sec 0.291, Tokens/sec 1137.790, Trained Tokens 154328, Peak mem 30.008 GB
-Iter 60: Train loss 0.810, Learning Rate 1.000e-05, It/sec 0.294, Tokens/sec 1114.682, Trained Tokens 230139, Peak mem 30.008 GB
-Iter 80: Train loss 0.829, Learning Rate 1.000e-05, It/sec 0.291, Tokens/sec 1130.986, Trained Tokens 307983, Peak mem 30.008 GB
-Iter 100: Val loss 0.813, Val took 53.554s
-Iter 100: Train loss 0.804, Learning Rate 1.000e-05, It/sec 0.295, Tokens/sec 1129.634, Trained Tokens 384524, Peak mem 31.984 GB
+Starting training..., iters: 1600
+Iter 1: Val loss 2.429, Val took 55.796s
+Iter 20: Train loss 1.453, Learning Rate 1.000e-05, It/sec 0.276, Tokens/sec 1104.378, Trained Tokens 80050, Peak mem 43.693 GB
+Iter 40: Train loss 0.847, Learning Rate 1.000e-05, It/sec 0.307, Tokens/sec 1171.349, Trained Tokens 156473, Peak mem 43.693 GB
+Iter 60: Train loss 0.840, Learning Rate 1.000e-05, It/sec 0.297, Tokens/sec 1156.159, Trained Tokens 234274, Peak mem 43.693 GB
+Iter 80: Train loss 0.811, Learning Rate 1.000e-05, It/sec 0.288, Tokens/sec 1120.025, Trained Tokens 312031, Peak mem 43.693 GB
+Iter 100: Val loss 0.815, Val took 53.556s
+Iter 100: Train loss 0.799, Learning Rate 1.000e-05, It/sec 0.301, Tokens/sec 1166.022, Trained Tokens 389569, Peak mem 43.693 GB
 Iter 100: Saved adapter weights to /Users/dellboy/Documents/Vibe_Coding/debris/data/adapters/debris_v1/adapters.safetensors and /Users/dellboy/Documents/Vibe_Coding/debris/data/adapters/debris_v1/0000100_adapters.safetensors.
-Iter 120: Train loss 0.810, Learning Rate 1.000e-05, It/sec 0.297, Tokens/sec 1135.482, Trained Tokens 460860, Peak mem 32.714 GB
-Iter 140: Train loss 0.809, Learning Rate 1.000e-05, It/sec 0.297, Tokens/sec 1129.459, Trained Tokens 536923, Peak mem 32.714 GB
-Iter 160: Train loss 0.818, Learning Rate 1.000e-05, It/sec 0.278, Tokens/sec 1089.280, Trained Tokens 615250, Peak mem 32.714 GB
-Iter 180: Train loss 0.793, Learning Rate 1.000e-05, It/sec 0.287, Tokens/sec 1096.850, Trained Tokens 691746, Peak mem 32.714 GB
-Iter 200: Val loss 0.798, Val took 54.445s
-Iter 200: Train loss 0.789, Learning Rate 1.000e-05, It/sec 0.312, Tokens/sec 1184.462, Trained Tokens 767689, Peak mem 32.714 GB
+Iter 120: Train loss 0.801, Learning Rate 1.000e-05, It/sec 0.292, Tokens/sec 1124.550, Trained Tokens 466610, Peak mem 43.693 GB
+Iter 140: Train loss 0.777, Learning Rate 1.000e-05, It/sec 0.299, Tokens/sec 1131.633, Trained Tokens 542322, Peak mem 43.693 GB
+Iter 160: Train loss 0.801, Learning Rate 1.000e-05, It/sec 0.286, Tokens/sec 1097.772, Trained Tokens 619051, Peak mem 43.693 GB
+Iter 180: Train loss 0.790, Learning Rate 1.000e-05, It/sec 0.297, Tokens/sec 1144.391, Trained Tokens 696148, Peak mem 43.693 GB
+Iter 200: Val loss 0.800, Val took 53.452s
+Iter 200: Train loss 0.804, Learning Rate 1.000e-05, It/sec 0.304, Tokens/sec 1172.649, Trained Tokens 773190, Peak mem 43.693 GB
 Iter 200: Saved adapter weights to /Users/dellboy/Documents/Vibe_Coding/debris/data/adapters/debris_v1/adapters.safetensors and /Users/dellboy/Documents/Vibe_Coding/debris/data/adapters/debris_v1/0000200_adapters.safetensors.
-Iter 220: Train loss 0.796, Learning Rate 1.000e-05, It/sec 0.298, Tokens/sec 1147.797, Trained Tokens 844657, Peak mem 32.714 GB
-Iter 240: Train loss 0.796, Learning Rate 1.000e-05, It/sec 0.305, Tokens/sec 1177.271, Trained Tokens 921800, Peak mem 32.714 GB
-Iter 260: Train loss 0.805, Learning Rate 1.000e-05, It/sec 0.295, Tokens/sec 1138.765, Trained Tokens 999024, Peak mem 32.714 GB
-Iter 280: Train loss 0.779, Learning Rate 1.000e-05, It/sec 0.300, Tokens/sec 1174.866, Trained Tokens 1077464, Peak mem 32.714 GB
-Iter 300: Val loss 0.801, Val took 54.534s
-Iter 300: Train loss 0.793, Learning Rate 1.000e-05, It/sec 0.278, Tokens/sec 1102.616, Trained Tokens 1156686, Peak mem 43.774 GB
+Iter 220: Train loss 0.833, Learning Rate 1.000e-05, It/sec 0.298, Tokens/sec 1173.140, Trained Tokens 851940, Peak mem 43.693 GB
+Iter 240: Train loss 0.776, Learning Rate 1.000e-05, It/sec 0.303, Tokens/sec 1149.905, Trained Tokens 927773, Peak mem 43.693 GB
+Iter 260: Train loss 0.769, Learning Rate 1.000e-05, It/sec 0.280, Tokens/sec 1098.736, Trained Tokens 1006203, Peak mem 43.693 GB
+Iter 280: Train loss 0.797, Learning Rate 1.000e-05, It/sec 0.304, Tokens/sec 1175.462, Trained Tokens 1083613, Peak mem 43.693 GB
+Iter 300: Val loss 0.787, Val took 53.169s
+Iter 300: Train loss 0.788, Learning Rate 1.000e-05, It/sec 0.287, Tokens/sec 1112.440, Trained Tokens 1161118, Peak mem 43.693 GB
 Iter 300: Saved adapter weights to /Users/dellboy/Documents/Vibe_Coding/debris/data/adapters/debris_v1/adapters.safetensors and /Users/dellboy/Documents/Vibe_Coding/debris/data/adapters/debris_v1/0000300_adapters.safetensors.
-Iter 320: Train loss 0.797, Learning Rate 1.000e-05, It/sec 0.307, Tokens/sec 1182.439, Trained Tokens 1233839, Peak mem 43.774 GB
-Iter 340: Train loss 0.796, Learning Rate 1.000e-05, It/sec 0.278, Tokens/sec 1085.747, Trained Tokens 1311861, Peak mem 43.774 GB
-Iter 360: Train loss 0.779, Learning Rate 1.000e-05, It/sec 0.315, Tokens/sec 1172.570, Trained Tokens 1386396, Peak mem 43.774 GB
-Iter 380: Train loss 0.768, Learning Rate 1.000e-05, It/sec 0.293, Tokens/sec 1125.992, Trained Tokens 1463223, Peak mem 43.774 GB
-Iter 400: Val loss 0.797, Val took 53.819s
-Iter 400: Train loss 0.767, Learning Rate 1.000e-05, It/sec 0.294, Tokens/sec 1135.044, Trained Tokens 1540466, Peak mem 43.774 GB
+Iter 320: Train loss 0.794, Learning Rate 1.000e-05, It/sec 0.299, Tokens/sec 1156.509, Trained Tokens 1238453, Peak mem 43.693 GB
+Iter 340: Train loss 0.757, Learning Rate 1.000e-05, It/sec 0.306, Tokens/sec 1182.959, Trained Tokens 1315666, Peak mem 43.693 GB
+Iter 360: Train loss 0.782, Learning Rate 1.000e-05, It/sec 0.298, Tokens/sec 1141.776, Trained Tokens 1392316, Peak mem 43.693 GB
+Iter 380: Train loss 0.744, Learning Rate 1.000e-05, It/sec 0.304, Tokens/sec 1144.614, Trained Tokens 1467642, Peak mem 43.693 GB
+Iter 400: Val loss 0.797, Val took 52.560s
+Iter 400: Train loss 0.780, Learning Rate 1.000e-05, It/sec 0.302, Tokens/sec 1177.831, Trained Tokens 1545684, Peak mem 43.693 GB
 Iter 400: Saved adapter weights to /Users/dellboy/Documents/Vibe_Coding/debris/data/adapters/debris_v1/adapters.safetensors and /Users/dellboy/Documents/Vibe_Coding/debris/data/adapters/debris_v1/0000400_adapters.safetensors.
-Iter 420: Train loss 0.737, Learning Rate 1.000e-05, It/sec 0.286, Tokens/sec 1118.854, Trained Tokens 1618588, Peak mem 43.774 GB
-Iter 440: Train loss 0.756, Learning Rate 1.000e-05, It/sec 0.292, Tokens/sec 1149.504, Trained Tokens 1697419, Peak mem 43.774 GB
-Iter 460: Train loss 0.763, Learning Rate 1.000e-05, It/sec 0.304, Tokens/sec 1174.909, Trained Tokens 1774821, Peak mem 43.774 GB
-Iter 480: Train loss 0.769, Learning Rate 1.000e-05, It/sec 0.295, Tokens/sec 1134.004, Trained Tokens 1851702, Peak mem 43.774 GB
-Iter 500: Val loss 0.778, Val took 53.241s
-Iter 500: Train loss 0.754, Learning Rate 1.000e-05, It/sec 0.300, Tokens/sec 1143.207, Trained Tokens 1927995, Peak mem 43.774 GB
+Iter 420: Train loss 0.759, Learning Rate 1.000e-05, It/sec 0.304, Tokens/sec 1167.125, Trained Tokens 1622425, Peak mem 43.693 GB
+Iter 440: Train loss 0.783, Learning Rate 1.000e-05, It/sec 0.293, Tokens/sec 1140.823, Trained Tokens 1700391, Peak mem 43.693 GB
+Iter 460: Train loss 0.766, Learning Rate 1.000e-05, It/sec 0.306, Tokens/sec 1183.432, Trained Tokens 1777806, Peak mem 43.693 GB
+Iter 480: Train loss 0.774, Learning Rate 1.000e-05, It/sec 0.294, Tokens/sec 1163.330, Trained Tokens 1856921, Peak mem 43.693 GB
+Iter 500: Val loss 0.779, Val took 54.959s
+Iter 500: Train loss 0.751, Learning Rate 1.000e-05, It/sec 0.298, Tokens/sec 1148.234, Trained Tokens 1933993, Peak mem 43.693 GB
 Iter 500: Saved adapter weights to /Users/dellboy/Documents/Vibe_Coding/debris/data/adapters/debris_v1/adapters.safetensors and /Users/dellboy/Documents/Vibe_Coding/debris/data/adapters/debris_v1/0000500_adapters.safetensors.
-Iter 520: Train loss 0.752, Learning Rate 1.000e-05, It/sec 0.306, Tokens/sec 1169.400, Trained Tokens 2004382, Peak mem 43.774 GB
-Iter 540: Train loss 0.733, Learning Rate 1.000e-05, It/sec 0.295, Tokens/sec 1125.234, Trained Tokens 2080600, Peak mem 43.774 GB
-Iter 560: Train loss 0.777, Learning Rate 1.000e-05, It/sec 0.300, Tokens/sec 1156.250, Trained Tokens 2157667, Peak mem 43.774 GB
-Iter 580: Train loss 0.782, Learning Rate 1.000e-05, It/sec 0.298, Tokens/sec 1151.535, Trained Tokens 2234976, Peak mem 43.774 GB
-Iter 600: Val loss 0.791, Val took 54.655s
-Iter 600: Train loss 0.773, Learning Rate 1.000e-05, It/sec 0.300, Tokens/sec 1169.482, Trained Tokens 2313006, Peak mem 43.774 GB
+Iter 520: Train loss 0.735, Learning Rate 1.000e-05, It/sec 0.304, Tokens/sec 1162.300, Trained Tokens 2010586, Peak mem 43.693 GB
+Iter 540: Train loss 0.768, Learning Rate 1.000e-05, It/sec 0.284, Tokens/sec 1100.763, Trained Tokens 2088095, Peak mem 43.693 GB
+Iter 560: Train loss 0.752, Learning Rate 1.000e-05, It/sec 0.276, Tokens/sec 1090.849, Trained Tokens 2167023, Peak mem 43.774 GB
+Iter 580: Train loss 0.752, Learning Rate 1.000e-05, It/sec 0.294, Tokens/sec 1152.545, Trained Tokens 2245556, Peak mem 43.774 GB
+Iter 600: Val loss 0.784, Val took 54.184s
+Iter 600: Train loss 0.751, Learning Rate 1.000e-05, It/sec 0.301, Tokens/sec 1155.839, Trained Tokens 2322431, Peak mem 43.774 GB
 Iter 600: Saved adapter weights to /Users/dellboy/Documents/Vibe_Coding/debris/data/adapters/debris_v1/adapters.safetensors and /Users/dellboy/Documents/Vibe_Coding/debris/data/adapters/debris_v1/0000600_adapters.safetensors.
-Iter 620: Train loss 0.752, Learning Rate 1.000e-05, It/sec 0.305, Tokens/sec 1172.619, Trained Tokens 2389933, Peak mem 43.774 GB
-Iter 640: Train loss 0.764, Learning Rate 1.000e-05, It/sec 0.289, Tokens/sec 1127.092, Trained Tokens 2468027, Peak mem 43.774 GB
-Iter 660: Train loss 0.745, Learning Rate 1.000e-05, It/sec 0.297, Tokens/sec 1137.087, Trained Tokens 2544623, Peak mem 43.774 GB
-Iter 680: Train loss 0.740, Learning Rate 1.000e-05, It/sec 0.294, Tokens/sec 1125.523, Trained Tokens 2621247, Peak mem 43.774 GB
-Iter 700: Val loss 0.783, Val took 54.477s
-Iter 700: Train loss 0.748, Learning Rate 1.000e-05, It/sec 0.297, Tokens/sec 1142.793, Trained Tokens 2698265, Peak mem 43.774 GB
+Iter 620: Train loss 0.734, Learning Rate 1.000e-05, It/sec 0.286, Tokens/sec 1103.453, Trained Tokens 2399559, Peak mem 43.774 GB
+Iter 640: Train loss 0.766, Learning Rate 1.000e-05, It/sec 0.277, Tokens/sec 1075.449, Trained Tokens 2477104, Peak mem 43.774 GB
+Iter 660: Train loss 0.739, Learning Rate 1.000e-05, It/sec 0.299, Tokens/sec 1147.768, Trained Tokens 2553987, Peak mem 43.774 GB
+Iter 680: Train loss 0.749, Learning Rate 1.000e-05, It/sec 0.300, Tokens/sec 1175.143, Trained Tokens 2632222, Peak mem 43.774 GB
+Iter 700: Val loss 0.774, Val took 53.705s
+Iter 700: Train loss 0.752, Learning Rate 1.000e-05, It/sec 0.294, Tokens/sec 1155.005, Trained Tokens 2710922, Peak mem 43.774 GB
 Iter 700: Saved adapter weights to /Users/dellboy/Documents/Vibe_Coding/debris/data/adapters/debris_v1/adapters.safetensors and /Users/dellboy/Documents/Vibe_Coding/debris/data/adapters/debris_v1/0000700_adapters.safetensors.
-Iter 720: Train loss 0.745, Learning Rate 1.000e-05, It/sec 0.306, Tokens/sec 1186.472, Trained Tokens 2775797, Peak mem 43.774 GB
-Iter 740: Train loss 0.745, Learning Rate 1.000e-05, It/sec 0.301, Tokens/sec 1161.376, Trained Tokens 2853071, Peak mem 43.774 GB
-Iter 760: Train loss 0.727, Learning Rate 1.000e-05, It/sec 0.290, Tokens/sec 1117.463, Trained Tokens 2930084, Peak mem 43.774 GB
-Iter 780: Train loss 0.726, Learning Rate 1.000e-05, It/sec 0.265, Tokens/sec 1024.231, Trained Tokens 3007465, Peak mem 43.774 GB
-Iter 800: Val loss 0.765, Val took 53.219s
-Iter 800: Train loss 0.768, Learning Rate 1.000e-05, It/sec 0.289, Tokens/sec 1125.576, Trained Tokens 3085253, Peak mem 43.774 GB
+Iter 720: Train loss 0.769, Learning Rate 1.000e-05, It/sec 0.291, Tokens/sec 1140.233, Trained Tokens 2789382, Peak mem 43.774 GB
+Iter 740: Train loss 0.737, Learning Rate 1.000e-05, It/sec 0.287, Tokens/sec 1101.646, Trained Tokens 2866228, Peak mem 43.774 GB
+Iter 760: Train loss 0.725, Learning Rate 1.000e-05, It/sec 0.302, Tokens/sec 1175.024, Trained Tokens 2943970, Peak mem 43.774 GB
+Iter 780: Train loss 0.750, Learning Rate 1.000e-05, It/sec 0.284, Tokens/sec 1119.696, Trained Tokens 3022812, Peak mem 43.774 GB
+Iter 800: Val loss 0.774, Val took 54.067s
+Iter 800: Train loss 0.716, Learning Rate 1.000e-05, It/sec 0.291, Tokens/sec 1104.349, Trained Tokens 3098602, Peak mem 43.774 GB
 Iter 800: Saved adapter weights to /Users/dellboy/Documents/Vibe_Coding/debris/data/adapters/debris_v1/adapters.safetensors and /Users/dellboy/Documents/Vibe_Coding/debris/data/adapters/debris_v1/0000800_adapters.safetensors.
+Iter 820: Train loss 0.728, Learning Rate 1.000e-05, It/sec 0.294, Tokens/sec 1150.810, Trained Tokens 3176815, Peak mem 43.774 GB
+Iter 840: Train loss 0.716, Learning Rate 1.000e-05, It/sec 0.291, Tokens/sec 1143.688, Trained Tokens 3255317, Peak mem 43.774 GB
+Iter 860: Train loss 0.721, Learning Rate 1.000e-05, It/sec 0.276, Tokens/sec 1069.571, Trained Tokens 3332805, Peak mem 43.774 GB
+Iter 880: Train loss 0.720, Learning Rate 1.000e-05, It/sec 0.309, Tokens/sec 1160.771, Trained Tokens 3407983, Peak mem 43.774 GB
+Iter 900: Val loss 0.783, Val took 53.172s
+Iter 900: Train loss 0.721, Learning Rate 1.000e-05, It/sec 0.302, Tokens/sec 1178.950, Trained Tokens 3486081, Peak mem 43.774 GB
+Iter 900: Saved adapter weights to /Users/dellboy/Documents/Vibe_Coding/debris/data/adapters/debris_v1/adapters.safetensors and /Users/dellboy/Documents/Vibe_Coding/debris/data/adapters/debris_v1/0000900_adapters.safetensors.
+Iter 920: Train loss 0.727, Learning Rate 1.000e-05, It/sec 0.298, Tokens/sec 1146.767, Trained Tokens 3563032, Peak mem 43.774 GB
+Iter 940: Train loss 0.729, Learning Rate 1.000e-05, It/sec 0.285, Tokens/sec 1078.082, Trained Tokens 3638712, Peak mem 43.774 GB
+Iter 960: Train loss 0.733, Learning Rate 1.000e-05, It/sec 0.295, Tokens/sec 1139.106, Trained Tokens 3715843, Peak mem 43.774 GB
+Iter 980: Train loss 0.711, Learning Rate 1.000e-05, It/sec 0.305, Tokens/sec 1159.312, Trained Tokens 3791783, Peak mem 43.774 GB
+Iter 1000: Val loss 0.803, Val took 54.737s
+Iter 1000: Train loss 0.690, Learning Rate 1.000e-05, It/sec 0.298, Tokens/sec 1152.771, Trained Tokens 3869027, Peak mem 43.774 GB
+Iter 1000: Saved adapter weights to /Users/dellboy/Documents/Vibe_Coding/debris/data/adapters/debris_v1/adapters.safetensors and /Users/dellboy/Documents/Vibe_Coding/debris/data/adapters/debris_v1/0001000_adapters.safetensors.
+Iter 1020: Train loss 0.711, Learning Rate 1.000e-05, It/sec 0.298, Tokens/sec 1141.278, Trained Tokens 3945594, Peak mem 43.774 GB
+Iter 1040: Train loss 0.713, Learning Rate 1.000e-05, It/sec 0.291, Tokens/sec 1126.219, Trained Tokens 4023054, Peak mem 43.774 GB
+Iter 1060: Train loss 0.692, Learning Rate 1.000e-05, It/sec 0.298, Tokens/sec 1135.030, Trained Tokens 4099268, Peak mem 43.774 GB
+Iter 1080: Train loss 0.704, Learning Rate 1.000e-05, It/sec 0.294, Tokens/sec 1158.953, Trained Tokens 4178043, Peak mem 43.774 GB
+Iter 1100: Val loss 0.782, Val took 53.944s
+Iter 1100: Train loss 0.694, Learning Rate 1.000e-05, It/sec 0.295, Tokens/sec 1133.814, Trained Tokens 4254816, Peak mem 43.774 GB
+Iter 1100: Saved adapter weights to /Users/dellboy/Documents/Vibe_Coding/debris/data/adapters/debris_v1/adapters.safetensors and /Users/dellboy/Documents/Vibe_Coding/debris/data/adapters/debris_v1/0001100_adapters.safetensors.
+Iter 1120: Train loss 0.697, Learning Rate 1.000e-05, It/sec 0.297, Tokens/sec 1129.605, Trained Tokens 4330777, Peak mem 43.774 GB
+Iter 1140: Train loss 0.729, Learning Rate 1.000e-05, It/sec 0.280, Tokens/sec 1105.856, Trained Tokens 4409886, Peak mem 43.774 GB
+Iter 1160: Train loss 0.687, Learning Rate 1.000e-05, It/sec 0.287, Tokens/sec 1105.606, Trained Tokens 4487034, Peak mem 43.774 GB
+Iter 1180: Train loss 0.710, Learning Rate 1.000e-05, It/sec 0.297, Tokens/sec 1155.279, Trained Tokens 4564700, Peak mem 43.774 GB
+Iter 1200: Val loss 0.799, Val took 54.105s
+Iter 1200: Train loss 0.710, Learning Rate 1.000e-05, It/sec 0.299, Tokens/sec 1173.050, Trained Tokens 4643090, Peak mem 43.774 GB
+Iter 1200: Saved adapter weights to /Users/dellboy/Documents/Vibe_Coding/debris/data/adapters/debris_v1/adapters.safetensors and /Users/dellboy/Documents/Vibe_Coding/debris/data/adapters/debris_v1/0001200_adapters.safetensors.
+Iter 1220: Train loss 0.744, Learning Rate 1.000e-05, It/sec 0.297, Tokens/sec 1158.047, Trained Tokens 4720991, Peak mem 43.774 GB
+Iter 1240: Train loss 0.716, Learning Rate 1.000e-05, It/sec 0.299, Tokens/sec 1144.772, Trained Tokens 4797464, Peak mem 43.774 GB
+Iter 1260: Train loss 0.712, Learning Rate 1.000e-05, It/sec 0.274, Tokens/sec 1085.383, Trained Tokens 4876655, Peak mem 43.774 GB
+Iter 1280: Train loss 0.733, Learning Rate 1.000e-05, It/sec 0.295, Tokens/sec 1155.343, Trained Tokens 4955041, Peak mem 43.774 GB
+Iter 1300: Val loss 0.805, Val took 53.220s
+Iter 1300: Train loss 0.664, Learning Rate 1.000e-05, It/sec 0.290, Tokens/sec 1123.505, Trained Tokens 5032644, Peak mem 43.774 GB
+Iter 1300: Saved adapter weights to /Users/dellboy/Documents/Vibe_Coding/debris/data/adapters/debris_v1/adapters.safetensors and /Users/dellboy/Documents/Vibe_Coding/debris/data/adapters/debris_v1/0001300_adapters.safetensors.
+Iter 1320: Train loss 0.670, Learning Rate 1.000e-05, It/sec 0.284, Tokens/sec 1115.966, Trained Tokens 5111291, Peak mem 43.774 GB
+Iter 1340: Train loss 0.664, Learning Rate 1.000e-05, It/sec 0.290, Tokens/sec 1108.055, Trained Tokens 5187808, Peak mem 43.774 GB
+Iter 1360: Train loss 0.683, Learning Rate 1.000e-05, It/sec 0.300, Tokens/sec 1165.438, Trained Tokens 5265488, Peak mem 43.774 GB
+Iter 1380: Train loss 0.689, Learning Rate 1.000e-05, It/sec 0.292, Tokens/sec 1126.365, Trained Tokens 5342742, Peak mem 43.774 GB
+Iter 1400: Val loss 0.805, Val took 53.638s
+Iter 1400: Train loss 0.692, Learning Rate 1.000e-05, It/sec 0.298, Tokens/sec 1159.492, Trained Tokens 5420452, Peak mem 43.774 GB
+Iter 1400: Saved adapter weights to /Users/dellboy/Documents/Vibe_Coding/debris/data/adapters/debris_v1/adapters.safetensors and /Users/dellboy/Documents/Vibe_Coding/debris/data/adapters/debris_v1/0001400_adapters.safetensors.
+Iter 1420: Train loss 0.710, Learning Rate 1.000e-05, It/sec 0.285, Tokens/sec 1127.480, Trained Tokens 5499570, Peak mem 43.774 GB
+Iter 1440: Train loss 0.714, Learning Rate 1.000e-05, It/sec 0.297, Tokens/sec 1155.407, Trained Tokens 5577368, Peak mem 43.774 GB
+Iter 1460: Train loss 0.699, Learning Rate 1.000e-05, It/sec 0.301, Tokens/sec 1159.897, Trained Tokens 5654409, Peak mem 43.774 GB
+Iter 1480: Train loss 0.686, Learning Rate 1.000e-05, It/sec 0.305, Tokens/sec 1168.182, Trained Tokens 5731002, Peak mem 43.774 GB
+Iter 1500: Val loss 0.800, Val took 54.127s
+Iter 1500: Train loss 0.696, Learning Rate 1.000e-05, It/sec 0.293, Tokens/sec 1144.371, Trained Tokens 5809155, Peak mem 43.774 GB
+Iter 1500: Saved adapter weights to /Users/dellboy/Documents/Vibe_Coding/debris/data/adapters/debris_v1/adapters.safetensors and /Users/dellboy/Documents/Vibe_Coding/debris/data/adapters/debris_v1/0001500_adapters.safetensors.
+Iter 1520: Train loss 0.656, Learning Rate 1.000e-05, It/sec 0.303, Tokens/sec 1140.849, Trained Tokens 5884373, Peak mem 43.774 GB
+Iter 1540: Train loss 0.714, Learning Rate 1.000e-05, It/sec 0.290, Tokens/sec 1129.633, Trained Tokens 5962177, Peak mem 43.774 GB
+Iter 1560: Train loss 0.695, Learning Rate 1.000e-05, It/sec 0.270, Tokens/sec 1032.022, Trained Tokens 6038740, Peak mem 43.774 GB
+Iter 1580: Train loss 0.678, Learning Rate 1.000e-05, It/sec 0.288, Tokens/sec 1121.422, Trained Tokens 6116652, Peak mem 43.774 GB
+Iter 1600: Val loss 0.808, Val took 54.466s
+Iter 1600: Train loss 0.656, Learning Rate 1.000e-05, It/sec 0.300, Tokens/sec 1151.261, Trained Tokens 6193305, Peak mem 43.774 GB
+Iter 1600: Saved adapter weights to /Users/dellboy/Documents/Vibe_Coding/debris/data/adapters/debris_v1/adapters.safetensors and /Users/dellboy/Documents/Vibe_Coding/debris/data/adapters/debris_v1/0001600_adapters.safetensors.
 Saved final weights to /Users/dellboy/Documents/Vibe_Coding/debris/data/adapters/debris_v1/adapters.safetensors.
 
 Fetching 9 files:   0%|          | 0/9 [00:00<?, ?it/s]
-Fetching 9 files: 100%|██████████| 9/9 [00:00<00:00, 3823.43it/s]
+Fetching 9 files: 100%|██████████| 9/9 [00:00<00:00, 3789.27it/s]
 
 Calculating loss...:   0%|          | 0/25 [00:00<?, ?it/s]
-Calculating loss...:   4%|▍         | 1/25 [00:02<01:08,  2.87s/it]
-Calculating loss...:   8%|▊         | 2/25 [00:04<00:53,  2.34s/it]
-Calculating loss...:  12%|█▏        | 3/25 [00:06<00:48,  2.19s/it]
-Calculating loss...:  16%|█▌        | 4/25 [00:08<00:44,  2.11s/it]
-Calculating loss...:  20%|██        | 5/25 [00:10<00:40,  2.05s/it]
-Calculating loss...:  24%|██▍       | 6/25 [00:13<00:40,  2.13s/it]
-Calculating loss...:  28%|██▊       | 7/25 [00:15<00:37,  2.09s/it]
-Calculating loss...:  32%|███▏      | 8/25 [00:17<00:35,  2.09s/it]
-Calculating loss...:  36%|███▌      | 9/25 [00:19<00:32,  2.06s/it]
-Calculating loss...:  40%|████      | 10/25 [00:21<00:31,  2.09s/it]
-Calculating loss...:  44%|████▍     | 11/25 [00:23<00:28,  2.04s/it]
-Calculating loss...:  48%|████▊     | 12/25 [00:25<00:27,  2.10s/it]
-Calculating loss...:  52%|█████▏    | 13/25 [00:27<00:24,  2.05s/it]
-Calculating loss...:  56%|█████▌    | 14/25 [00:29<00:22,  2.07s/it]
-Calculating loss...:  60%|██████    | 15/25 [00:31<00:20,  2.07s/it]
-Calculating loss...:  64%|██████▍   | 16/25 [00:34<00:20,  2.26s/it]
-Calculating loss...:  68%|██████▊   | 17/25 [00:36<00:18,  2.29s/it]
-Calculating loss...:  72%|███████▏  | 18/25 [00:38<00:15,  2.28s/it]
-Calculating loss...:  76%|███████▌  | 19/25 [00:41<00:14,  2.34s/it]
-Calculating loss...:  80%|████████  | 20/25 [00:43<00:11,  2.32s/it]
-Calculating loss...:  84%|████████▍ | 21/25 [00:46<00:09,  2.42s/it]
-Calculating loss...:  88%|████████▊ | 22/25 [00:48<00:07,  2.40s/it]
-Calculating loss...:  92%|█████████▏| 23/25 [00:50<00:04,  2.30s/it]
-Calculating loss...:  96%|█████████▌| 24/25 [00:53<00:02,  2.30s/it]
-Calculating loss...: 100%|██████████| 25/25 [00:55<00:00,  2.27s/it]
-Calculating loss...: 100%|██████████| 25/25 [00:55<00:00,  2.21s/it]
+Calculating loss...:   4%|▍         | 1/25 [00:02<01:00,  2.51s/it]
+Calculating loss...:   8%|▊         | 2/25 [00:04<00:49,  2.17s/it]
+Calculating loss...:  12%|█▏        | 3/25 [00:06<00:45,  2.06s/it]
+Calculating loss...:  16%|█▌        | 4/25 [00:09<00:48,  2.29s/it]
+Calculating loss...:  20%|██        | 5/25 [00:11<00:44,  2.22s/it]
+Calculating loss...:  24%|██▍       | 6/25 [00:13<00:42,  2.24s/it]
+Calculating loss...:  28%|██▊       | 7/25 [00:15<00:39,  2.18s/it]
+Calculating loss...:  32%|███▏      | 8/25 [00:17<00:37,  2.21s/it]
+Calculating loss...:  36%|███▌      | 9/25 [00:19<00:34,  2.14s/it]
+Calculating loss...:  40%|████      | 10/25 [00:21<00:32,  2.17s/it]
+Calculating loss...:  44%|████▍     | 11/25 [00:23<00:29,  2.14s/it]
+Calculating loss...:  48%|████▊     | 12/25 [00:26<00:28,  2.18s/it]
+Calculating loss...:  52%|█████▏    | 13/25 [00:28<00:25,  2.10s/it]
+Calculating loss...:  56%|█████▌    | 14/25 [00:30<00:23,  2.13s/it]
+Calculating loss...:  60%|██████    | 15/25 [00:32<00:21,  2.11s/it]
+Calculating loss...:  64%|██████▍   | 16/25 [00:34<00:20,  2.23s/it]
+Calculating loss...:  68%|██████▊   | 17/25 [00:37<00:18,  2.34s/it]
+Calculating loss...:  72%|███████▏  | 18/25 [00:40<00:17,  2.47s/it]
+Calculating loss...:  76%|███████▌  | 19/25 [00:42<00:14,  2.47s/it]
+Calculating loss...:  80%|████████  | 20/25 [00:45<00:12,  2.54s/it]
+Calculating loss...:  84%|████████▍ | 21/25 [00:47<00:09,  2.40s/it]
+Calculating loss...:  88%|████████▊ | 22/25 [00:49<00:06,  2.33s/it]
+Calculating loss...:  92%|█████████▏| 23/25 [00:51<00:04,  2.23s/it]
+Calculating loss...:  96%|█████████▌| 24/25 [00:53<00:02,  2.20s/it]
+Calculating loss...: 100%|██████████| 25/25 [00:55<00:00,  2.12s/it]
+Calculating loss...: 100%|██████████| 25/25 [00:55<00:00,  2.23s/it]
 
 Calculating loss...:   0%|          | 0/25 [00:00<?, ?it/s]
-Calculating loss...:   4%|▍         | 1/25 [00:02<00:58,  2.43s/it]
-Calculating loss...:   8%|▊         | 2/25 [00:04<00:52,  2.29s/it]
-Calculating loss...:  12%|█▏        | 3/25 [00:06<00:46,  2.13s/it]
+Calculating loss...:   4%|▍         | 1/25 [00:02<00:54,  2.29s/it]
+Calculating loss...:   8%|▊         | 2/25 [00:04<00:57,  2.49s/it]
+Calculating loss...:  12%|█▏        | 3/25 [00:06<00:48,  2.21s/it]
 Calculating loss...:  16%|█▌        | 4/25 [00:08<00:44,  2.14s/it]
-Calculating loss...:  20%|██        | 5/25 [00:11<00:45,  2.29s/it]
-Calculating loss...:  24%|██▍       | 6/25 [00:13<00:41,  2.19s/it]
-Calculating loss...:  28%|██▊       | 7/25 [00:15<00:40,  2.24s/it]
-Calculating loss...:  32%|███▏      | 8/25 [00:17<00:38,  2.27s/it]
-Calculating loss...:  36%|███▌      | 9/25 [00:19<00:34,  2.15s/it]
-Calculating loss...:  40%|████      | 10/25 [00:21<00:32,  2.15s/it]
-Calculating loss...:  44%|████▍     | 11/25 [00:23<00:29,  2.10s/it]
-Calculating loss...:  48%|████▊     | 12/25 [00:25<00:26,  2.05s/it]
-Calculating loss...:  52%|█████▏    | 13/25 [00:28<00:25,  2.15s/it]
-Calculating loss...:  56%|█████▌    | 14/25 [00:30<00:25,  2.31s/it]
-Calculating loss...:  60%|██████    | 15/25 [00:33<00:22,  2.28s/it]
-Calculating loss...:  64%|██████▍   | 16/25 [00:35<00:19,  2.19s/it]
-Calculating loss...:  68%|██████▊   | 17/25 [00:37<00:17,  2.15s/it]
-Calculating loss...:  72%|███████▏  | 18/25 [00:39<00:14,  2.11s/it]
-Calculating loss...:  76%|███████▌  | 19/25 [00:41<00:12,  2.04s/it]
-Calculating loss...:  80%|████████  | 20/25 [00:43<00:10,  2.07s/it]
-Calculating loss...:  84%|████████▍ | 21/25 [00:45<00:08,  2.02s/it]
-Calculating loss...:  88%|████████▊ | 22/25 [00:47<00:06,  2.08s/it]
-Calculating loss...:  92%|█████████▏| 23/25 [00:49<00:04,  2.01s/it]
-Calculating loss...:  96%|█████████▌| 24/25 [00:51<00:01,  1.99s/it]
-Calculating loss...: 100%|██████████| 25/25 [00:53<00:00,  2.11s/it]
+Calculating loss...:  20%|██        | 5/25 [00:10<00:42,  2.11s/it]
+Calculating loss...:  24%|██▍       | 6/25 [00:12<00:39,  2.08s/it]
+Calculating loss...:  28%|██▊       | 7/25 [00:15<00:37,  2.11s/it]
+Calculating loss...:  32%|███▏      | 8/25 [00:17<00:36,  2.15s/it]
+Calculating loss...:  36%|███▌      | 9/25 [00:19<00:33,  2.10s/it]
+Calculating loss...:  40%|████      | 10/25 [00:21<00:31,  2.13s/it]
+Calculating loss...:  44%|████▍     | 11/25 [00:23<00:28,  2.07s/it]
+Calculating loss...:  48%|████▊     | 12/25 [00:25<00:28,  2.16s/it]
+Calculating loss...:  52%|█████▏    | 13/25 [00:28<00:26,  2.23s/it]
+Calculating loss...:  56%|█████▌    | 14/25 [00:30<00:23,  2.16s/it]
+Calculating loss...:  60%|██████    | 15/25 [00:32<00:21,  2.17s/it]
+Calculating loss...:  64%|██████▍   | 16/25 [00:34<00:18,  2.10s/it]
+Calculating loss...:  68%|██████▊   | 17/25 [00:36<00:16,  2.11s/it]
+Calculating loss...:  72%|███████▏  | 18/25 [00:38<00:14,  2.08s/it]
+Calculating loss...:  76%|███████▌  | 19/25 [00:40<00:12,  2.01s/it]
+Calculating loss...:  80%|████████  | 20/25 [00:42<00:10,  2.01s/it]
+Calculating loss...:  84%|████████▍ | 21/25 [00:44<00:08,  2.17s/it]
+Calculating loss...:  88%|████████▊ | 22/25 [00:47<00:06,  2.33s/it]
+Calculating loss...:  92%|█████████▏| 23/25 [00:49<00:04,  2.19s/it]
+Calculating loss...:  96%|█████████▌| 24/25 [00:51<00:02,  2.11s/it]
+Calculating loss...: 100%|██████████| 25/25 [00:53<00:00,  2.14s/it]
 Calculating loss...: 100%|██████████| 25/25 [00:53<00:00,  2.14s/it]
 
 Calculating loss...:   0%|          | 0/25 [00:00<?, ?it/s]
-Calculating loss...:   4%|▍         | 1/25 [00:01<00:45,  1.90s/it]
-Calculating loss...:   8%|▊         | 2/25 [00:03<00:44,  1.96s/it]
-Calculating loss...:  12%|█▏        | 3/25 [00:05<00:43,  1.98s/it]
-Calculating loss...:  16%|█▌        | 4/25 [00:08<00:43,  2.05s/it]
-Calculating loss...:  20%|██        | 5/25 [00:09<00:39,  1.99s/it]
-Calculating loss...:  24%|██▍       | 6/25 [00:11<00:37,  1.97s/it]
-Calculating loss...:  28%|██▊       | 7/25 [00:14<00:39,  2.21s/it]
-Calculating loss...:  32%|███▏      | 8/25 [00:16<00:37,  2.20s/it]
-Calculating loss...:  36%|███▌      | 9/25 [00:18<00:34,  2.17s/it]
-Calculating loss...:  40%|████      | 10/25 [00:20<00:32,  2.15s/it]
-Calculating loss...:  44%|████▍     | 11/25 [00:23<00:31,  2.28s/it]
-Calculating loss...:  48%|████▊     | 12/25 [00:25<00:28,  2.15s/it]
-Calculating loss...:  52%|█████▏    | 13/25 [00:27<00:24,  2.07s/it]
-Calculating loss...:  56%|█████▌    | 14/25 [00:29<00:23,  2.11s/it]
-Calculating loss...:  60%|██████    | 15/25 [00:31<00:21,  2.11s/it]
-Calculating loss...:  64%|██████▍   | 16/25 [00:33<00:19,  2.20s/it]
-Calculating loss...:  68%|██████▊   | 17/25 [00:36<00:17,  2.20s/it]
-Calculating loss...:  72%|███████▏  | 18/25 [00:38<00:15,  2.25s/it]
-Calculating loss...:  76%|███████▌  | 19/25 [00:40<00:13,  2.30s/it]
-Calculating loss...:  80%|████████  | 20/25 [00:43<00:11,  2.25s/it]
-Calculating loss...:  84%|████████▍ | 21/25 [00:45<00:08,  2.15s/it]
-Calculating loss...:  88%|████████▊ | 22/25 [00:47<00:06,  2.10s/it]
-Calculating loss...:  92%|█████████▏| 23/25 [00:49<00:04,  2.26s/it]
-Calculating loss...:  96%|█████████▌| 24/25 [00:51<00:02,  2.27s/it]
-Calculating loss...: 100%|██████████| 25/25 [00:54<00:00,  2.34s/it]
-Calculating loss...: 100%|██████████| 25/25 [00:54<00:00,  2.18s/it]
+Calculating loss...:   4%|▍         | 1/25 [00:02<00:48,  2.00s/it]
+Calculating loss...:   8%|▊         | 2/25 [00:03<00:45,  2.00s/it]
+Calculating loss...:  12%|█▏        | 3/25 [00:05<00:43,  1.97s/it]
+Calculating loss...:  16%|█▌        | 4/25 [00:08<00:42,  2.04s/it]
+Calculating loss...:  20%|██        | 5/25 [00:10<00:40,  2.02s/it]
+Calculating loss...:  24%|██▍       | 6/25 [00:12<00:40,  2.14s/it]
+Calculating loss...:  28%|██▊       | 7/25 [00:14<00:37,  2.09s/it]
+Calculating loss...:  32%|███▏      | 8/25 [00:16<00:35,  2.08s/it]
+Calculating loss...:  36%|███▌      | 9/25 [00:18<00:33,  2.10s/it]
+Calculating loss...:  40%|████      | 10/25 [00:20<00:30,  2.07s/it]
+Calculating loss...:  44%|████▍     | 11/25 [00:22<00:28,  2.06s/it]
+Calculating loss...:  48%|████▊     | 12/25 [00:24<00:26,  2.01s/it]
+Calculating loss...:  52%|█████▏    | 13/25 [00:26<00:23,  1.97s/it]
+Calculating loss...:  56%|█████▌    | 14/25 [00:28<00:22,  2.04s/it]
+Calculating loss...:  60%|██████    | 15/25 [00:30<00:20,  2.09s/it]
+Calculating loss...:  64%|██████▍   | 16/25 [00:33<00:19,  2.19s/it]
+Calculating loss...:  68%|██████▊   | 17/25 [00:35<00:18,  2.31s/it]
+Calculating loss...:  72%|███████▏  | 18/25 [00:38<00:15,  2.28s/it]
+Calculating loss...:  76%|███████▌  | 19/25 [00:40<00:13,  2.29s/it]
+Calculating loss...:  80%|████████  | 20/25 [00:42<00:10,  2.17s/it]
+Calculating loss...:  84%|████████▍ | 21/25 [00:44<00:08,  2.11s/it]
+Calculating loss...:  88%|████████▊ | 22/25 [00:46<00:06,  2.25s/it]
+Calculating loss...:  92%|█████████▏| 23/25 [00:48<00:04,  2.17s/it]
+Calculating loss...:  96%|█████████▌| 24/25 [00:50<00:02,  2.14s/it]
+Calculating loss...: 100%|██████████| 25/25 [00:53<00:00,  2.27s/it]
+Calculating loss...: 100%|██████████| 25/25 [00:53<00:00,  2.14s/it]
 
 Calculating loss...:   0%|          | 0/25 [00:00<?, ?it/s]
-Calculating loss...:   4%|▍         | 1/25 [00:02<00:53,  2.23s/it]
-Calculating loss...:   8%|▊         | 2/25 [00:04<00:46,  2.02s/it]
-Calculating loss...:  12%|█▏        | 3/25 [00:06<00:43,  1.99s/it]
-Calculating loss...:  16%|█▌        | 4/25 [00:08<00:47,  2.27s/it]
-Calculating loss...:  20%|██        | 5/25 [00:10<00:43,  2.17s/it]
-Calculating loss...:  24%|██▍       | 6/25 [00:13<00:43,  2.30s/it]
+Calculating loss...:   4%|▍         | 1/25 [00:02<00:49,  2.08s/it]
+Calculating loss...:   8%|▊         | 2/25 [00:03<00:45,  1.96s/it]
+Calculating loss...:  12%|█▏        | 3/25 [00:06<00:46,  2.13s/it]
+Calculating loss...:  16%|█▌        | 4/25 [00:08<00:43,  2.08s/it]
+Calculating loss...:  20%|██        | 5/25 [00:10<00:40,  2.05s/it]
+Calculating loss...:  24%|██▍       | 6/25 [00:12<00:38,  2.05s/it]
 Calculating loss...:  28%|██▊       | 7/25 [00:15<00:40,  2.26s/it]
-Calculating loss...:  32%|███▏      | 8/25 [00:17<00:37,  2.18s/it]
-Calculating loss...:  36%|███▌      | 9/25 [00:19<00:35,  2.20s/it]
-Calculating loss...:  40%|████      | 10/25 [00:22<00:34,  2.27s/it]
-Calculating loss...:  44%|████▍     | 11/25 [00:24<00:30,  2.21s/it]
-Calculating loss...:  48%|████▊     | 12/25 [00:26<00:27,  2.13s/it]
-Calculating loss...:  52%|█████▏    | 13/25 [00:28<00:25,  2.15s/it]
-Calculating loss...:  56%|█████▌    | 14/25 [00:30<00:23,  2.15s/it]
-Calculating loss...:  60%|██████    | 15/25 [00:32<00:21,  2.15s/it]
-Calculating loss...:  64%|██████▍   | 16/25 [00:34<00:18,  2.07s/it]
-Calculating loss...:  68%|██████▊   | 17/25 [00:36<00:17,  2.16s/it]
-Calculating loss...:  72%|███████▏  | 18/25 [00:39<00:15,  2.23s/it]
-Calculating loss...:  76%|███████▌  | 19/25 [00:41<00:14,  2.34s/it]
-Calculating loss...:  80%|████████  | 20/25 [00:43<00:11,  2.24s/it]
-Calculating loss...:  84%|████████▍ | 21/25 [00:45<00:08,  2.15s/it]
-Calculating loss...:  88%|████████▊ | 22/25 [00:47<00:06,  2.06s/it]
-Calculating loss...:  92%|█████████▏| 23/25 [00:50<00:04,  2.22s/it]
-Calculating loss...:  96%|█████████▌| 24/25 [00:52<00:02,  2.11s/it]
-Calculating loss...: 100%|██████████| 25/25 [00:54<00:00,  2.19s/it]
-Calculating loss...: 100%|██████████| 25/25 [00:54<00:00,  2.18s/it]
+Calculating loss...:  32%|███▏      | 8/25 [00:16<00:36,  2.15s/it]
+Calculating loss...:  36%|███▌      | 9/25 [00:19<00:33,  2.12s/it]
+Calculating loss...:  40%|████      | 10/25 [00:21<00:33,  2.22s/it]
+Calculating loss...:  44%|████▍     | 11/25 [00:23<00:30,  2.20s/it]
+Calculating loss...:  48%|████▊     | 12/25 [00:25<00:27,  2.10s/it]
+Calculating loss...:  52%|█████▏    | 13/25 [00:28<00:27,  2.26s/it]
+Calculating loss...:  56%|█████▌    | 14/25 [00:30<00:24,  2.24s/it]
+Calculating loss...:  60%|██████    | 15/25 [00:32<00:21,  2.13s/it]
+Calculating loss...:  64%|██████▍   | 16/25 [00:34<00:18,  2.06s/it]
+Calculating loss...:  68%|██████▊   | 17/25 [00:36<00:17,  2.13s/it]
+Calculating loss...:  72%|███████▏  | 18/25 [00:38<00:15,  2.15s/it]
+Calculating loss...:  76%|███████▌  | 19/25 [00:40<00:13,  2.22s/it]
+Calculating loss...:  80%|████████  | 20/25 [00:43<00:11,  2.21s/it]
+Calculating loss...:  84%|████████▍ | 21/25 [00:45<00:08,  2.13s/it]
+Calculating loss...:  88%|████████▊ | 22/25 [00:47<00:06,  2.09s/it]
+Calculating loss...:  92%|█████████▏| 23/25 [00:49<00:04,  2.06s/it]
+Calculating loss...:  96%|█████████▌| 24/25 [00:51<00:02,  2.04s/it]
+Calculating loss...: 100%|██████████| 25/25 [00:53<00:00,  2.07s/it]
+Calculating loss...: 100%|██████████| 25/25 [00:53<00:00,  2.13s/it]
 
 Calculating loss...:   0%|          | 0/25 [00:00<?, ?it/s]
-Calculating loss...:   4%|▍         | 1/25 [00:01<00:45,  1.89s/it]
-Calculating loss...:   8%|▊         | 2/25 [00:04<00:46,  2.03s/it]
-Calculating loss...:  12%|█▏        | 3/25 [00:05<00:43,  1.99s/it]
+Calculating loss...:   4%|▍         | 1/25 [00:02<00:48,  2.03s/it]
+Calculating loss...:   8%|▊         | 2/25 [00:04<00:49,  2.14s/it]
+Calculating loss...:  12%|█▏        | 3/25 [00:06<00:45,  2.08s/it]
+Calculating loss...:  16%|█▌        | 4/25 [00:08<00:44,  2.11s/it]
+Calculating loss...:  20%|██        | 5/25 [00:10<00:40,  2.02s/it]
+Calculating loss...:  24%|██▍       | 6/25 [00:12<00:37,  1.99s/it]
+Calculating loss...:  28%|██▊       | 7/25 [00:14<00:35,  1.97s/it]
+Calculating loss...:  32%|███▏      | 8/25 [00:16<00:33,  2.00s/it]
+Calculating loss...:  36%|███▌      | 9/25 [00:18<00:32,  2.02s/it]
+Calculating loss...:  40%|████      | 10/25 [00:20<00:29,  1.97s/it]
+Calculating loss...:  44%|████▍     | 11/25 [00:22<00:28,  2.02s/it]
+Calculating loss...:  48%|████▊     | 12/25 [00:24<00:26,  2.01s/it]
+Calculating loss...:  52%|█████▏    | 13/25 [00:26<00:24,  2.01s/it]
+Calculating loss...:  56%|█████▌    | 14/25 [00:28<00:23,  2.17s/it]
+Calculating loss...:  60%|██████    | 15/25 [00:31<00:22,  2.27s/it]
+Calculating loss...:  64%|██████▍   | 16/25 [00:33<00:19,  2.15s/it]
+Calculating loss...:  68%|██████▊   | 17/25 [00:35<00:17,  2.15s/it]
+Calculating loss...:  72%|███████▏  | 18/25 [00:37<00:14,  2.10s/it]
+Calculating loss...:  76%|███████▌  | 19/25 [00:39<00:12,  2.09s/it]
+Calculating loss...:  80%|████████  | 20/25 [00:41<00:10,  2.05s/it]
+Calculating loss...:  84%|████████▍ | 21/25 [00:43<00:08,  2.12s/it]
+Calculating loss...:  88%|████████▊ | 22/25 [00:45<00:06,  2.15s/it]
+Calculating loss...:  92%|█████████▏| 23/25 [00:48<00:04,  2.31s/it]
+Calculating loss...:  96%|█████████▌| 24/25 [00:50<00:02,  2.21s/it]
+Calculating loss...: 100%|██████████| 25/25 [00:52<00:00,  2.17s/it]
+Calculating loss...: 100%|██████████| 25/25 [00:52<00:00,  2.10s/it]
+
+Calculating loss...:   0%|          | 0/25 [00:00<?, ?it/s]
+Calculating loss...:   4%|▍         | 1/25 [00:02<00:48,  2.00s/it]
+Calculating loss...:   8%|▊         | 2/25 [00:03<00:45,  1.96s/it]
+Calculating loss...:  12%|█▏        | 3/25 [00:05<00:42,  1.92s/it]
 Calculating loss...:  16%|█▌        | 4/25 [00:08<00:44,  2.12s/it]
 Calculating loss...:  20%|██        | 5/25 [00:10<00:40,  2.03s/it]
-Calculating loss...:  24%|██▍       | 6/25 [00:12<00:37,  2.00s/it]
-Calculating loss...:  28%|██▊       | 7/25 [00:14<00:35,  1.99s/it]
-Calculating loss...:  32%|███▏      | 8/25 [00:16<00:36,  2.17s/it]
+Calculating loss...:  24%|██▍       | 6/25 [00:12<00:39,  2.07s/it]
+Calculating loss...:  28%|██▊       | 7/25 [00:14<00:39,  2.18s/it]
+Calculating loss...:  32%|███▏      | 8/25 [00:16<00:36,  2.12s/it]
 Calculating loss...:  36%|███▌      | 9/25 [00:18<00:33,  2.08s/it]
 Calculating loss...:  40%|████      | 10/25 [00:20<00:31,  2.10s/it]
-Calculating loss...:  44%|████▍     | 11/25 [00:22<00:29,  2.11s/it]
-Calculating loss...:  48%|████▊     | 12/25 [00:24<00:26,  2.03s/it]
-Calculating loss...:  52%|█████▏    | 13/25 [00:26<00:24,  2.06s/it]
-Calculating loss...:  56%|█████▌    | 14/25 [00:29<00:23,  2.12s/it]
-Calculating loss...:  60%|██████    | 15/25 [00:30<00:20,  2.06s/it]
-Calculating loss...:  64%|██████▍   | 16/25 [00:32<00:18,  2.02s/it]
-Calculating loss...:  68%|██████▊   | 17/25 [00:34<00:16,  2.05s/it]
-Calculating loss...:  72%|███████▏  | 18/25 [00:37<00:15,  2.24s/it]
-Calculating loss...:  76%|███████▌  | 19/25 [00:39<00:13,  2.25s/it]
-Calculating loss...:  80%|████████  | 20/25 [00:41<00:10,  2.18s/it]
-Calculating loss...:  84%|████████▍ | 21/25 [00:44<00:09,  2.25s/it]
-Calculating loss...:  88%|████████▊ | 22/25 [00:46<00:06,  2.29s/it]
-Calculating loss...:  92%|█████████▏| 23/25 [00:48<00:04,  2.27s/it]
-Calculating loss...:  96%|█████████▌| 24/25 [00:51<00:02,  2.38s/it]
-Calculating loss...: 100%|██████████| 25/25 [00:53<00:00,  2.33s/it]
+Calculating loss...:  44%|████▍     | 11/25 [00:23<00:31,  2.26s/it]
+Calculating loss...:  48%|████▊     | 12/25 [00:25<00:30,  2.35s/it]
+Calculating loss...:  52%|█████▏    | 13/25 [00:28<00:27,  2.28s/it]
+Calculating loss...:  56%|█████▌    | 14/25 [00:30<00:24,  2.19s/it]
+Calculating loss...:  60%|██████    | 15/25 [00:32<00:22,  2.29s/it]
+Calculating loss...:  64%|██████▍   | 16/25 [00:34<00:19,  2.18s/it]
+Calculating loss...:  68%|██████▊   | 17/25 [00:36<00:17,  2.13s/it]
+Calculating loss...:  72%|███████▏  | 18/25 [00:38<00:15,  2.17s/it]
+Calculating loss...:  76%|███████▌  | 19/25 [00:41<00:13,  2.28s/it]
+Calculating loss...:  80%|████████  | 20/25 [00:43<00:11,  2.24s/it]
+Calculating loss...:  84%|████████▍ | 21/25 [00:45<00:08,  2.16s/it]
+Calculating loss...:  88%|████████▊ | 22/25 [00:48<00:06,  2.32s/it]
+Calculating loss...:  92%|█████████▏| 23/25 [00:50<00:04,  2.40s/it]
+Calculating loss...:  96%|█████████▌| 24/25 [00:52<00:02,  2.28s/it]
+Calculating loss...: 100%|██████████| 25/25 [00:54<00:00,  2.26s/it]
+Calculating loss...: 100%|██████████| 25/25 [00:54<00:00,  2.20s/it]
+
+Calculating loss...:   0%|          | 0/25 [00:00<?, ?it/s]
+Calculating loss...:   4%|▍         | 1/25 [00:02<00:55,  2.29s/it]
+Calculating loss...:   8%|▊         | 2/25 [00:04<00:48,  2.13s/it]
+Calculating loss...:  12%|█▏        | 3/25 [00:06<00:47,  2.17s/it]
+Calculating loss...:  16%|█▌        | 4/25 [00:09<00:49,  2.37s/it]
+Calculating loss...:  20%|██        | 5/25 [00:11<00:44,  2.24s/it]
+Calculating loss...:  24%|██▍       | 6/25 [00:13<00:42,  2.22s/it]
+Calculating loss...:  28%|██▊       | 7/25 [00:15<00:38,  2.13s/it]
+Calculating loss...:  32%|███▏      | 8/25 [00:17<00:35,  2.12s/it]
+Calculating loss...:  36%|███▌      | 9/25 [00:19<00:33,  2.08s/it]
+Calculating loss...:  40%|████      | 10/25 [00:21<00:32,  2.18s/it]
+Calculating loss...:  44%|████▍     | 11/25 [00:23<00:30,  2.14s/it]
+Calculating loss...:  48%|████▊     | 12/25 [00:26<00:28,  2.21s/it]
+Calculating loss...:  52%|█████▏    | 13/25 [00:28<00:27,  2.31s/it]
+Calculating loss...:  56%|█████▌    | 14/25 [00:30<00:24,  2.19s/it]
+Calculating loss...:  60%|██████    | 15/25 [00:32<00:21,  2.18s/it]
+Calculating loss...:  64%|██████▍   | 16/25 [00:34<00:18,  2.09s/it]
+Calculating loss...:  68%|██████▊   | 17/25 [00:36<00:16,  2.07s/it]
+Calculating loss...:  72%|███████▏  | 18/25 [00:38<00:14,  2.04s/it]
+Calculating loss...:  76%|███████▌  | 19/25 [00:41<00:13,  2.22s/it]
+Calculating loss...:  80%|████████  | 20/25 [00:43<00:11,  2.21s/it]
+Calculating loss...:  84%|████████▍ | 21/25 [00:45<00:08,  2.11s/it]
+Calculating loss...:  88%|████████▊ | 22/25 [00:47<00:06,  2.13s/it]
+Calculating loss...:  92%|█████████▏| 23/25 [00:49<00:04,  2.11s/it]
+Calculating loss...:  96%|█████████▌| 24/25 [00:52<00:02,  2.23s/it]
+Calculating loss...: 100%|██████████| 25/25 [00:54<00:00,  2.16s/it]
+Calculating loss...: 100%|██████████| 25/25 [00:54<00:00,  2.17s/it]
+
+Calculating loss...:   0%|          | 0/25 [00:00<?, ?it/s]
+Calculating loss...:   4%|▍         | 1/25 [00:02<00:51,  2.13s/it]
+Calculating loss...:   8%|▊         | 2/25 [00:04<00:47,  2.07s/it]
+Calculating loss...:  12%|█▏        | 3/25 [00:06<00:49,  2.23s/it]
+Calculating loss...:  16%|█▌        | 4/25 [00:08<00:46,  2.22s/it]
+Calculating loss...:  20%|██        | 5/25 [00:10<00:41,  2.09s/it]
+Calculating loss...:  24%|██▍       | 6/25 [00:12<00:39,  2.09s/it]
+Calculating loss...:  28%|██▊       | 7/25 [00:14<00:37,  2.08s/it]
+Calculating loss...:  32%|███▏      | 8/25 [00:16<00:36,  2.12s/it]
+Calculating loss...:  36%|███▌      | 9/25 [00:19<00:34,  2.14s/it]
+Calculating loss...:  40%|████      | 10/25 [00:21<00:31,  2.10s/it]
+Calculating loss...:  44%|████▍     | 11/25 [00:23<00:29,  2.11s/it]
+Calculating loss...:  48%|████▊     | 12/25 [00:25<00:27,  2.11s/it]
+Calculating loss...:  52%|█████▏    | 13/25 [00:27<00:24,  2.08s/it]
+Calculating loss...:  56%|█████▌    | 14/25 [00:29<00:23,  2.09s/it]
+Calculating loss...:  60%|██████    | 15/25 [00:31<00:20,  2.06s/it]
+Calculating loss...:  64%|██████▍   | 16/25 [00:33<00:18,  2.01s/it]
+Calculating loss...:  68%|██████▊   | 17/25 [00:36<00:17,  2.20s/it]
+Calculating loss...:  72%|███████▏  | 18/25 [00:38<00:15,  2.20s/it]
+Calculating loss...:  76%|███████▌  | 19/25 [00:40<00:13,  2.21s/it]
+Calculating loss...:  80%|████████  | 20/25 [00:42<00:10,  2.15s/it]
+Calculating loss...:  84%|████████▍ | 21/25 [00:44<00:08,  2.07s/it]
+Calculating loss...:  88%|████████▊ | 22/25 [00:46<00:06,  2.21s/it]
+Calculating loss...:  92%|█████████▏| 23/25 [00:49<00:04,  2.32s/it]
+Calculating loss...:  96%|█████████▌| 24/25 [00:51<00:02,  2.22s/it]
+Calculating loss...: 100%|██████████| 25/25 [00:53<00:00,  2.21s/it]
 Calculating loss...: 100%|██████████| 25/25 [00:53<00:00,  2.15s/it]
 
 Calculating loss...:   0%|          | 0/25 [00:00<?, ?it/s]
-Calculating loss...:   4%|▍         | 1/25 [00:01<00:47,  1.97s/it]
-Calculating loss...:   8%|▊         | 2/25 [00:03<00:44,  1.95s/it]
-Calculating loss...:  12%|█▏        | 3/25 [00:06<00:44,  2.03s/it]
-Calculating loss...:  16%|█▌        | 4/25 [00:08<00:45,  2.18s/it]
-Calculating loss...:  20%|██        | 5/25 [00:10<00:41,  2.09s/it]
-Calculating loss...:  24%|██▍       | 6/25 [00:12<00:39,  2.08s/it]
-Calculating loss...:  28%|██▊       | 7/25 [00:15<00:40,  2.26s/it]
-Calculating loss...:  32%|███▏      | 8/25 [00:17<00:37,  2.19s/it]
-Calculating loss...:  36%|███▌      | 9/25 [00:18<00:33,  2.09s/it]
-Calculating loss...:  40%|████      | 10/25 [00:21<00:32,  2.18s/it]
-Calculating loss...:  44%|████▍     | 11/25 [00:23<00:30,  2.19s/it]
+Calculating loss...:   4%|▍         | 1/25 [00:02<00:49,  2.08s/it]
+Calculating loss...:   8%|▊         | 2/25 [00:03<00:45,  1.96s/it]
+Calculating loss...:  12%|█▏        | 3/25 [00:06<00:44,  2.00s/it]
+Calculating loss...:  16%|█▌        | 4/25 [00:08<00:46,  2.22s/it]
+Calculating loss...:  20%|██        | 5/25 [00:10<00:42,  2.14s/it]
+Calculating loss...:  24%|██▍       | 6/25 [00:12<00:40,  2.14s/it]
+Calculating loss...:  28%|██▊       | 7/25 [00:15<00:39,  2.21s/it]
+Calculating loss...:  32%|███▏      | 8/25 [00:17<00:37,  2.21s/it]
+Calculating loss...:  36%|███▌      | 9/25 [00:19<00:34,  2.15s/it]
+Calculating loss...:  40%|████      | 10/25 [00:21<00:31,  2.10s/it]
+Calculating loss...:  44%|████▍     | 11/25 [00:23<00:29,  2.13s/it]
 Calculating loss...:  48%|████▊     | 12/25 [00:25<00:27,  2.11s/it]
-Calculating loss...:  52%|█████▏    | 13/25 [00:27<00:25,  2.12s/it]
-Calculating loss...:  56%|█████▌    | 14/25 [00:29<00:22,  2.08s/it]
-Calculating loss...:  60%|██████    | 15/25 [00:31<00:21,  2.13s/it]
-Calculating loss...:  64%|██████▍   | 16/25 [00:33<00:18,  2.09s/it]
-Calculating loss...:  68%|██████▊   | 17/25 [00:35<00:16,  2.02s/it]
-Calculating loss...:  72%|███████▏  | 18/25 [00:38<00:14,  2.13s/it]
-Calculating loss...:  76%|███████▌  | 19/25 [00:40<00:12,  2.09s/it]
-Calculating loss...:  80%|████████  | 20/25 [00:42<00:10,  2.08s/it]
-Calculating loss...:  84%|████████▍ | 21/25 [00:44<00:08,  2.05s/it]
+Calculating loss...:  52%|█████▏    | 13/25 [00:27<00:26,  2.20s/it]
+Calculating loss...:  56%|█████▌    | 14/25 [00:30<00:23,  2.18s/it]
+Calculating loss...:  60%|██████    | 15/25 [00:32<00:23,  2.31s/it]
+Calculating loss...:  64%|██████▍   | 16/25 [00:35<00:21,  2.37s/it]
+Calculating loss...:  68%|██████▊   | 17/25 [00:37<00:18,  2.32s/it]
+Calculating loss...:  72%|███████▏  | 18/25 [00:39<00:15,  2.24s/it]
+Calculating loss...:  76%|███████▌  | 19/25 [00:41<00:13,  2.28s/it]
+Calculating loss...:  80%|████████  | 20/25 [00:43<00:10,  2.16s/it]
+Calculating loss...:  84%|████████▍ | 21/25 [00:45<00:08,  2.11s/it]
+Calculating loss...:  88%|████████▊ | 22/25 [00:47<00:06,  2.14s/it]
+Calculating loss...:  92%|█████████▏| 23/25 [00:49<00:04,  2.09s/it]
+Calculating loss...:  96%|█████████▌| 24/25 [00:52<00:02,  2.15s/it]
+Calculating loss...: 100%|██████████| 25/25 [00:54<00:00,  2.07s/it]
+Calculating loss...: 100%|██████████| 25/25 [00:54<00:00,  2.16s/it]
+
+Calculating loss...:   0%|          | 0/25 [00:00<?, ?it/s]
+Calculating loss...:   4%|▍         | 1/25 [00:02<00:52,  2.18s/it]
+Calculating loss...:   8%|▊         | 2/25 [00:04<00:53,  2.34s/it]
+Calculating loss...:  12%|█▏        | 3/25 [00:06<00:46,  2.13s/it]
+Calculating loss...:  16%|█▌        | 4/25 [00:08<00:44,  2.11s/it]
+Calculating loss...:  20%|██        | 5/25 [00:10<00:40,  2.03s/it]
+Calculating loss...:  24%|██▍       | 6/25 [00:12<00:39,  2.06s/it]
+Calculating loss...:  28%|██▊       | 7/25 [00:14<00:36,  2.02s/it]
+Calculating loss...:  32%|███▏      | 8/25 [00:16<00:35,  2.08s/it]
+Calculating loss...:  36%|███▌      | 9/25 [00:18<00:33,  2.07s/it]
+Calculating loss...:  40%|████      | 10/25 [00:20<00:30,  2.05s/it]
+Calculating loss...:  44%|████▍     | 11/25 [00:22<00:28,  2.04s/it]
+Calculating loss...:  48%|████▊     | 12/25 [00:24<00:26,  2.02s/it]
+Calculating loss...:  52%|█████▏    | 13/25 [00:26<00:23,  1.99s/it]
+Calculating loss...:  56%|█████▌    | 14/25 [00:29<00:23,  2.16s/it]
+Calculating loss...:  60%|██████    | 15/25 [00:31<00:22,  2.23s/it]
+Calculating loss...:  64%|██████▍   | 16/25 [00:33<00:19,  2.12s/it]
+Calculating loss...:  68%|██████▊   | 17/25 [00:35<00:17,  2.20s/it]
+Calculating loss...:  72%|███████▏  | 18/25 [00:37<00:14,  2.13s/it]
+Calculating loss...:  76%|███████▌  | 19/25 [00:39<00:12,  2.09s/it]
+Calculating loss...:  80%|████████  | 20/25 [00:41<00:10,  2.06s/it]
+Calculating loss...:  84%|████████▍ | 21/25 [00:43<00:08,  2.05s/it]
 Calculating loss...:  88%|████████▊ | 22/25 [00:46<00:06,  2.10s/it]
-Calculating loss...:  92%|█████████▏| 23/25 [00:48<00:04,  2.23s/it]
-Calculating loss...:  96%|█████████▌| 24/25 [00:51<00:02,  2.20s/it]
-Calculating loss...: 100%|██████████| 25/25 [00:53<00:00,  2.20s/it]
+Calculating loss...:  92%|█████████▏| 23/25 [00:48<00:04,  2.16s/it]
+Calculating loss...:  96%|█████████▌| 24/25 [00:51<00:02,  2.30s/it]
+Calculating loss...: 100%|██████████| 25/25 [00:53<00:00,  2.25s/it]
 Calculating loss...: 100%|██████████| 25/25 [00:53<00:00,  2.13s/it]
 
 Calculating loss...:   0%|          | 0/25 [00:00<?, ?it/s]
-Calculating loss...:   4%|▍         | 1/25 [00:02<00:58,  2.45s/it]
-Calculating loss...:   8%|▊         | 2/25 [00:04<00:48,  2.12s/it]
-Calculating loss...:  12%|█▏        | 3/25 [00:06<00:47,  2.14s/it]
+Calculating loss...:   4%|▍         | 1/25 [00:02<00:51,  2.15s/it]
+Calculating loss...:   8%|▊         | 2/25 [00:04<00:49,  2.14s/it]
+Calculating loss...:  12%|█▏        | 3/25 [00:06<00:45,  2.07s/it]
 Calculating loss...:  16%|█▌        | 4/25 [00:08<00:45,  2.16s/it]
-Calculating loss...:  20%|██        | 5/25 [00:10<00:42,  2.15s/it]
+Calculating loss...:  20%|██        | 5/25 [00:11<00:46,  2.32s/it]
 Calculating loss...:  24%|██▍       | 6/25 [00:13<00:42,  2.23s/it]
-Calculating loss...:  28%|██▊       | 7/25 [00:15<00:38,  2.13s/it]
-Calculating loss...:  32%|███▏      | 8/25 [00:17<00:36,  2.15s/it]
-Calculating loss...:  36%|███▌      | 9/25 [00:20<00:37,  2.32s/it]
-Calculating loss...:  40%|████      | 10/25 [00:22<00:36,  2.41s/it]
-Calculating loss...:  44%|████▍     | 11/25 [00:24<00:33,  2.37s/it]
-Calculating loss...:  48%|████▊     | 12/25 [00:26<00:29,  2.24s/it]
-Calculating loss...:  52%|█████▏    | 13/25 [00:29<00:26,  2.24s/it]
-Calculating loss...:  56%|█████▌    | 14/25 [00:31<00:23,  2.15s/it]
-Calculating loss...:  60%|██████    | 15/25 [00:33<00:21,  2.13s/it]
-Calculating loss...:  64%|██████▍   | 16/25 [00:35<00:18,  2.08s/it]
-Calculating loss...:  68%|██████▊   | 17/25 [00:37<00:17,  2.23s/it]
-Calculating loss...:  72%|███████▏  | 18/25 [00:39<00:15,  2.16s/it]
-Calculating loss...:  76%|███████▌  | 19/25 [00:41<00:13,  2.17s/it]
-Calculating loss...:  80%|████████  | 20/25 [00:44<00:10,  2.18s/it]
-Calculating loss...:  84%|████████▍ | 21/25 [00:46<00:08,  2.16s/it]
-Calculating loss...:  88%|████████▊ | 22/25 [00:48<00:06,  2.11s/it]
-Calculating loss...:  92%|█████████▏| 23/25 [00:50<00:04,  2.25s/it]
-Calculating loss...:  96%|█████████▌| 24/25 [00:52<00:02,  2.15s/it]
-Calculating loss...: 100%|██████████| 25/25 [00:54<00:00,  2.10s/it]
+Calculating loss...:  28%|██▊       | 7/25 [00:15<00:38,  2.12s/it]
+Calculating loss...:  32%|███▏      | 8/25 [00:17<00:36,  2.14s/it]
+Calculating loss...:  36%|███▌      | 9/25 [00:19<00:33,  2.10s/it]
+Calculating loss...:  40%|████      | 10/25 [00:21<00:31,  2.13s/it]
+Calculating loss...:  44%|████▍     | 11/25 [00:23<00:29,  2.10s/it]
+Calculating loss...:  48%|████▊     | 12/25 [00:25<00:27,  2.11s/it]
+Calculating loss...:  52%|█████▏    | 13/25 [00:28<00:27,  2.25s/it]
+Calculating loss...:  56%|█████▌    | 14/25 [00:30<00:23,  2.18s/it]
+Calculating loss...:  60%|██████    | 15/25 [00:32<00:21,  2.14s/it]
+Calculating loss...:  64%|██████▍   | 16/25 [00:34<00:18,  2.08s/it]
+Calculating loss...:  68%|██████▊   | 17/25 [00:36<00:16,  2.02s/it]
+Calculating loss...:  72%|███████▏  | 18/25 [00:38<00:14,  2.14s/it]
+Calculating loss...:  76%|███████▌  | 19/25 [00:41<00:13,  2.25s/it]
+Calculating loss...:  80%|████████  | 20/25 [00:43<00:11,  2.33s/it]
+Calculating loss...:  84%|████████▍ | 21/25 [00:45<00:09,  2.34s/it]
+Calculating loss...:  88%|████████▊ | 22/25 [00:48<00:06,  2.27s/it]
+Calculating loss...:  92%|█████████▏| 23/25 [00:50<00:04,  2.40s/it]
+Calculating loss...:  96%|█████████▌| 24/25 [00:52<00:02,  2.28s/it]
+Calculating loss...: 100%|██████████| 25/25 [00:54<00:00,  2.19s/it]
 Calculating loss...: 100%|██████████| 25/25 [00:54<00:00,  2.19s/it]
 
 Calculating loss...:   0%|          | 0/25 [00:00<?, ?it/s]
-Calculating loss...:   4%|▍         | 1/25 [00:02<00:56,  2.35s/it]
-Calculating loss...:   8%|▊         | 2/25 [00:04<00:50,  2.20s/it]
-Calculating loss...:  12%|█▏        | 3/25 [00:07<00:52,  2.39s/it]
-Calculating loss...:  16%|█▌        | 4/25 [00:09<00:50,  2.40s/it]
-Calculating loss...:  20%|██        | 5/25 [00:11<00:44,  2.23s/it]
-Calculating loss...:  24%|██▍       | 6/25 [00:13<00:42,  2.24s/it]
-Calculating loss...:  28%|██▊       | 7/25 [00:16<00:42,  2.34s/it]
-Calculating loss...:  32%|███▏      | 8/25 [00:18<00:39,  2.31s/it]
-Calculating loss...:  36%|███▌      | 9/25 [00:20<00:37,  2.31s/it]
-Calculating loss...:  40%|████      | 10/25 [00:22<00:32,  2.18s/it]
-Calculating loss...:  44%|████▍     | 11/25 [00:24<00:30,  2.14s/it]
-Calculating loss...:  48%|████▊     | 12/25 [00:26<00:27,  2.14s/it]
-Calculating loss...:  52%|█████▏    | 13/25 [00:28<00:24,  2.06s/it]
-Calculating loss...:  56%|█████▌    | 14/25 [00:30<00:22,  2.06s/it]
-Calculating loss...:  60%|██████    | 15/25 [00:32<00:20,  2.02s/it]
-Calculating loss...:  64%|██████▍   | 16/25 [00:34<00:17,  1.98s/it]
-Calculating loss...:  68%|██████▊   | 17/25 [00:37<00:17,  2.14s/it]
-Calculating loss...:  72%|███████▏  | 18/25 [00:39<00:14,  2.13s/it]
-Calculating loss...:  76%|███████▌  | 19/25 [00:41<00:13,  2.21s/it]
-Calculating loss...:  80%|████████  | 20/25 [00:44<00:11,  2.32s/it]
-Calculating loss...:  84%|████████▍ | 21/25 [00:46<00:09,  2.26s/it]
-Calculating loss...:  88%|████████▊ | 22/25 [00:48<00:06,  2.16s/it]
-Calculating loss...:  92%|█████████▏| 23/25 [00:50<00:04,  2.17s/it]
-Calculating loss...:  96%|█████████▌| 24/25 [00:52<00:02,  2.13s/it]
-Calculating loss...: 100%|██████████| 25/25 [00:54<00:00,  2.09s/it]
-Calculating loss...: 100%|██████████| 25/25 [00:54<00:00,  2.18s/it]
+Calculating loss...:   4%|▍         | 1/25 [00:02<00:49,  2.07s/it]
+Calculating loss...:   8%|▊         | 2/25 [00:04<00:49,  2.16s/it]
+Calculating loss...:  12%|█▏        | 3/25 [00:06<00:47,  2.15s/it]
+Calculating loss...:  16%|█▌        | 4/25 [00:08<00:43,  2.09s/it]
+Calculating loss...:  20%|██        | 5/25 [00:10<00:40,  2.01s/it]
+Calculating loss...:  24%|██▍       | 6/25 [00:12<00:38,  2.01s/it]
+Calculating loss...:  28%|██▊       | 7/25 [00:14<00:36,  2.02s/it]
+Calculating loss...:  32%|███▏      | 8/25 [00:16<00:36,  2.13s/it]
+Calculating loss...:  36%|███▌      | 9/25 [00:18<00:34,  2.13s/it]
+Calculating loss...:  40%|████      | 10/25 [00:21<00:32,  2.15s/it]
+Calculating loss...:  44%|████▍     | 11/25 [00:23<00:31,  2.23s/it]
+Calculating loss...:  48%|████▊     | 12/25 [00:25<00:28,  2.20s/it]
+Calculating loss...:  52%|█████▏    | 13/25 [00:27<00:25,  2.10s/it]
+Calculating loss...:  56%|█████▌    | 14/25 [00:29<00:24,  2.19s/it]
+Calculating loss...:  60%|██████    | 15/25 [00:32<00:23,  2.32s/it]
+Calculating loss...:  64%|██████▍   | 16/25 [00:34<00:21,  2.39s/it]
+Calculating loss...:  68%|██████▊   | 17/25 [00:37<00:19,  2.45s/it]
+Calculating loss...:  72%|███████▏  | 18/25 [00:39<00:16,  2.38s/it]
+Calculating loss...:  76%|███████▌  | 19/25 [00:41<00:13,  2.25s/it]
+Calculating loss...:  80%|████████  | 20/25 [00:44<00:11,  2.27s/it]
+Calculating loss...:  84%|████████▍ | 21/25 [00:46<00:08,  2.23s/it]
+Calculating loss...:  88%|████████▊ | 22/25 [00:48<00:06,  2.12s/it]
+Calculating loss...:  92%|█████████▏| 23/25 [00:50<00:04,  2.08s/it]
+Calculating loss...:  96%|█████████▌| 24/25 [00:51<00:02,  2.02s/it]
+Calculating loss...: 100%|██████████| 25/25 [00:53<00:00,  2.01s/it]
+Calculating loss...: 100%|██████████| 25/25 [00:53<00:00,  2.16s/it]
 
 Calculating loss...:   0%|          | 0/25 [00:00<?, ?it/s]
-Calculating loss...:   4%|▍         | 1/25 [00:01<00:45,  1.89s/it]
-Calculating loss...:   8%|▊         | 2/25 [00:03<00:44,  1.92s/it]
-Calculating loss...:  12%|█▏        | 3/25 [00:06<00:45,  2.07s/it]
-Calculating loss...:  16%|█▌        | 4/25 [00:08<00:42,  2.02s/it]
-Calculating loss...:  20%|██        | 5/25 [00:10<00:40,  2.01s/it]
-Calculating loss...:  24%|██▍       | 6/25 [00:12<00:39,  2.05s/it]
-Calculating loss...:  28%|██▊       | 7/25 [00:14<00:36,  2.01s/it]
-Calculating loss...:  32%|███▏      | 8/25 [00:16<00:34,  2.01s/it]
-Calculating loss...:  36%|███▌      | 9/25 [00:18<00:31,  1.98s/it]
-Calculating loss...:  40%|████      | 10/25 [00:19<00:29,  1.95s/it]
-Calculating loss...:  44%|████▍     | 11/25 [00:22<00:28,  2.04s/it]
-Calculating loss...:  48%|████▊     | 12/25 [00:24<00:28,  2.20s/it]
-Calculating loss...:  52%|█████▏    | 13/25 [00:27<00:27,  2.32s/it]
-Calculating loss...:  56%|█████▌    | 14/25 [00:29<00:24,  2.24s/it]
-Calculating loss...:  60%|██████    | 15/25 [00:31<00:22,  2.23s/it]
-Calculating loss...:  64%|██████▍   | 16/25 [00:33<00:20,  2.24s/it]
-Calculating loss...:  68%|██████▊   | 17/25 [00:36<00:18,  2.27s/it]
-Calculating loss...:  72%|███████▏  | 18/25 [00:38<00:15,  2.25s/it]
-Calculating loss...:  76%|███████▌  | 19/25 [00:40<00:13,  2.30s/it]
-Calculating loss...:  80%|████████  | 20/25 [00:42<00:10,  2.17s/it]
-Calculating loss...:  84%|████████▍ | 21/25 [00:44<00:08,  2.16s/it]
-Calculating loss...:  88%|████████▊ | 22/25 [00:46<00:06,  2.15s/it]
-Calculating loss...:  92%|█████████▏| 23/25 [00:48<00:04,  2.10s/it]
-Calculating loss...:  96%|█████████▌| 24/25 [00:51<00:02,  2.19s/it]
-Calculating loss...: 100%|██████████| 25/25 [00:53<00:00,  2.11s/it]
+Calculating loss...:   4%|▍         | 1/25 [00:01<00:45,  1.90s/it]
+Calculating loss...:   8%|▊         | 2/25 [00:04<00:47,  2.06s/it]
+Calculating loss...:  12%|█▏        | 3/25 [00:06<00:46,  2.09s/it]
+Calculating loss...:  16%|█▌        | 4/25 [00:08<00:48,  2.33s/it]
+Calculating loss...:  20%|██        | 5/25 [00:11<00:45,  2.28s/it]
+Calculating loss...:  24%|██▍       | 6/25 [00:13<00:42,  2.21s/it]
+Calculating loss...:  28%|██▊       | 7/25 [00:15<00:42,  2.35s/it]
+Calculating loss...:  32%|███▏      | 8/25 [00:17<00:37,  2.23s/it]
+Calculating loss...:  36%|███▌      | 9/25 [00:20<00:36,  2.29s/it]
+Calculating loss...:  40%|████      | 10/25 [00:22<00:32,  2.20s/it]
+Calculating loss...:  44%|████▍     | 11/25 [00:24<00:29,  2.12s/it]
+Calculating loss...:  48%|████▊     | 12/25 [00:26<00:29,  2.25s/it]
+Calculating loss...:  52%|█████▏    | 13/25 [00:28<00:26,  2.17s/it]
+Calculating loss...:  56%|█████▌    | 14/25 [00:30<00:23,  2.14s/it]
+Calculating loss...:  60%|██████    | 15/25 [00:33<00:22,  2.25s/it]
+Calculating loss...:  64%|██████▍   | 16/25 [00:35<00:20,  2.23s/it]
+Calculating loss...:  68%|██████▊   | 17/25 [00:37<00:17,  2.13s/it]
+Calculating loss...:  72%|███████▏  | 18/25 [00:39<00:14,  2.07s/it]
+Calculating loss...:  76%|███████▌  | 19/25 [00:41<00:12,  2.10s/it]
+Calculating loss...:  80%|████████  | 20/25 [00:43<00:10,  2.05s/it]
+Calculating loss...:  84%|████████▍ | 21/25 [00:45<00:08,  2.05s/it]
+Calculating loss...:  88%|████████▊ | 22/25 [00:47<00:06,  2.10s/it]
+Calculating loss...:  92%|█████████▏| 23/25 [00:49<00:04,  2.15s/it]
+Calculating loss...:  96%|█████████▌| 24/25 [00:51<00:02,  2.11s/it]
+Calculating loss...: 100%|██████████| 25/25 [00:54<00:00,  2.13s/it]
+Calculating loss...: 100%|██████████| 25/25 [00:54<00:00,  2.16s/it]
+
+Calculating loss...:   0%|          | 0/25 [00:00<?, ?it/s]
+Calculating loss...:   4%|▍         | 1/25 [00:02<00:50,  2.09s/it]
+Calculating loss...:   8%|▊         | 2/25 [00:03<00:45,  1.97s/it]
+Calculating loss...:  12%|█▏        | 3/25 [00:06<00:49,  2.24s/it]
+Calculating loss...:  16%|█▌        | 4/25 [00:08<00:46,  2.19s/it]
+Calculating loss...:  20%|██        | 5/25 [00:10<00:42,  2.10s/it]
+Calculating loss...:  24%|██▍       | 6/25 [00:12<00:40,  2.13s/it]
+Calculating loss...:  28%|██▊       | 7/25 [00:14<00:38,  2.13s/it]
+Calculating loss...:  32%|███▏      | 8/25 [00:17<00:36,  2.15s/it]
+Calculating loss...:  36%|███▌      | 9/25 [00:18<00:33,  2.06s/it]
+Calculating loss...:  40%|████      | 10/25 [00:20<00:30,  2.04s/it]
+Calculating loss...:  44%|████▍     | 11/25 [00:23<00:28,  2.05s/it]
+Calculating loss...:  48%|████▊     | 12/25 [00:25<00:26,  2.05s/it]
+Calculating loss...:  52%|█████▏    | 13/25 [00:27<00:24,  2.01s/it]
+Calculating loss...:  56%|█████▌    | 14/25 [00:29<00:22,  2.03s/it]
+Calculating loss...:  60%|██████    | 15/25 [00:31<00:21,  2.18s/it]
+Calculating loss...:  64%|██████▍   | 16/25 [00:33<00:19,  2.17s/it]
+Calculating loss...:  68%|██████▊   | 17/25 [00:36<00:17,  2.23s/it]
+Calculating loss...:  72%|███████▏  | 18/25 [00:38<00:16,  2.29s/it]
+Calculating loss...:  76%|███████▌  | 19/25 [00:40<00:13,  2.26s/it]
+Calculating loss...:  80%|████████  | 20/25 [00:43<00:11,  2.39s/it]
+Calculating loss...:  84%|████████▍ | 21/25 [00:45<00:09,  2.27s/it]
+Calculating loss...:  88%|████████▊ | 22/25 [00:47<00:06,  2.15s/it]
+Calculating loss...:  92%|█████████▏| 23/25 [00:49<00:04,  2.07s/it]
+Calculating loss...:  96%|█████████▌| 24/25 [00:51<00:02,  2.05s/it]
+Calculating loss...: 100%|██████████| 25/25 [00:53<00:00,  2.05s/it]
 Calculating loss...: 100%|██████████| 25/25 [00:53<00:00,  2.13s/it]
+
+Calculating loss...:   0%|          | 0/25 [00:00<?, ?it/s]
+Calculating loss...:   4%|▍         | 1/25 [00:02<00:51,  2.16s/it]
+Calculating loss...:   8%|▊         | 2/25 [00:04<00:46,  2.03s/it]
+Calculating loss...:  12%|█▏        | 3/25 [00:06<00:50,  2.30s/it]
+Calculating loss...:  16%|█▌        | 4/25 [00:08<00:45,  2.19s/it]
+Calculating loss...:  20%|██        | 5/25 [00:10<00:42,  2.12s/it]
+Calculating loss...:  24%|██▍       | 6/25 [00:12<00:41,  2.16s/it]
+Calculating loss...:  28%|██▊       | 7/25 [00:14<00:37,  2.08s/it]
+Calculating loss...:  32%|███▏      | 8/25 [00:16<00:34,  2.03s/it]
+Calculating loss...:  36%|███▌      | 9/25 [00:18<00:31,  1.98s/it]
+Calculating loss...:  40%|████      | 10/25 [00:20<00:29,  1.99s/it]
+Calculating loss...:  44%|████▍     | 11/25 [00:22<00:28,  2.05s/it]
+Calculating loss...:  48%|████▊     | 12/25 [00:24<00:25,  2.00s/it]
+Calculating loss...:  52%|█████▏    | 13/25 [00:27<00:25,  2.15s/it]
+Calculating loss...:  56%|█████▌    | 14/25 [00:29<00:23,  2.15s/it]
+Calculating loss...:  60%|██████    | 15/25 [00:31<00:22,  2.23s/it]
+Calculating loss...:  64%|██████▍   | 16/25 [00:34<00:20,  2.33s/it]
+Calculating loss...:  68%|██████▊   | 17/25 [00:36<00:17,  2.23s/it]
+Calculating loss...:  72%|███████▏  | 18/25 [00:38<00:16,  2.31s/it]
+Calculating loss...:  76%|███████▌  | 19/25 [00:40<00:13,  2.24s/it]
+Calculating loss...:  80%|████████  | 20/25 [00:43<00:11,  2.27s/it]
+Calculating loss...:  84%|████████▍ | 21/25 [00:45<00:08,  2.17s/it]
+Calculating loss...:  88%|████████▊ | 22/25 [00:47<00:06,  2.16s/it]
+Calculating loss...:  92%|█████████▏| 23/25 [00:49<00:04,  2.13s/it]
+Calculating loss...:  96%|█████████▌| 24/25 [00:51<00:02,  2.10s/it]
+Calculating loss...: 100%|██████████| 25/25 [00:53<00:00,  2.12s/it]
+Calculating loss...: 100%|██████████| 25/25 [00:53<00:00,  2.15s/it]
+
+Calculating loss...:   0%|          | 0/25 [00:00<?, ?it/s]
+Calculating loss...:   4%|▍         | 1/25 [00:02<01:03,  2.66s/it]
+Calculating loss...:   8%|▊         | 2/25 [00:04<00:54,  2.37s/it]
+Calculating loss...:  12%|█▏        | 3/25 [00:06<00:49,  2.23s/it]
+Calculating loss...:  16%|█▌        | 4/25 [00:08<00:45,  2.15s/it]
+Calculating loss...:  20%|██        | 5/25 [00:10<00:41,  2.10s/it]
+Calculating loss...:  24%|██▍       | 6/25 [00:12<00:39,  2.09s/it]
+Calculating loss...:  28%|██▊       | 7/25 [00:14<00:36,  2.04s/it]
+Calculating loss...:  32%|███▏      | 8/25 [00:16<00:34,  2.00s/it]
+Calculating loss...:  36%|███▌      | 9/25 [00:18<00:32,  2.01s/it]
+Calculating loss...:  40%|████      | 10/25 [00:20<00:30,  2.02s/it]
+Calculating loss...:  44%|████▍     | 11/25 [00:23<00:29,  2.08s/it]
+Calculating loss...:  48%|████▊     | 12/25 [00:25<00:28,  2.17s/it]
+Calculating loss...:  52%|█████▏    | 13/25 [00:28<00:27,  2.29s/it]
+Calculating loss...:  56%|█████▌    | 14/25 [00:30<00:24,  2.20s/it]
+Calculating loss...:  60%|██████    | 15/25 [00:32<00:21,  2.14s/it]
+Calculating loss...:  64%|██████▍   | 16/25 [00:34<00:19,  2.16s/it]
+Calculating loss...:  68%|██████▊   | 17/25 [00:36<00:18,  2.26s/it]
+Calculating loss...:  72%|███████▏  | 18/25 [00:38<00:15,  2.15s/it]
+Calculating loss...:  76%|███████▌  | 19/25 [00:40<00:12,  2.17s/it]
+Calculating loss...:  80%|████████  | 20/25 [00:42<00:10,  2.10s/it]
+Calculating loss...:  84%|████████▍ | 21/25 [00:45<00:08,  2.22s/it]
+Calculating loss...:  88%|████████▊ | 22/25 [00:47<00:06,  2.26s/it]
+Calculating loss...:  92%|█████████▏| 23/25 [00:49<00:04,  2.24s/it]
+Calculating loss...:  96%|█████████▌| 24/25 [00:51<00:02,  2.13s/it]
+Calculating loss...: 100%|██████████| 25/25 [00:54<00:00,  2.21s/it]
+Calculating loss...: 100%|██████████| 25/25 [00:54<00:00,  2.16s/it]
+
+Calculating loss...:   0%|          | 0/25 [00:00<?, ?it/s]
+Calculating loss...:   4%|▍         | 1/25 [00:02<00:48,  2.02s/it]
+Calculating loss...:   8%|▊         | 2/25 [00:04<00:51,  2.24s/it]
+Calculating loss...:  12%|█▏        | 3/25 [00:06<00:45,  2.08s/it]
+Calculating loss...:  16%|█▌        | 4/25 [00:08<00:41,  2.00s/it]
+Calculating loss...:  20%|██        | 5/25 [00:10<00:39,  2.00s/it]
+Calculating loss...:  24%|██▍       | 6/25 [00:12<00:37,  1.99s/it]
+Calculating loss...:  28%|██▊       | 7/25 [00:14<00:36,  2.02s/it]
+Calculating loss...:  32%|███▏      | 8/25 [00:16<00:34,  2.01s/it]
+Calculating loss...:  36%|███▌      | 9/25 [00:18<00:31,  1.97s/it]
+Calculating loss...:  40%|████      | 10/25 [00:20<00:30,  2.05s/it]
+Calculating loss...:  44%|████▍     | 11/25 [00:23<00:31,  2.26s/it]
+Calculating loss...:  48%|████▊     | 12/25 [00:25<00:28,  2.18s/it]
+Calculating loss...:  52%|█████▏    | 13/25 [00:26<00:25,  2.09s/it]
+Calculating loss...:  56%|█████▌    | 14/25 [00:29<00:23,  2.10s/it]
+Calculating loss...:  60%|██████    | 15/25 [00:31<00:20,  2.07s/it]
+Calculating loss...:  64%|██████▍   | 16/25 [00:33<00:19,  2.21s/it]
+Calculating loss...:  68%|██████▊   | 17/25 [00:35<00:17,  2.21s/it]
+Calculating loss...:  72%|███████▏  | 18/25 [00:38<00:15,  2.21s/it]
+Calculating loss...:  76%|███████▌  | 19/25 [00:40<00:14,  2.34s/it]
+Calculating loss...:  80%|████████  | 20/25 [00:42<00:11,  2.26s/it]
+Calculating loss...:  84%|████████▍ | 21/25 [00:45<00:09,  2.29s/it]
+Calculating loss...:  88%|████████▊ | 22/25 [00:47<00:06,  2.26s/it]
+Calculating loss...:  92%|█████████▏| 23/25 [00:49<00:04,  2.22s/it]
+Calculating loss...:  96%|█████████▌| 24/25 [00:51<00:02,  2.31s/it]
+Calculating loss...: 100%|██████████| 25/25 [00:54<00:00,  2.38s/it]
+Calculating loss...: 100%|██████████| 25/25 [00:54<00:00,  2.18s/it]

@@ -34,9 +34,13 @@ Rewritten after every phase and at least every 30 minutes during compute.
 - [x] Error breakdown by field (`pixi run errors`) over the recorded test-split predictions
 - [x] Labels repaired (D22): `model_type` was arbitrary on all 732 irrelevant papers and
       144 rung-5 labels sat on abstracts reporting no dose; the split is now frozen
-- [ ] The 5.5 acceptance floor: 800 and 1,600 iterations each missed six of eight, which
-      the breakdown traced to the two label defects; retraining on the repaired labels
-      (ladder beyond that: 32 layers, then 7B, then collapse pathways)
+- [x] Repaired labels retrained: relevant_f1 0.9600 clears its floor, rungs_exact 0.8148,
+      valid_json 1.0; polymers 0.8152, organs 0.7591, pathways 0.6644, rungs within one
+      0.8580 and model_type 0.8523 still short
+- [x] Checkpoint choice measured on the validation split, not on validation loss (D24):
+      the lowest-loss checkpoint was worse on every field
+- [ ] The 5.5 acceptance floor: five of eight still short; 32-layer rung running with
+      checkpoint selection (ladder beyond that: 7B, then collapse pathways)
 - [ ] Full corpus tagged
 
 ## Phase 3 App polish (85 %)

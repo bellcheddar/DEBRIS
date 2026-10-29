@@ -267,9 +267,22 @@ before and after numbers are measured on the same papers.
 
 Pre-repair metrics and predictions are kept in
 `data/adapters/debris_v1_iters1600_prerepair/`. The labels were backed up before the
-repair ran. Organ systems and pathways were left alone: their train and test frequencies
-match closely and no comparable defect showed up, so they stay the hard part of the task
-and the ladder still applies to them if the repaired run misses the floor.
+repair ran. Organ systems and pathways were left alone, and the check that says so is worth
+recording. For each value, how often does the labelled paper's abstract contain that
+value's own vocabulary? Organ systems: 87 % over 1,282 label instances, from 100 % for
+renal and 98 % for gastrointestinal down to 71 % for respiratory. Pathways: 83 % over
+1,270, from 100 % for fibrosis and endothelial dysfunction down to 60 % for the NF-kB and
+cytokine pathway. Against rung 5's 37 % those are sound labels: the paper says what it
+was given. Their train and test frequencies match closely too, so the gap at
+organ_systems 0.74 and pathways 0.64 is the difficulty of a thirteen and a twenty-value
+multi-label task read from an abstract, and the remaining ladder rungs are the right
+answer to it rather than more label work.
+
+Two soft spots the model card should name. `systemic` carries its own words in only 29 %
+of the 96 papers labelled with it: it is the organ value for a study that reports whole
+animal effects, so it is a judgement rather than a reading, and it accounts for about a
+seventh of the organ errors. `other:` pathway values are a free field by design and the
+review queue is where they are meant to surface.
 
 ## D23 - one timer, and the droplet's was the wrong one
 
@@ -295,3 +308,47 @@ rather than any loss of data.
 The Studio side is installed and enabled: `~/Library/LaunchAgents/com.mdeller.debris.weekly.plist`,
 bootstrapped into `gui/$(id -u)`, next firing Sunday 2026-11-01 02:00 local. `plutil
 -lint` passes and `launchctl print` shows the calendar interval registered.
+
+## D24 - choose the checkpoint on the fields, not on the loss
+
+The repaired labels moved five of the eight floor metrics up: relevant_f1 0.9385 to
+0.9600, which clears its floor, rungs_exact 0.778 to 0.815, rungs_within_one 0.809 to
+0.858, organ_systems 0.738 to 0.759, pathways 0.642 to 0.664. The rung errors are
+symmetric now, 7 the model leaving rung 5 off and 4 adding it, where before 16 of 22 were
+the same omission, and `in_silico` has gone from 8 of the 22 model_type errors to none
+that matter: the commonest confusion left is cell line against human primary cells, which
+is a real boundary rather than a bin for off-topic work.
+
+**Validation loss is the wrong signal, and the first version of this decision used it.**
+Both the 1,600-iteration runs reached their lowest validation loss near iteration 700
+(0.774 this time) and then drifted up to 0.808 by 1,600 while the training loss kept
+falling. mlx-lm writes a checkpoint every 100 iterations but leaves `adapters.safetensors`
+pointing at the last one, so both runs fused the worse of the two models. `train.py` now
+reads the validation losses out of its own log, takes the lowest whose checkpoint is still
+on disk, and copies that over `adapters.safetensors`, keeping the final adapter beside it
+as `adapters_last.safetensors`. A tie goes to the earlier iteration, which is the less
+overfitted one. Stale checkpoints from a previous, longer run are cleared before a
+retrain, because this run's validation losses say nothing about them.
+
+Fusing the iteration-700 checkpoint and scoring it answered that: it was worse on every
+field. Relevant F1 0.9492 against 0.9600, polymers 0.8021 against 0.8152, organ systems
+0.7327 against 0.7591, pathways 0.6031 against 0.6644, rungs within one 0.8457 against
+0.8580. Six points of pathways F1 for a checkpoint with 0.034 less validation loss.
+
+Cross-entropy over the JSON string is not agreement field by field. It counts every token
+of a 300-character object, so it is dominated by the summary text and the key names, and
+a model can write a more probable sentence while naming one organ fewer. Choosing on it
+optimises the wrong quantity.
+
+So the choice is made on the fields themselves. `train.py --select-every N` scores every
+Nth checkpoint on the **validation** split, ranks them by how many acceptance floors each
+clears and then by the mean of its metric-to-floor ratios capped at one, and fuses the
+winner. The cap stops a metric already over its floor from paying for one still under it.
+The test split is never used to choose: it is what the floor is measured over. The choice
+is recorded in `data/train/checkpoint_choice.json`, and the final adapter is kept beside
+the chosen one as `adapters_last.safetensors`. Each candidate costs about five minutes
+over the 161 validation papers.
+
+The iteration count in the spec's ladder is therefore a budget rather than a target, which
+is the right reading of it, but which checkpoint inside that budget is best has to be
+measured and cannot be inferred from the loss curve.

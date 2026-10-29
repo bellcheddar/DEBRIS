@@ -57,6 +57,11 @@ def lora_supports_wandb() -> bool:
 
 def train(iters: int, num_layers: int, model_id: str, batch_size: int) -> Path:
     log_path = c.ROOT / "data" / "train" / "lora_train.log"
+    # Checkpoints from a previous, longer run would still be here, and the validation
+    # loss in this run's log says nothing about them.
+    for stale in ADAPTER.glob("*_adapters.safetensors"):
+        stale.unlink()
+    (ADAPTER / "adapters_last.safetensors").unlink(missing_ok=True)
     cmd = ["mlx_lm.lora", "--model", model_id, "--train", "--data", str(c.TRAIN),
            "--fine-tune-type", "lora", "--num-layers", str(num_layers),
            "--batch-size", str(batch_size), "--iters", str(iters),
@@ -79,6 +84,59 @@ def parse_training_log(path: Path) -> list[dict]:
         elif m := re.search(r"Iter (\d+): Val loss ([\d.]+)", line):
             points.append({"iter": int(m.group(1)), "val_loss": float(m.group(2))})
     return points
+
+
+def checkpoint_rank(metrics: dict) -> tuple[int, float]:
+    """How good a checkpoint is: floors cleared first, then how close the rest are.
+
+    Capping each ratio at 1 stops a metric that is already comfortably over its floor
+    from paying for one that is under it."""
+    met = sum(1 for field, floor in FLOOR.items() if metrics.get(field, 0) >= floor)
+    ratios = [min(metrics.get(field, 0) / floor, 1.0) for field, floor in FLOOR.items()]
+    return met, sum(ratios) / len(ratios)
+
+
+def select_checkpoint(iters: int, model_id: str, every: int) -> None:
+    """Pick the checkpoint that tags the validation split best, and fuse that one.
+
+    mlx-lm leaves `adapters.safetensors` pointing at the last iteration. Validation loss
+    looked like the way to choose a better one, and it is not: the checkpoint with the
+    lowest loss scored worse on every field, pathways by six points (DECISIONS.md D24).
+    Cross-entropy over the JSON is not the same quantity as agreement field by field, so
+    the choice is made on the fields themselves, on the validation split, never on the
+    test split that the acceptance floor is measured over.
+    """
+    final = ADAPTER / "adapters.safetensors"
+    candidates = [it for it in range(every, iters + 1, every)
+                  if (ADAPTER / f"{it:07d}_adapters.safetensors").exists()]
+    if iters not in candidates and (ADAPTER / f"{iters:07d}_adapters.safetensors").exists():
+        candidates.append(iters)
+    if len(candidates) < 2:
+        c.log("train: fewer than two checkpoints on disk; fusing the last adapter")
+        return
+
+    shutil.copy(final, ADAPTER / "adapters_last.safetensors")
+    staged = ADAPTER.parent / "debris_v1_candidate"
+    best: tuple[tuple[int, float], int, dict] | None = None
+    for it in candidates:
+        staged.mkdir(parents=True, exist_ok=True)
+        shutil.copy(ADAPTER / "adapter_config.json", staged / "adapter_config.json")
+        shutil.copy(ADAPTER / f"{it:07d}_adapters.safetensors", staged / "adapters.safetensors")
+        metrics = score(model_id, str(staged), split="valid", label=f"valid_{it}")
+        rank = checkpoint_rank(metrics)
+        c.log(f"train: checkpoint {it}: {rank[0]}/{len(FLOOR)} floors, score {rank[1]:.4f}, "
+              f"relevant {metrics['relevant_f1']}, organs {metrics['organ_systems_f1']}, "
+              f"pathways {metrics['pathways_f1']}")
+        if best is None or rank > best[0]:
+            best = (rank, it, metrics)
+    shutil.rmtree(staged, ignore_errors=True)
+
+    rank, it, _ = best
+    shutil.copy(ADAPTER / f"{it:07d}_adapters.safetensors", final)
+    (c.TRAIN / "checkpoint_choice.json").write_text(json.dumps(
+        {"chosen": it, "of": candidates, "rank": {"floors_met": rank[0], "score": rank[1]},
+         "split": "valid", "written": c.now()}, indent=1))
+    c.log(f"train: fusing checkpoint {it} of {candidates}, chosen on the validation split")
 
 
 def fuse(model_id: str) -> None:
@@ -271,6 +329,9 @@ def main() -> None:
     ap.add_argument("--retrain", action="store_true",
                     help="fine-tune again even if an adapter is already saved")
     ap.add_argument("--skip-q4-score", action="store_true")
+    ap.add_argument("--select-every", type=int, default=0, metavar="N",
+                    help="score every Nth checkpoint on the validation split and fuse "
+                         "the best one instead of the last (about 5 min per checkpoint)")
     args = ap.parse_args()
 
     tuning = c.tuning()
@@ -288,6 +349,8 @@ def main() -> None:
             started = time.monotonic()
             log_path = train(args.iters, args.num_layers, model_id, args.batch_size)
             c.log(f"train: LoRA finished in {(time.monotonic() - started) / 60:.1f} min")
+            if args.select_every:
+                select_checkpoint(args.iters, model_id, args.select_every)
         if (FUSED / "config.json").exists() and not args.retrain:
             c.log("train: fused model already present, reusing it")
         else:

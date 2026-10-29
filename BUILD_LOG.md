@@ -225,3 +225,7 @@
 - 2026-10-29 18:12 lab phase0-baseline f0 s42: training 800 iterations
 - 2026-10-29 18:12 train: mlx_lm.lora --model Qwen/Qwen2.5-1.5B-Instruct --train --data /Users/dellboy/Documents/Vibe_Coding/debris/data/lab/phase0-baseline/f0-s42/data ...
 - 2026-10-29 18:14 ceiling: sampled 150 papers
+- 2026-10-29 18:45 lab phase0-baseline f0 s42: trained in 32.8 min
+- 2026-10-29 18:50 lab: a benchmark training run beside Phase 0's scoring exhausted GPU memory
+  and aborted the scoring (D36). Fold 0's training was complete and saved; Phase 0 resumed
+  alone. Concurrent jobs need per-process memory caps before they run again.

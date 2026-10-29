@@ -829,3 +829,21 @@ as the answer, so it mostly measures how well the model reproduces text it was g
 
 The chosen adapter is archived at `data/adapters/debris_v1_7b_round05`, since the 7B fused and
 q4 directories replaced the 3B's. Round 04's adapter is still at `debris_v1_32layer1600`.
+
+## D36 Two MLX processes on one GPU need memory caps; Phase 0 was knocked over finding that out
+
+While Phase 0 was scoring fold 0, I ran a short benchmark training beside it to see whether
+the GPU had room for more than one job. It did for compute and did not for memory: Phase 0's
+scoring process died with `[METAL] Command buffer execution failed: Insufficient Memory`.
+Fold 0's training had finished and its adapters were saved, so only the checkpoint-200
+scoring in progress was lost; the run resumed from the saved adapters. Running GPU work beside
+a live experiment without a memory cap was a mistake, and it should not be repeated.
+
+What it measured is still worth having. The benchmark trained at 0.34 to 0.42 iterations a
+second beside the scoring, against 0.35 to 0.39 for the same iterations of fold 0 alone, so a
+single 1.5B job does not saturate the GPU. The limit is memory: MLX reports a recommended
+working set of 115.4 GB, but each process grows its own buffer cache as if it had all of it,
+and nothing coordinates two processes. Fold 0 alone peaked at 34.7 GB of active arrays, before
+its cache. Any concurrent lab jobs therefore need an explicit per-process memory and cache
+limit (`mx.set_memory_limit`, `mx.set_cache_limit`), set from config/tuning.toml rather than
+hard-coded, and measured alone on the GPU before the lab relies on them.

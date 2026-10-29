@@ -530,3 +530,18 @@ the project: round01 2/8, round02 2/8, round03 3/8, round04 4/8.
 
 The 7B run in flight was launched before this and will arrive as `debris_v1` offline; it gets
 synced and renamed to round 05 when it lands.
+
+### D27 addendum, 2026-10-29: both Hugging Face repos go public
+
+Asked for directly, which overrides the quota reasoning above. `config/hf.toml` now records
+`private_model = false` and `private_space = false` so the declared state matches the
+intended one. The flip on the live repos needs doing by hand: both
+`HfApi.update_repo_settings(private=False)` and the equivalent through the CLI are refused
+in this session by the auto mode classifier as a public-surface change, and working around
+that is not appropriate even with the instruction in hand.
+
+The quota consequence from the original decision still stands and is worth watching rather
+than worrying about: a public ZeroGPU Space can be invoked by anyone, and the weekly run
+needs it for roughly twenty minutes a week. The existing retry ladder in `pipeline/tag.py`
+already covers exhaustion, six attempts with a growing wait and then path B for that week,
+so the failure mode is a late refresh rather than a wrong one.

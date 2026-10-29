@@ -43,7 +43,19 @@ cp "$APP_DIR/deploy/debris-weekly.service"   /etc/systemd/system/
 cp "$APP_DIR/deploy/debris-weekly.timer"     /etc/systemd/system/
 systemctl daemon-reload
 systemctl enable --now debris-gunicorn.service
-systemctl enable --now debris-weekly.timer
+
+# One timer refreshes the corpus, never two (spec 5.6). The droplet timer is path A, so
+# it tags through the Hugging Face Space and is useless without a token: the droplet has
+# no GPU and no mlx. With no token the Studio launchd job is the live timer and pushes
+# the result here with deploy.sh --data-only, so the unit is installed but left stopped.
+if grep -qs '^HF_TOKEN=.\+' "$APP_DIR/.env"; then
+  systemctl enable --now debris-weekly.timer
+  echo "    weekly timer enabled (path A, tagging through the Space)"
+else
+  systemctl disable --now debris-weekly.timer 2>/dev/null || true
+  echo "    weekly timer installed but left disabled: no HF_TOKEN, so the Studio"
+  echo "    launchd job is the live timer (path B)"
+fi
 
 echo "==> nginx site"
 sed -e "s/__SERVER_NAME__/${SERVER_NAME}/" -e "s|__BIND_ADDR__|${BIND_ADDR}|" \

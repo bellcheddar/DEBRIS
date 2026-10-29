@@ -25,8 +25,11 @@ pathways = ["oxidative_stress", "inflammasome_il1b", "nfkb_cytokine", "endotheli
             "dysbiosis", "dna_damage_genotoxicity", "immune_dysregulation",
             "leachate_chemical_toxicity"]
 
+# not_applicable is the value for a paper the tagger judges irrelevant: the design of a
+# paper that is not about plastic particles and disease is not a fact about this corpus,
+# and labelling one anyway taught the tagger to use in_silico as a bin for off-topic work.
 model_types = ["human_tissue", "human_cohort", "human_in_vitro", "organoid", "animal_in_vivo",
-               "cell_line", "in_silico", "review", "meta_analysis"]
+               "cell_line", "in_silico", "review", "meta_analysis", "not_applicable"]
 
 # Fields that accept a free-text "other:<text>" value alongside the controlled terms.
 open_fields = ["polymers", "pathways"]
@@ -112,6 +115,7 @@ cell_line = "Cell line"
 in_silico = "In silico"
 review = "Review"
 meta_analysis = "Meta-analysis"
+not_applicable = "Not applicable"
 
 # Evidence ladder (spec 5.4). Rung 6 is drawn even when empty.
 [[rungs]]
@@ -302,3 +306,7 @@ cells = "cell_line"
 computational = "in_silico"
 systematic_review = "review"
 narrative_review = "review"
+none = "not_applicable"
+not_relevant = "not_applicable"
+irrelevant = "not_applicable"
+na = "not_applicable"

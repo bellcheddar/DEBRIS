@@ -14,11 +14,11 @@ Rewritten after every phase and at least every 30 minutes during compute.
 - [x] SQLite schema with every index, `papers` populated
 - [x] Elora design system, four tabs, Papers tab live with the untagged corpus
 - [x] `pipeline/aggregate.py` and the five static bundles
-- [x] 68 tests green (schema, DOI with mocked HTTP, aggregate totals vs SQL, novelty, routes)
+- [x] 77 tests green (schema, DOI with mocked HTTP, aggregate totals vs SQL, novelty, routes)
 - [x] Bootstrap labels (1,600: 868 relevant, 732 not) and the wandb dataset artifact (offline)
 - [x] Phase 1 deploy to debris.mdeller.com (live over HTTPS, ingest banner shown)
 
-## Phase 2 Tagger (70 %)
+## Phase 2 Tagger (75 %)
 
 - [x] `pipeline/tag.py` (local mlx and remote Space paths, priority tiers, review queue)
 - [x] `pipeline/train.py` (LoRA, fuse, q4, field-by-field scoring, model card, wandb)
@@ -29,8 +29,14 @@ Rewritten after every phase and at least every 30 minutes during compute.
 - [x] Training run: debris_v1, LoRA 800 iterations in 53.5 min, validation loss 0.813 to 0.765
 - [x] Stale 5.x transformers files cleared from the pixi environment (D15), train stages resumable
 - [x] Fused and q4 converted; q4 lost 15 F1 points on relevance, so `USE_FUSED` is set
-- [ ] The 5.5 acceptance floor: 800 iterations missed six of eight, retraining at 1,600
-      (spec 5.5 fallback ladder: 1,600 iters, then 32 layers, then 7B, then collapse pathways)
+- [x] Fuse and quantise split into separately resumable stages (D21), so a convert that
+      refuses an existing directory no longer costs the fine-tune
+- [x] Error breakdown by field (`pixi run errors`) over the recorded test-split predictions
+- [x] Labels repaired (D22): `model_type` was arbitrary on all 732 irrelevant papers and
+      144 rung-5 labels sat on abstracts reporting no dose; the split is now frozen
+- [ ] The 5.5 acceptance floor: 800 and 1,600 iterations each missed six of eight, which
+      the breakdown traced to the two label defects; retraining on the repaired labels
+      (ladder beyond that: 32 layers, then 7B, then collapse pathways)
 - [ ] Full corpus tagged
 
 ## Phase 3 App polish (85 %)
@@ -45,8 +51,10 @@ Rewritten after every phase and at least every 30 minutes during compute.
 
 - [x] `pipeline/weekly.py`, `deploy/weekly.sh`, systemd service and timer, launchd plist
 - [x] `deploy/deploy.sh` (code, data, `--data-only`, `--provision`), nginx vhost, provision script
-- [ ] Timer installed and enabled on the droplet, dry weekly run
+- [x] Studio launchd timer installed and enabled (path B), next firing Sunday 2026-11-01 02:00
+- [ ] Droplet timer disabled (D23): it is path A and has no token; G1 open, one ssh command
+- [ ] Dry weekly run
 - [x] `tools/findings.py` and `tools/readme.py`, both generated from the database and the forge
 - [ ] Final README and FINDINGS.md regenerated against the tagged corpus
 
-Open gates: none
+Open gates: G1, the droplet's weekly timer needs disabling (GATE_OPEN.md). The build is not blocked by it.

@@ -102,3 +102,39 @@ def test_user_prompt_is_bounded():
     prompt = schema.user_prompt({"title": "T", "journal": "J", "year": 2024,
                                  "mesh": "x" * 2000, "abstract": "y" * 20000})
     assert len(prompt) < 7200 and "[truncated]" in prompt
+
+
+def test_irrelevant_paper_records_no_design_or_findings():
+    """An irrelevant paper has no design worth recording (DECISIONS.md D22). Every
+    field the labelling used to guess at is emptied or set to not_applicable."""
+    tag, problems, _ = schema.validate({
+        "relevant": False, "polymers": ["PS"], "size_class": "micro",
+        "organ_systems": ["hepatic"], "disease_categories": ["liver_disease"],
+        "disease_terms": ["steatosis"], "pathways": ["oxidative_stress"],
+        "model_type": "in_silico", "evidence_rungs": [3, 5], "pet_specific": True,
+        "summary": "Off topic.", "confidence": 0.9})
+    assert tag["model_type"] == "not_applicable"
+    assert tag["polymers"] == []
+    assert tag["organ_systems"] == []
+    assert tag["pathways"] == []
+    assert tag["evidence_rungs"] == []
+    assert tag["disease_categories"] == ["none"]
+    assert tag["pet_specific"] is False
+    assert not problems
+
+
+def test_not_applicable_is_in_the_vocabulary_and_carries_a_label():
+    v = c.vocab()
+    assert "not_applicable" in v["model_types"]
+    assert v["model_type_labels"]["not_applicable"]
+
+
+def test_relevant_paper_keeps_its_design_and_rungs():
+    tag, _, _ = schema.validate({
+        "relevant": True, "polymers": ["PS"], "size_class": "nano",
+        "organ_systems": ["hepatic"], "disease_categories": ["liver_disease"],
+        "disease_terms": [], "pathways": ["oxidative_stress"],
+        "model_type": "animal_in_vivo", "evidence_rungs": [3, 5],
+        "pet_specific": False, "summary": "Reported in mice.", "confidence": 0.8})
+    assert tag["model_type"] == "animal_in_vivo"
+    assert tag["evidence_rungs"] == [3, 5]

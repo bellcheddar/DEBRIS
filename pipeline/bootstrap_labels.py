@@ -31,6 +31,7 @@ BATCH_SIZE = 25
 BATCH_DIR = c.LABELS / "batches"
 SESSION_DIR = c.LABELS / "session"
 BOOTSTRAP = c.LABELS / "bootstrap.jsonl"
+ASSIGNMENT = c.TRAIN / "split_assignment.json"
 SEED = 42
 
 # Coarse organ grouping for stratification only (no LLM, no bearing on the tags).
@@ -304,29 +305,54 @@ def ingest() -> None:
 
 # --------------------------------------------------------------------------- split
 
-def split() -> None:
-    """Stratified 80/10/10 on (relevant, model_type), written in mlx chat format."""
-    records = list(c.jsonl_read(BOOTSTRAP))
-    if not records:
-        raise SystemExit("no bootstrap labels: run ingest first")
-    rng = random.Random(SEED)
+def draw_split(records: list[dict], rng: random.Random) -> dict[str, str]:
+    """Stratified 80/10/10 on (relevant, model_type), as a pmid to split name map."""
     strata: dict[tuple, list] = collections.defaultdict(list)
     for r in records:
         strata[(r["tag"]["relevant"], r["tag"]["model_type"])].append(r)
-
-    train, valid, test = [], [], []
+    assignment = {}
     for key in sorted(strata, key=str):
         group = strata[key]
         rng.shuffle(group)
         n = len(group)
         n_valid = max(1, round(n * 0.1)) if n >= 10 else (1 if n >= 3 else 0)
         n_test = max(1, round(n * 0.1)) if n >= 10 else (1 if n >= 2 else 0)
-        valid.extend(group[:n_valid])
-        test.extend(group[n_valid:n_valid + n_test])
-        train.extend(group[n_valid + n_test:])
+        for i, r in enumerate(group):
+            assignment[r["pmid"]] = ("valid" if i < n_valid else
+                                     "test" if i < n_valid + n_test else "train")
+    return assignment
 
+
+def split(resplit: bool = False) -> None:
+    """Write the three splits in mlx chat format.
+
+    The assignment is frozen in split_assignment.json the first time and reused after.
+    A label repair or a vocabulary change alters the strata, and without this the test
+    split would move with them, so two runs' metrics would not be comparable. Papers
+    labelled after the freeze are drawn among themselves and added to it."""
+    records = list(c.jsonl_read(BOOTSTRAP))
+    if not records:
+        raise SystemExit("no bootstrap labels: run ingest first")
+    rng = random.Random(SEED)
+    frozen: dict[str, str] = {}
+    if ASSIGNMENT.exists() and not resplit:
+        frozen = json.loads(ASSIGNMENT.read_text())["assignment"]
+    fresh = [r for r in records if r["pmid"] not in frozen]
+    if fresh and frozen:
+        c.log(f"bootstrap split: {len(fresh)} papers added to the frozen split")
+    assignment = {**frozen, **draw_split(fresh, rng)} if fresh else frozen
+    ASSIGNMENT.write_text(json.dumps(
+        {"seed": SEED, "written": c.now(), "assignment": assignment}, indent=1))
+
+    train = [r for r in records if assignment[r["pmid"]] == "train"]
+    valid = [r for r in records if assignment[r["pmid"]] == "valid"]
+    test = [r for r in records if assignment[r["pmid"]] == "test"]
+
+    # A fresh generator, so the order written depends only on the assignment and not on
+    # how many draws making it happened to consume: a rerun reproduces the files.
+    shuffler = random.Random(SEED)
     for name, rows in (("train", train), ("valid", valid), ("test", test)):
-        rng.shuffle(rows)
+        shuffler.shuffle(rows)
         chat = [{"messages": [
             {"role": "system", "content": schema.SYSTEM_PROMPT},
             {"role": "user", "content": schema.user_prompt(r["paper"])},
@@ -389,6 +415,9 @@ def log_wandb() -> None:
 def main() -> None:
     ap = argparse.ArgumentParser(description="DEBRIS bootstrap labels")
     ap.add_argument("stage", choices=["prepare", "api", "ingest", "split", "wandb", "all"])
+    ap.add_argument("--resplit", action="store_true",
+                    help="draw the train/valid/test split again instead of reusing the "
+                         "frozen one; every metric measured before becomes incomparable")
     args = ap.parse_args()
     if args.stage in ("prepare", "all"):
         prepare()
@@ -397,7 +426,7 @@ def main() -> None:
     if args.stage in ("ingest", "all"):
         ingest()
     if args.stage in ("split", "all"):
-        split()
+        split(args.resplit)
     if args.stage in ("wandb", "all"):
         log_wandb()
 

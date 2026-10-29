@@ -131,3 +131,17 @@ def test_an_out_of_vocabulary_value_queues_the_paper_for_review(tmp_path):
     label, candidates = tag_with(["other:protein_corona"])
     reason = tag.store(conn, "1", label, label, [], candidates, "test", "v1")
     assert reason == "out-of-vocabulary value"
+
+
+def test_dose_evidence_separates_dose_from_size_dependence():
+    """Rung 5 needs the abstract to report more than one exposure level. A
+    size-dependent study is not a dose-response (DECISIONS.md D22)."""
+    from tools.repair_labels import dose_evidence
+
+    assert dose_evidence("exposure caused a dose-dependent rise in ALT")
+    assert dose_evidence("mice received various concentrations of polystyrene")
+    assert dose_evidence("larvae were exposed to 10 mg/L and 100 mg/L for 21 days")
+    assert dose_evidence("the IC50 was 42 ug/mL")
+    assert not dose_evidence("particles of different diameters showed size-dependent uptake")
+    assert not dose_evidence("mice were exposed to 100 mg/L polystyrene for 28 days")
+    assert not dose_evidence("polystyrene nanoplastics induced cardiomyocyte apoptosis")

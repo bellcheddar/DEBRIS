@@ -73,7 +73,7 @@ def corpus(tmp_path, monkeypatch):
                      diseases=(("thrombosis", "venous thrombosis"),), rungs=(1,))
         insert_paper(conn, "1006", doi_status="unresolved")
         insert_paper(conn, "1007", relevant=0, polymers=(), organs=(), diseases=(),
-                     pathways=(), rungs=(), pet=0, model_type="review",
+                     pathways=(), rungs=(), pet=0, model_type="not_applicable",
                      title="Positron emission tomography staging")
         insert_paper(conn, "1008", relevant=None)
         conn.execute("INSERT INTO review_queue (pmid,reason,queued_at) VALUES ('1004','low confidence',?)",

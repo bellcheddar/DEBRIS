@@ -126,3 +126,16 @@
 - 2026-10-29 03:05 validate: gold controls 3/9 clean, negatives misclassified 0/0, headline failures 4
 - 2026-10-29 03:05 validate: headline control failures: carotid_plaque_cohort: not tagged | blood_detection: not tagged | lung_tissue: not tagged | brain_accumulation: not tagged
 - 2026-10-29 03:06 qc ui: pass, 8 page renders, 0 serious or critical axe violations, 0 console errors, 0 failed requests
+- 2026-10-29 04:37 train: LoRA finished in 106.8 min
+- 2026-10-29 04:37 train: mlx_lm.fuse --model Qwen/Qwen2.5-3B-Instruct --adapter-path /Users/dellboy/Documents/Vibe_Coding/debris/data/adapters/debris_v1 --save-path ...
+- 2026-10-29 04:37 train: mlx_lm.convert --hf-path /Users/dellboy/Documents/Vibe_Coding/debris/data/adapters/debris_v1_fused -q --mlx-path /Users/dellboy/Documents/Vibe_Coding/debris/data/adapters/debris_v1_q4
+- 2026-10-29 04:38 train: adapter already present, reusing it (--retrain to start over)
+- 2026-10-29 04:38 train: fused model already present, reusing it
+- 2026-10-29 04:38 train: mlx_lm.convert --hf-path /Users/dellboy/Documents/Vibe_Coding/debris/data/adapters/debris_v1_fused -q --mlx-path /Users/dellboy/Documents/Vibe_Coding/debris/data/adapters/debris_v1_q4
+- 2026-10-29 04:38 train: quantised
+- 2026-10-29 04:47 train: q4 vs fused relevant F1 gap +0.110
+- 2026-10-29 04:47 train: metrics {"n": 162, "relevant_f1": 0.9385, "polymers_f1": 0.8324, "organ_systems_f1": 0.7379, "pathways_f1": 0.6416, "disease_categories_f1": 0.8712, "rungs_exact": 0.7778, "rungs_within_one": 0.8086, "model_type_accuracy": 0.8642, "valid_json": 1.0, "seconds_per_paper": 1.8, "model": "/Users/dellboy/Documents/Vibe_Coding/debris/data/adapters/debris_v1_fused"}
+- 2026-10-29 04:47 train: BELOW FLOOR: relevant_f1 0.939 < 0.95; polymers_f1 0.832 < 0.85; organ_systems_f1 0.738 < 0.85; pathways_f1 0.642 < 0.75; rungs_within_one 0.809 < 0.9; model_type_accuracy 0.864 < 0.9
+- 2026-10-29 04:53 bootstrap ingest: 1600/1600 labelled (868 relevant, 732 not), 0 problems, 11 vocabulary candidates
+- 2026-10-29 04:53 bootstrap split: train 1277, valid 161, test 162
+- 2026-10-29 04:54 train: mlx_lm.lora --model Qwen/Qwen2.5-3B-Instruct --train --data /Users/dellboy/Documents/Vibe_Coding/debris/data/train ...

@@ -65,11 +65,13 @@ organ_systems and disease_categories: only what the article reports; ["none"] fo
 disease_categories when no disease endpoint is reported.
 disease_terms: up to four free-text clinical terms as written in the article.
 pathways: mechanisms the article reports evidence for, not mechanisms it speculates about.
-model_type: the single strongest design in the article.
+model_type: the single strongest design in the article, and not_applicable when
+relevant is false.
 evidence_rungs: every rung the article itself supports. 1 detected in human tissue or
 fluid; 2 associated with an outcome in a human cohort; 3 reproduced in vivo in animals;
-4 mechanism in vitro or ex vivo; 5 dose-response demonstrated; 6 effect reversible on
-particle removal or degradation. Reviews and meta-analyses: [].
+4 mechanism in vitro or ex vivo; 5 dose-response demonstrated, only where the article
+reports more than one exposure level or states a dose or concentration dependent effect;
+6 effect reversible on particle removal or degradation. Reviews and meta-analyses: [].
 pet_specific: true only when PET (polyethylene terephthalate) is specifically studied
 or detected, not merely listed among polymers found in the environment.
 summary: at most 30 words, British English, no causal claim about humans (use
@@ -207,7 +209,11 @@ def validate(tag: dict | None) -> tuple[dict | None, list[str], list[tuple[str, 
     model_type = _canon(model_type, "model_types", V["model_types"]) or model_type.lower()
     if model_type not in V["model_types"]:
         problems.append(f"model_type '{model_type}' not in vocabulary")
-        model_type = "review" if not relevant else "cell_line"
+        model_type = "not_applicable" if not relevant else "cell_line"
+    if not relevant:
+        # An irrelevant paper has no design worth recording, and every list field is
+        # already emptied below, so the enum follows them rather than holding a guess.
+        model_type = "not_applicable"
     out["model_type"] = model_type
 
     rungs = tag.get("evidence_rungs")
@@ -219,7 +225,7 @@ def validate(tag: dict | None) -> tuple[dict | None, list[str], list[tuple[str, 
             continue
         if 1 <= r <= 6:
             clean_rungs.append(r)
-    if model_type in ("review", "meta_analysis"):
+    if model_type in ("review", "meta_analysis", "not_applicable"):
         clean_rungs = []
     out["evidence_rungs"] = sorted(set(clean_rungs))
 
@@ -254,6 +260,7 @@ def validate(tag: dict | None) -> tuple[dict | None, list[str], list[tuple[str, 
         if not out["organ_systems"]:
             problems.append("relevant paper with no organ system")
     else:
+        out["polymers"] = []
         out["organ_systems"] = []
         out["pathways"] = []
         out["disease_categories"] = ["none"]

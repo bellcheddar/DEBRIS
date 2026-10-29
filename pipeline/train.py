@@ -17,6 +17,7 @@ import argparse
 import json
 import os
 import re
+import shutil
 import subprocess
 import time
 from pathlib import Path
@@ -80,9 +81,21 @@ def parse_training_log(path: Path) -> list[dict]:
     return points
 
 
-def fuse_and_quantise(model_id: str) -> None:
+def fuse(model_id: str) -> None:
+    """Merge the adapter into the base weights, de-quantised so transformers can load
+    them on the Space. Clear the directory first: a shard left over from a previous
+    fuse with a different layout would otherwise sit alongside the new ones."""
+    if FUSED.exists():
+        shutil.rmtree(FUSED)
     run(["mlx_lm.fuse", "--model", model_id, "--adapter-path", str(ADAPTER),
          "--save-path", str(FUSED), "--dequantize"])
+
+
+def quantise() -> None:
+    """The 4-bit copy for Studio-side inference. mlx_lm.convert refuses to write into a
+    directory that already exists, so a second run has to clear the previous copy."""
+    if Q4.exists():
+        shutil.rmtree(Q4)
     run(["mlx_lm.convert", "--hf-path", str(FUSED), "-q", "--mlx-path", str(Q4)])
 
 
@@ -125,7 +138,8 @@ def score(model_path: str, adapter_path: str | None = None, split: str = "test",
 
     truth_rel, pred_rel = [], []
     poly, organ, path_pairs, disease = [], [], [], []
-    rung_exact = rung_within = model_ok = valid_json = 0
+    rung_exact = rung_within = valid_json = 0
+    model_ok = model_n = 0
     predictions = []
     started = time.monotonic()
     for i, row in enumerate(rows, 1):
@@ -136,7 +150,8 @@ def score(model_path: str, adapter_path: str | None = None, split: str = "test",
         pred, _, _ = schema.validate(raw)
         if pred is None:
             pred = {"relevant": False, "polymers": [], "organ_systems": [], "pathways": [],
-                    "disease_categories": [], "evidence_rungs": [], "model_type": "review"}
+                    "disease_categories": [], "evidence_rungs": [],
+                    "model_type": "not_applicable"}
         predictions.append({"pmid": row["pmid"], "gold": gold, "pred": pred,
                             "parsed": raw is not None})
         truth_rel.append(bool(gold["relevant"]))
@@ -148,7 +163,13 @@ def score(model_path: str, adapter_path: str | None = None, split: str = "test",
         gold_rungs, pred_rungs = set(gold["evidence_rungs"]), set(pred["evidence_rungs"])
         rung_exact += 1 if gold_rungs == pred_rungs else 0
         rung_within += 1 if rungs_within_one(gold_rungs, pred_rungs) else 0
-        model_ok += 1 if gold["model_type"] == pred["model_type"] else 0
+        # model_type is only defined where the paper is relevant: on the rest it is
+        # not_applicable, which just restates the relevance call that relevant_f1
+        # already measures. Scoring it there would pad the accuracy with 46 % of the
+        # split at no cost (see DECISIONS.md D22).
+        if gold["relevant"]:
+            model_n += 1
+            model_ok += 1 if gold["model_type"] == pred["model_type"] else 0
         if i % 20 == 0:
             print(f"  scored {i}/{len(rows)}", flush=True)
     n = len(rows)
@@ -162,7 +183,8 @@ def score(model_path: str, adapter_path: str | None = None, split: str = "test",
         "disease_categories_f1": round(micro_f1(disease), 4),
         "rungs_exact": round(rung_exact / n, 4),
         "rungs_within_one": round(rung_within / n, 4),
-        "model_type_accuracy": round(model_ok / n, 4),
+        "model_type_accuracy": round(model_ok / model_n, 4) if model_n else 1.0,
+        "model_type_n": model_n,
         "valid_json": round(valid_json / n, 4),
         "seconds_per_paper": round((time.monotonic() - started) / n, 2),
         "model": model_path + (f"+{adapter_path}" if adapter_path else ""),
@@ -269,8 +291,13 @@ def main() -> None:
         if (FUSED / "config.json").exists() and not args.retrain:
             c.log("train: fused model already present, reusing it")
         else:
-            fuse_and_quantise(model_id)
-            c.log("train: fused and quantised")
+            fuse(model_id)
+            c.log("train: fused")
+        if (Q4 / "config.json").exists() and not args.retrain:
+            c.log("train: quantised model already present, reusing it")
+        else:
+            quantise()
+            c.log("train: quantised")
 
     metrics = score(str(FUSED) if FUSED.exists() else model_id,
                     None if FUSED.exists() else str(ADAPTER), label="fused")
@@ -279,10 +306,16 @@ def main() -> None:
         q4_metrics = score(str(Q4), label="q4")
         gap = metrics["relevant_f1"] - q4_metrics["relevant_f1"]
         c.log(f"train: q4 vs fused relevant F1 gap {gap:+.3f}")
+        marker = c.ROOT / "USE_FUSED"
         if gap > 0.02:
-            (c.ROOT / "USE_FUSED").write_text(
+            marker.write_text(
                 "q4 lost more than 2 F1 points against the fused model; inference uses "
                 "debris_v1_fused.\n")
+        elif marker.exists():
+            # A previous run's q4 copy scored badly. This one does not, so clear the
+            # marker rather than leave inference pointed at the 6 GB fused weights.
+            marker.unlink()
+            c.log("train: q4 now matches the fused model, cleared USE_FUSED")
     (c.TRAIN / "metrics.json").write_text(json.dumps(
         {"fused": metrics, "q4": q4_metrics, "floor": FLOOR,
          "shortfall": meets_floor(metrics), "curve": parse_training_log(log_path)

@@ -316,6 +316,38 @@ in vitro. Nothing in the schema asserts human causation, and the evidence rungs 
 deliberately ordered so that a reader can see how far from a human outcome a given
 claim sits. Reviews carry no rungs. Papers the tagger is unsure about are routed to
 the review queue and shown as "needs review" rather than silently published.
+
+## Known label limits
+
+Some fields carry more label noise than others, and the measurements behind this are in
+DECISIONS.md D22 and D25. A reader of the tagged corpus should know which way each field
+errs.
+
+**Evidence rung 5 is a lower bound.** Dose-response is recorded only where the article
+reports more than one exposure level, or states a dose or concentration dependent effect.
+That rule removed 144 of the original 245 rung-5 labels, most of them papers reporting a
+size-dependent rather than a dose-dependent effect, and left 82 instances across the
+relevant training rows. The tagger's commonest rung error is leaving rung 5 off a paper
+that has it, so a paper shown without rung 5 may still have demonstrated a dose response.
+The error does not run the other way to any comparable degree.
+
+**`systemic` is a soft organ label.** It carries its own vocabulary in the abstract in
+29 % of instances, against 100 % for renal and 98 % for gastrointestinal, so in practice
+it is a residual category for multi-organ or unlocalised work rather than a finding. It is
+also the organ system the tagger most often fails to predict.
+
+**`cell_line` and `human_in_vitro` overlap.** Gold `cell_line` names an immortalised line
+(Caco-2, HepG2, A549 and the like) in 60 % of its papers and gold `human_in_vitro` in
+25 %, while only 16 % of `human_in_vitro` papers mention primary or ex vivo material. The
+boundary is therefore not a rule the schema states, and most model-type errors sit on it.
+Read `model_type` as a broad design class and not as a precise claim about the material.
+
+**Pathways are over-reported rather than under-reported.** Precision is the weaker side:
+the tagger volunteers mechanisms that are plausible for the exposure but not measured in
+the paper, and a substantial minority of its false-positive `oxidative_stress` calls have
+no oxidative vocabulary anywhere in the abstract. `leachate_chemical_toxicity` is weakly
+grounded in both directions. Treat a pathway on a single paper as a pointer to the
+abstract rather than as a finding, and weigh the pathway hub on counts across many papers.
 """)
 
 

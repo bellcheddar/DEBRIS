@@ -229,3 +229,4 @@
 - 2026-10-29 18:50 lab: a benchmark training run beside Phase 0's scoring exhausted GPU memory
   and aborted the scoring (D36). Fold 0's training was complete and saved; Phase 0 resumed
   alone. Concurrent jobs need per-process memory caps before they run again.
+- 2026-10-29 18:54 lab phase0-baseline f0 s42 @ 200: relevant_f1 0.8944, polymers_f1 0.758, organ_systems_f1 0.6514, pathways_f1 0.5228, rungs_exact 0.6021, rungs_within_one 0.8125, model_type_accuracy 0.7269, valid_json 1.0, 0.46 s/paper

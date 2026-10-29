@@ -1,2 +1,4 @@
 {"experiment":"smoke","fold":0,"seed":42,"stage":"trained","minutes":1.6,"at":"2026-10-29T22:10:47+00:00"}
 {"experiment":"smoke","fold":0,"seed":42,"stage":"scored","iter":20,"n":24,"metrics":{"relevant_f1":0.0,"polymers_f1":0.0,"organ_systems_f1":0.0,"pathways_f1":0.0,"disease_categories_f1":0.8511,"rungs_exact":0.7917,"rungs_within_one":0.7917,"model_type_accuracy":0.0,"model_type_n":1,"valid_json":0.9583,"seconds_per_paper":0.644},"at":"2026-10-29T22:11:04+00:00"}
+{"experiment":"phase0-baseline","fold":0,"seed":42,"stage":"trained","minutes":32.8,"at":"2026-10-29T22:45:01+00:00"}
+{"experiment":"phase0-baseline","fold":0,"seed":42,"stage":"scored","iter":200,"n":480,"metrics":{"relevant_f1":0.8944,"polymers_f1":0.758,"organ_systems_f1":0.6514,"pathways_f1":0.5228,"disease_categories_f1":0.8256,"rungs_exact":0.6021,"rungs_within_one":0.8125,"model_type_accuracy":0.7269,"model_type_n":260,"valid_json":1.0,"seconds_per_paper":0.462},"at":"2026-10-29T22:54:38+00:00"}

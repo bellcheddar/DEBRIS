@@ -40,6 +40,16 @@ def metal_available() -> bool:
         return False
 
 
+def gpu_working_set_gb() -> float:
+    """How much memory Metal recommends the GPU use, across every process together (D36)."""
+    try:
+        import mlx.core as mx
+
+        return round(mx.metal.device_info()["max_recommended_working_set_size"] / 2**30, 1)
+    except Exception:
+        return 0.0
+
+
 def probe() -> dict:
     usage = shutil.disk_usage(ROOT)
     return {
@@ -51,6 +61,7 @@ def probe() -> dict:
         "gpu_cores": gpu_cores(),
         "free_disk_gb": round(usage.free / 2**30, 1),
         "metal_available": metal_available(),
+        "gpu_working_set_gb": gpu_working_set_gb(),
     }
 
 
@@ -77,7 +88,24 @@ def derive(hw: dict, previous: dict | None) -> dict:
                     "ncbi_rate_per_second", "tag_batch_size_status"):
             if key in previous:
                 tuning[key] = previous[key]
+    tuning["lab"] = lab_tuning(hw, (previous or {}).get("lab", {}))
     return tuning
+
+
+def lab_tuning(hw: dict, previous: dict) -> dict:
+    """How many lab jobs share the GPU, and each one's memory cap (D36).
+
+    The number of jobs is measured by tools/lab_bench.py, not derived, so it is kept across
+    re-probes; until the benchmark has run it is one. Each job gets an equal share of 90 % of
+    the GPU working set, and at most a quarter of its share as cache, so the jobs' caches
+    cannot together grow past what the GPU can hold."""
+    jobs = int(previous.get("parallel_jobs", 1))
+    share = round(hw.get("gpu_working_set_gb", 0) * 0.9 / jobs, 1)
+    lab = {"parallel_jobs": jobs, "job_memory_gb": share, "job_cache_gb": round(share / 4, 1)}
+    for key in ("parallel_jobs_status", "bench"):
+        if key in previous:
+            lab[key] = previous[key]
+    return lab
 
 
 def main() -> None:

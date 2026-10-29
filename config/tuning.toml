@@ -11,3 +11,8 @@ ncbi_rate_per_second = 3
 [env]
 TOKENIZERS_PARALLELISM = "false"
 OMP_NUM_THREADS = "14"
+
+[lab]
+parallel_jobs = 1
+job_memory_gb = 96.8
+job_cache_gb = 24.2

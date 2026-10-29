@@ -28,3 +28,210 @@ Calculating loss...: 100%|██████████| 16/16 [00:18<00:00,  1
 Iter 1: Val loss 2.376, Val took 18.795s
 Iter 20: Train loss 1.404, Learning Rate 1.000e-05, It/sec 0.390, Tokens/sec 1501.066, Trained Tokens 77065, Peak mem 25.186 GB
 Iter 40: Train loss 0.881, Learning Rate 1.000e-05, It/sec 0.385, Tokens/sec 1489.657, Trained Tokens 154413, Peak mem 25.186 GB
+Iter 60: Train loss 0.848, Learning Rate 1.000e-05, It/sec 0.354, Tokens/sec 1372.662, Trained Tokens 231910, Peak mem 26.374 GB
+Iter 80: Train loss 0.865, Learning Rate 1.000e-05, It/sec 0.445, Tokens/sec 1706.080, Trained Tokens 308636, Peak mem 26.374 GB
+
+Calculating loss...:   0%|          | 0/16 [00:00<?, ?it/s]
+Calculating loss...:   6%|▋         | 1/16 [00:01<00:22,  1.51s/it]
+Calculating loss...:  12%|█▎        | 2/16 [00:02<00:17,  1.28s/it]
+Calculating loss...:  19%|█▉        | 3/16 [00:03<00:14,  1.13s/it]
+Calculating loss...:  25%|██▌       | 4/16 [00:04<00:14,  1.21s/it]
+Calculating loss...:  31%|███▏      | 5/16 [00:05<00:12,  1.16s/it]
+Calculating loss...:  38%|███▊      | 6/16 [00:07<00:12,  1.21s/it]
+Calculating loss...:  44%|████▍     | 7/16 [00:08<00:10,  1.16s/it]
+Calculating loss...:  50%|█████     | 8/16 [00:09<00:09,  1.15s/it]
+Calculating loss...:  56%|█████▋    | 9/16 [00:10<00:07,  1.14s/it]
+Calculating loss...:  62%|██████▎   | 10/16 [00:11<00:07,  1.18s/it]
+Calculating loss...:  69%|██████▉   | 11/16 [00:13<00:06,  1.20s/it]
+Calculating loss...:  75%|███████▌  | 12/16 [00:14<00:04,  1.13s/it]
+Calculating loss...:  81%|████████▏ | 13/16 [00:15<00:03,  1.13s/it]
+Calculating loss...:  88%|████████▊ | 14/16 [00:16<00:02,  1.13s/it]
+Calculating loss...:  94%|█████████▍| 15/16 [00:17<00:01,  1.11s/it]
+Calculating loss...: 100%|██████████| 16/16 [00:18<00:00,  1.06s/it]
+Calculating loss...: 100%|██████████| 16/16 [00:18<00:00,  1.15s/it]
+Iter 100: Val loss 0.827, Val took 18.339s
+Iter 100: Train loss 0.844, Learning Rate 1.000e-05, It/sec 0.495, Tokens/sec 1898.500, Trained Tokens 385399, Peak mem 26.374 GB
+Iter 100: Saved adapter weights to /Users/dellboy/Documents/Vibe_Coding/debris/data/lab/phase0-baseline/f0-s42/adapters/adapters.safetensors and /Users/dellboy/Documents/Vibe_Coding/debris/data/lab/phase0-baseline/f0-s42/adapters/0000100_adapters.safetensors.
+Iter 120: Train loss 0.807, Learning Rate 1.000e-05, It/sec 0.467, Tokens/sec 1817.569, Trained Tokens 463188, Peak mem 26.374 GB
+Iter 140: Train loss 0.862, Learning Rate 1.000e-05, It/sec 0.403, Tokens/sec 1582.817, Trained Tokens 541690, Peak mem 34.669 GB
+Iter 160: Train loss 0.857, Learning Rate 1.000e-05, It/sec 0.482, Tokens/sec 1857.832, Trained Tokens 618837, Peak mem 34.669 GB
+Iter 180: Train loss 0.848, Learning Rate 1.000e-05, It/sec 0.466, Tokens/sec 1820.139, Trained Tokens 697005, Peak mem 34.669 GB
+
+Calculating loss...:   0%|          | 0/16 [00:00<?, ?it/s]
+Calculating loss...:   6%|▋         | 1/16 [00:01<00:22,  1.53s/it]
+Calculating loss...:  12%|█▎        | 2/16 [00:02<00:18,  1.29s/it]
+Calculating loss...:  19%|█▉        | 3/16 [00:03<00:16,  1.27s/it]
+Calculating loss...:  25%|██▌       | 4/16 [00:05<00:14,  1.23s/it]
+Calculating loss...:  31%|███▏      | 5/16 [00:05<00:12,  1.11s/it]
+Calculating loss...:  38%|███▊      | 6/16 [00:07<00:11,  1.12s/it]
+Calculating loss...:  44%|████▍     | 7/16 [00:08<00:10,  1.17s/it]
+Calculating loss...:  50%|█████     | 8/16 [00:09<00:09,  1.15s/it]
+Calculating loss...:  56%|█████▋    | 9/16 [00:10<00:07,  1.10s/it]
+Calculating loss...:  62%|██████▎   | 10/16 [00:11<00:06,  1.12s/it]
+Calculating loss...:  69%|██████▉   | 11/16 [00:12<00:05,  1.13s/it]
+Calculating loss...:  75%|███████▌  | 12/16 [00:14<00:04,  1.17s/it]
+Calculating loss...:  81%|████████▏ | 13/16 [00:15<00:03,  1.22s/it]
+Calculating loss...:  88%|████████▊ | 14/16 [00:16<00:02,  1.15s/it]
+Calculating loss...:  94%|█████████▍| 15/16 [00:17<00:01,  1.08s/it]
+Calculating loss...: 100%|██████████| 16/16 [00:18<00:00,  1.09s/it]
+Calculating loss...: 100%|██████████| 16/16 [00:18<00:00,  1.15s/it]
+Iter 200: Val loss 0.815, Val took 18.406s
+Iter 200: Train loss 0.850, Learning Rate 1.000e-05, It/sec 0.458, Tokens/sec 1760.709, Trained Tokens 773888, Peak mem 34.669 GB
+Iter 200: Saved adapter weights to /Users/dellboy/Documents/Vibe_Coding/debris/data/lab/phase0-baseline/f0-s42/adapters/adapters.safetensors and /Users/dellboy/Documents/Vibe_Coding/debris/data/lab/phase0-baseline/f0-s42/adapters/0000200_adapters.safetensors.
+Iter 220: Train loss 0.841, Learning Rate 1.000e-05, It/sec 0.446, Tokens/sec 1733.984, Trained Tokens 851698, Peak mem 34.669 GB
+Iter 240: Train loss 0.827, Learning Rate 1.000e-05, It/sec 0.489, Tokens/sec 1871.451, Trained Tokens 928286, Peak mem 34.669 GB
+Iter 260: Train loss 0.807, Learning Rate 1.000e-05, It/sec 0.436, Tokens/sec 1665.987, Trained Tokens 1004736, Peak mem 34.669 GB
+Iter 280: Train loss 0.811, Learning Rate 1.000e-05, It/sec 0.421, Tokens/sec 1645.154, Trained Tokens 1082839, Peak mem 34.669 GB
+
+Calculating loss...:   0%|          | 0/16 [00:00<?, ?it/s]
+Calculating loss...:   6%|▋         | 1/16 [00:01<00:16,  1.12s/it]
+Calculating loss...:  12%|█▎        | 2/16 [00:02<00:15,  1.08s/it]
+Calculating loss...:  19%|█▉        | 3/16 [00:03<00:15,  1.16s/it]
+Calculating loss...:  25%|██▌       | 4/16 [00:04<00:12,  1.07s/it]
+Calculating loss...:  31%|███▏      | 5/16 [00:05<00:13,  1.24s/it]
+Calculating loss...:  38%|███▊      | 6/16 [00:07<00:12,  1.21s/it]
+Calculating loss...:  44%|████▍     | 7/16 [00:08<00:10,  1.18s/it]
+Calculating loss...:  50%|█████     | 8/16 [00:09<00:09,  1.21s/it]
+Calculating loss...:  56%|█████▋    | 9/16 [00:10<00:08,  1.19s/it]
+Calculating loss...:  62%|██████▎   | 10/16 [00:11<00:07,  1.17s/it]
+Calculating loss...:  69%|██████▉   | 11/16 [00:12<00:05,  1.16s/it]
+Calculating loss...:  75%|███████▌  | 12/16 [00:13<00:04,  1.11s/it]
+Calculating loss...:  81%|████████▏ | 13/16 [00:15<00:03,  1.16s/it]
+Calculating loss...:  88%|████████▊ | 14/16 [00:16<00:02,  1.22s/it]
+Calculating loss...:  94%|█████████▍| 15/16 [00:17<00:01,  1.13s/it]
+Calculating loss...: 100%|██████████| 16/16 [00:18<00:00,  1.11s/it]
+Calculating loss...: 100%|██████████| 16/16 [00:18<00:00,  1.15s/it]
+Iter 300: Val loss 0.813, Val took 18.457s
+Iter 300: Train loss 0.793, Learning Rate 1.000e-05, It/sec 0.437, Tokens/sec 1715.752, Trained Tokens 1161431, Peak mem 34.669 GB
+Iter 300: Saved adapter weights to /Users/dellboy/Documents/Vibe_Coding/debris/data/lab/phase0-baseline/f0-s42/adapters/adapters.safetensors and /Users/dellboy/Documents/Vibe_Coding/debris/data/lab/phase0-baseline/f0-s42/adapters/0000300_adapters.safetensors.
+Iter 320: Train loss 0.808, Learning Rate 1.000e-05, It/sec 0.441, Tokens/sec 1734.831, Trained Tokens 1240154, Peak mem 34.669 GB
+Iter 340: Train loss 0.786, Learning Rate 1.000e-05, It/sec 0.513, Tokens/sec 1925.751, Trained Tokens 1315165, Peak mem 34.669 GB
+Iter 360: Train loss 0.804, Learning Rate 1.000e-05, It/sec 0.442, Tokens/sec 1722.581, Trained Tokens 1393039, Peak mem 34.669 GB
+Iter 380: Train loss 0.815, Learning Rate 1.000e-05, It/sec 0.428, Tokens/sec 1648.824, Trained Tokens 1470035, Peak mem 34.669 GB
+
+Calculating loss...:   0%|          | 0/16 [00:00<?, ?it/s]
+Calculating loss...:   6%|▋         | 1/16 [00:00<00:14,  1.05it/s]
+Calculating loss...:  12%|█▎        | 2/16 [00:01<00:13,  1.01it/s]
+Calculating loss...:  19%|█▉        | 3/16 [00:03<00:14,  1.09s/it]
+Calculating loss...:  25%|██▌       | 4/16 [00:04<00:13,  1.12s/it]
+Calculating loss...:  31%|███▏      | 5/16 [00:05<00:12,  1.12s/it]
+Calculating loss...:  38%|███▊      | 6/16 [00:06<00:11,  1.13s/it]
+Calculating loss...:  44%|████▍     | 7/16 [00:07<00:09,  1.08s/it]
+Calculating loss...:  50%|█████     | 8/16 [00:08<00:09,  1.15s/it]
+Calculating loss...:  56%|█████▋    | 9/16 [00:10<00:08,  1.20s/it]
+Calculating loss...:  62%|██████▎   | 10/16 [00:11<00:07,  1.18s/it]
+Calculating loss...:  69%|██████▉   | 11/16 [00:12<00:05,  1.10s/it]
+Calculating loss...:  75%|███████▌  | 12/16 [00:13<00:04,  1.23s/it]
+Calculating loss...:  81%|████████▏ | 13/16 [00:15<00:03,  1.24s/it]
+Calculating loss...:  88%|████████▊ | 14/16 [00:16<00:02,  1.19s/it]
+Calculating loss...:  94%|█████████▍| 15/16 [00:17<00:01,  1.17s/it]
+Calculating loss...: 100%|██████████| 16/16 [00:18<00:00,  1.16s/it]
+Calculating loss...: 100%|██████████| 16/16 [00:18<00:00,  1.15s/it]
+Iter 400: Val loss 0.810, Val took 18.394s
+Iter 400: Train loss 0.795, Learning Rate 1.000e-05, It/sec 0.470, Tokens/sec 1840.855, Trained Tokens 1548408, Peak mem 34.669 GB
+Iter 400: Saved adapter weights to /Users/dellboy/Documents/Vibe_Coding/debris/data/lab/phase0-baseline/f0-s42/adapters/adapters.safetensors and /Users/dellboy/Documents/Vibe_Coding/debris/data/lab/phase0-baseline/f0-s42/adapters/0000400_adapters.safetensors.
+Iter 420: Train loss 0.788, Learning Rate 1.000e-05, It/sec 0.354, Tokens/sec 1350.842, Trained Tokens 1624635, Peak mem 34.669 GB
+Iter 440: Train loss 0.803, Learning Rate 1.000e-05, It/sec 0.442, Tokens/sec 1706.618, Trained Tokens 1701828, Peak mem 34.669 GB
+Iter 460: Train loss 0.807, Learning Rate 1.000e-05, It/sec 0.499, Tokens/sec 1925.115, Trained Tokens 1778952, Peak mem 34.669 GB
+Iter 480: Train loss 0.772, Learning Rate 1.000e-05, It/sec 0.476, Tokens/sec 1853.622, Trained Tokens 1856764, Peak mem 34.669 GB
+
+Calculating loss...:   0%|          | 0/16 [00:00<?, ?it/s]
+Calculating loss...:   6%|▋         | 1/16 [00:01<00:19,  1.31s/it]
+Calculating loss...:  12%|█▎        | 2/16 [00:02<00:16,  1.18s/it]
+Calculating loss...:  19%|█▉        | 3/16 [00:03<00:15,  1.17s/it]
+Calculating loss...:  25%|██▌       | 4/16 [00:04<00:14,  1.21s/it]
+Calculating loss...:  31%|███▏      | 5/16 [00:05<00:13,  1.19s/it]
+Calculating loss...:  38%|███▊      | 6/16 [00:06<00:11,  1.10s/it]
+Calculating loss...:  44%|████▍     | 7/16 [00:08<00:10,  1.12s/it]
+Calculating loss...:  50%|█████     | 8/16 [00:09<00:08,  1.10s/it]
+Calculating loss...:  56%|█████▋    | 9/16 [00:10<00:07,  1.04s/it]
+Calculating loss...:  62%|██████▎   | 10/16 [00:10<00:06,  1.01s/it]
+Calculating loss...:  69%|██████▉   | 11/16 [00:12<00:05,  1.04s/it]
+Calculating loss...:  75%|███████▌  | 12/16 [00:13<00:04,  1.11s/it]
+Calculating loss...:  81%|████████▏ | 13/16 [00:14<00:03,  1.18s/it]
+Calculating loss...:  88%|████████▊ | 14/16 [00:15<00:02,  1.15s/it]
+Calculating loss...:  94%|█████████▍| 15/16 [00:17<00:01,  1.26s/it]
+Calculating loss...: 100%|██████████| 16/16 [00:18<00:00,  1.22s/it]
+Calculating loss...: 100%|██████████| 16/16 [00:18<00:00,  1.15s/it]
+Iter 500: Val loss 0.809, Val took 18.424s
+Iter 500: Train loss 0.776, Learning Rate 1.000e-05, It/sec 0.469, Tokens/sec 1824.178, Trained Tokens 1934482, Peak mem 34.669 GB
+Iter 500: Saved adapter weights to /Users/dellboy/Documents/Vibe_Coding/debris/data/lab/phase0-baseline/f0-s42/adapters/adapters.safetensors and /Users/dellboy/Documents/Vibe_Coding/debris/data/lab/phase0-baseline/f0-s42/adapters/0000500_adapters.safetensors.
+Iter 520: Train loss 0.767, Learning Rate 1.000e-05, It/sec 0.405, Tokens/sec 1615.256, Trained Tokens 2014299, Peak mem 34.669 GB
+Iter 540: Train loss 0.772, Learning Rate 1.000e-05, It/sec 0.472, Tokens/sec 1825.260, Trained Tokens 2091586, Peak mem 34.669 GB
+Iter 560: Train loss 0.770, Learning Rate 1.000e-05, It/sec 0.481, Tokens/sec 1869.275, Trained Tokens 2169324, Peak mem 34.669 GB
+Iter 580: Train loss 0.791, Learning Rate 1.000e-05, It/sec 0.428, Tokens/sec 1640.467, Trained Tokens 2245923, Peak mem 34.669 GB
+
+Calculating loss...:   0%|          | 0/16 [00:00<?, ?it/s]
+Calculating loss...:   6%|▋         | 1/16 [00:01<00:16,  1.11s/it]
+Calculating loss...:  12%|█▎        | 2/16 [00:02<00:15,  1.09s/it]
+Calculating loss...:  19%|█▉        | 3/16 [00:03<00:13,  1.03s/it]
+Calculating loss...:  25%|██▌       | 4/16 [00:04<00:13,  1.16s/it]
+Calculating loss...:  31%|███▏      | 5/16 [00:05<00:13,  1.21s/it]
+Calculating loss...:  38%|███▊      | 6/16 [00:06<00:11,  1.11s/it]
+Calculating loss...:  44%|████▍     | 7/16 [00:07<00:10,  1.11s/it]
+Calculating loss...:  50%|█████     | 8/16 [00:09<00:09,  1.14s/it]
+Calculating loss...:  56%|█████▋    | 9/16 [00:10<00:08,  1.18s/it]
+Calculating loss...:  62%|██████▎   | 10/16 [00:11<00:06,  1.13s/it]
+Calculating loss...:  69%|██████▉   | 11/16 [00:12<00:05,  1.13s/it]
+Calculating loss...:  75%|███████▌  | 12/16 [00:13<00:04,  1.13s/it]
+Calculating loss...:  81%|████████▏ | 13/16 [00:14<00:03,  1.16s/it]
+Calculating loss...:  88%|████████▊ | 14/16 [00:15<00:02,  1.11s/it]
+Calculating loss...:  94%|█████████▍| 15/16 [00:16<00:01,  1.11s/it]
+Calculating loss...: 100%|██████████| 16/16 [00:18<00:00,  1.23s/it]
+Calculating loss...: 100%|██████████| 16/16 [00:18<00:00,  1.15s/it]
+Iter 600: Val loss 0.811, Val took 18.441s
+Iter 600: Train loss 0.774, Learning Rate 1.000e-05, It/sec 0.447, Tokens/sec 1730.145, Trained Tokens 2323371, Peak mem 34.669 GB
+Iter 600: Saved adapter weights to /Users/dellboy/Documents/Vibe_Coding/debris/data/lab/phase0-baseline/f0-s42/adapters/adapters.safetensors and /Users/dellboy/Documents/Vibe_Coding/debris/data/lab/phase0-baseline/f0-s42/adapters/0000600_adapters.safetensors.
+Iter 620: Train loss 0.768, Learning Rate 1.000e-05, It/sec 0.445, Tokens/sec 1722.330, Trained Tokens 2400751, Peak mem 34.669 GB
+Iter 640: Train loss 0.748, Learning Rate 1.000e-05, It/sec 0.495, Tokens/sec 1877.446, Trained Tokens 2476632, Peak mem 34.669 GB
+Iter 660: Train loss 0.772, Learning Rate 1.000e-05, It/sec 0.461, Tokens/sec 1800.505, Trained Tokens 2554730, Peak mem 34.669 GB
+Iter 680: Train loss 0.785, Learning Rate 1.000e-05, It/sec 0.489, Tokens/sec 1924.027, Trained Tokens 2633473, Peak mem 34.669 GB
+
+Calculating loss...:   0%|          | 0/16 [00:00<?, ?it/s]
+Calculating loss...:   6%|▋         | 1/16 [00:00<00:14,  1.00it/s]
+Calculating loss...:  12%|█▎        | 2/16 [00:02<00:14,  1.07s/it]
+Calculating loss...:  19%|█▉        | 3/16 [00:03<00:14,  1.10s/it]
+Calculating loss...:  25%|██▌       | 4/16 [00:04<00:12,  1.06s/it]
+Calculating loss...:  31%|███▏      | 5/16 [00:05<00:11,  1.08s/it]
+Calculating loss...:  38%|███▊      | 6/16 [00:06<00:11,  1.13s/it]
+Calculating loss...:  44%|████▍     | 7/16 [00:07<00:10,  1.12s/it]
+Calculating loss...:  50%|█████     | 8/16 [00:08<00:08,  1.06s/it]
+Calculating loss...:  56%|█████▋    | 9/16 [00:10<00:08,  1.21s/it]
+Calculating loss...:  62%|██████▎   | 10/16 [00:11<00:06,  1.12s/it]
+Calculating loss...:  69%|██████▉   | 11/16 [00:12<00:05,  1.18s/it]
+Calculating loss...:  75%|███████▌  | 12/16 [00:13<00:04,  1.22s/it]
+Calculating loss...:  81%|████████▏ | 13/16 [00:14<00:03,  1.20s/it]
+Calculating loss...:  88%|████████▊ | 14/16 [00:15<00:02,  1.17s/it]
+Calculating loss...:  94%|█████████▍| 15/16 [00:17<00:01,  1.16s/it]
+Calculating loss...: 100%|██████████| 16/16 [00:18<00:00,  1.19s/it]
+Calculating loss...: 100%|██████████| 16/16 [00:18<00:00,  1.15s/it]
+Iter 700: Val loss 0.807, Val took 18.372s
+Iter 700: Train loss 0.763, Learning Rate 1.000e-05, It/sec 0.448, Tokens/sec 1695.962, Trained Tokens 2709259, Peak mem 34.669 GB
+Iter 700: Saved adapter weights to /Users/dellboy/Documents/Vibe_Coding/debris/data/lab/phase0-baseline/f0-s42/adapters/adapters.safetensors and /Users/dellboy/Documents/Vibe_Coding/debris/data/lab/phase0-baseline/f0-s42/adapters/0000700_adapters.safetensors.
+Iter 720: Train loss 0.762, Learning Rate 1.000e-05, It/sec 0.464, Tokens/sec 1784.910, Trained Tokens 2786243, Peak mem 34.669 GB
+Iter 740: Train loss 0.738, Learning Rate 1.000e-05, It/sec 0.474, Tokens/sec 1830.416, Trained Tokens 2863460, Peak mem 34.669 GB
+Iter 760: Train loss 0.735, Learning Rate 1.000e-05, It/sec 0.495, Tokens/sec 1913.085, Trained Tokens 2940821, Peak mem 34.669 GB
+Iter 780: Train loss 0.752, Learning Rate 1.000e-05, It/sec 0.457, Tokens/sec 1768.831, Trained Tokens 3018244, Peak mem 34.669 GB
+
+Calculating loss...:   0%|          | 0/16 [00:00<?, ?it/s]
+Calculating loss...:   6%|▋         | 1/16 [00:00<00:14,  1.05it/s]
+Calculating loss...:  12%|█▎        | 2/16 [00:02<00:14,  1.05s/it]
+Calculating loss...:  19%|█▉        | 3/16 [00:03<00:16,  1.27s/it]
+Calculating loss...:  25%|██▌       | 4/16 [00:04<00:14,  1.22s/it]
+Calculating loss...:  31%|███▏      | 5/16 [00:05<00:12,  1.17s/it]
+Calculating loss...:  38%|███▊      | 6/16 [00:07<00:12,  1.20s/it]
+Calculating loss...:  44%|████▍     | 7/16 [00:08<00:10,  1.19s/it]
+Calculating loss...:  50%|█████     | 8/16 [00:09<00:09,  1.15s/it]
+Calculating loss...:  56%|█████▋    | 9/16 [00:10<00:07,  1.14s/it]
+Calculating loss...:  62%|██████▎   | 10/16 [00:11<00:06,  1.07s/it]
+Calculating loss...:  69%|██████▉   | 11/16 [00:12<00:05,  1.09s/it]
+Calculating loss...:  75%|███████▌  | 12/16 [00:13<00:04,  1.15s/it]
+Calculating loss...:  81%|████████▏ | 13/16 [00:14<00:03,  1.11s/it]
+Calculating loss...:  88%|████████▊ | 14/16 [00:16<00:02,  1.16s/it]
+Calculating loss...:  94%|█████████▍| 15/16 [00:17<00:01,  1.10s/it]
+Calculating loss...: 100%|██████████| 16/16 [00:18<00:00,  1.18s/it]
+Calculating loss...: 100%|██████████| 16/16 [00:18<00:00,  1.15s/it]
+Iter 800: Val loss 0.813, Val took 18.396s
+Iter 800: Train loss 0.753, Learning Rate 1.000e-05, It/sec 0.450, Tokens/sec 1760.026, Trained Tokens 3096462, Peak mem 34.669 GB
+Iter 800: Saved adapter weights to /Users/dellboy/Documents/Vibe_Coding/debris/data/lab/phase0-baseline/f0-s42/adapters/adapters.safetensors and /Users/dellboy/Documents/Vibe_Coding/debris/data/lab/phase0-baseline/f0-s42/adapters/0000800_adapters.safetensors.
+Saved final weights to /Users/dellboy/Documents/Vibe_Coding/debris/data/lab/phase0-baseline/f0-s42/adapters/adapters.safetensors.

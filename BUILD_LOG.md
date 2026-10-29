@@ -33,3 +33,7 @@
 - 2026-10-29 00:20 bootstrap prepare: 1600 papers selected, 25 already labelled, 1575 to label in 63 batches, mix {'stratified': 1168, 'already_labelled': 25, 'gold': 7, 'negative': 400}
 - 2026-10-29 00:22 bootstrap prepare: 1600 papers selected, 50 already labelled, 1550 to label in 62 batches, mix {'already_labelled': 50, 'stratified': 1143, 'gold': 7, 'negative': 400}
 - 2026-10-29 00:28 bootstrap ingest: 150/1600 labelled (79 relevant, 71 not), 0 problems, 0 vocabulary candidates
+- 2026-10-29 00:33 bootstrap ingest: 275/1600 labelled (189 relevant, 86 not), 0 problems, 0 vocabulary candidates
+- 2026-10-29 00:35 bootstrap ingest: 325/1600 labelled (233 relevant, 92 not), 0 problems, 0 vocabulary candidates
+- 2026-10-29 00:41 bootstrap ingest: 525/1600 labelled (279 relevant, 246 not), 0 problems, 0 vocabulary candidates
+- 2026-10-29 00:44 bootstrap ingest: 750/1600 labelled (288 relevant, 462 not), 0 problems, 0 vocabulary candidates

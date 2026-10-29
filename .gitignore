@@ -8,3 +8,6 @@ data/snapshots/
 .venv/
 __pycache__/
 tests/qc_screenshots/
+.DS_Store
+wandb/
+qc/*.png

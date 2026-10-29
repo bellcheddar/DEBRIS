@@ -77,11 +77,11 @@ const DEBRIS = (() => {
         <dt>DOI</dt><dd>${doiLink} <span class="tag">${esc(p.doi_status || 'unknown')}</span></dd>
         <dt>Journal</dt><dd>${esc(p.journal || '')} ${p.year ? '(' + p.year + ')' : ''}</dd>
         <dt>Polymers</dt><dd>${chipsHtml(p.polymers, 'poly') || '<span class="empty">untagged</span>'}</dd>
-        <dt>Organs</dt><dd>${chipsHtml(p.organ_systems) || '—'}</dd>
-        <dt>Pathways</dt><dd>${chipsHtml(p.pathways) || '—'}</dd>
-        <dt>Rungs</dt><dd>${(p.rungs || []).map((r) => `<span class="tag rung">${r}</span>`).join(' ') || '—'}</dd>
-        <dt>Model</dt><dd>${esc(p.model_type || '—')} · ${esc(p.size_class || '—')}</dd>
-        <dt>Confidence</dt><dd class="mono">${p.confidence !== null && p.confidence !== undefined ? p.confidence.toFixed(2) : '—'} · self-consistency ${p.self_consistency !== null && p.self_consistency !== undefined ? p.self_consistency.toFixed(2) : '—'}</dd>
+        <dt>Organs</dt><dd>${chipsHtml(p.organ_systems) || 'none'}</dd>
+        <dt>Pathways</dt><dd>${chipsHtml(p.pathways) || 'none'}</dd>
+        <dt>Rungs</dt><dd>${(p.rungs || []).map((r) => `<span class="tag rung">${r}</span>`).join(' ') || 'none'}</dd>
+        <dt>Model</dt><dd>${esc(p.model_type || 'unknown')} · ${esc(p.size_class || 'unknown')}</dd>
+        <dt>Confidence</dt><dd class="mono">${p.confidence !== null && p.confidence !== undefined ? p.confidence.toFixed(2) : 'not scored'} · self-consistency ${p.self_consistency !== null && p.self_consistency !== undefined ? p.self_consistency.toFixed(2) : 'not scored'}</dd>
         <dt>Tag source</dt><dd>${esc(p.tag_source || 'untagged')} ${p.model_version ? '· ' + esc(p.model_version) : ''}</dd>
         ${p.review ? `<dt>Review</dt><dd>${esc(p.review.reason)}</dd>` : ''}
         ${(p.novelty || []).length ? `<dt>Novel</dt><dd>${p.novelty.map((n) => `<span class="tag">${esc(n.kind)}: ${esc(n.key)}</span>`).join(' ')}</dd>` : ''}

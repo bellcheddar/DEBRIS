@@ -28,3 +28,12 @@ the bound itself is not reusable; what was lifted is the habit of recording why 
 bound exists next to the bound. DEBRIS needs a ceiling instead (`>=4.48,<5`, see
 DECISIONS.md D13) because mlx-lm 0.29 cannot read transformers 5's chat-template return
 value. Nothing was copied from the sibling and nothing in it was modified.
+
+## 15. readme_forge.py
+
+Source: `/Users/dellboy/Documents/Vibe_Coding/marcs-vibe-coding/scripts/readme_forge.py`,
+copied unchanged to `scripts/readme_forge.py`. It polishes a crude README into the house
+format (branded header, shields, section emoji, author footer) and emits the Elementor
+HTML. DEBRIS supplies `readme_meta.json` with the tagline and the "why it matters"
+paragraph, which the script cannot invent. The sibling was not modified and nothing is
+imported across folders.

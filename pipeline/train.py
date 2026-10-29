@@ -274,13 +274,18 @@ def score(model_path: str, adapter_path: str | None = None, split: str = "test",
         raw_text = tagger.generate(schema.user_prompt(row["paper"]), 0.0)
         raw = schema.extract_json(raw_text)
         valid_json += 1 if raw is not None else 0
-        pred, _, _ = schema.validate(raw)
+        pred, problems, _ = schema.validate(raw)
         if pred is None:
             pred = {"relevant": False, "polymers": [], "organ_systems": [], "pathways": [],
                     "disease_categories": [], "evidence_rungs": [],
                     "model_type": "not_applicable"}
+        # What the model emitted, beside what the schema made of it. validate() repairs as
+        # well as checks, and without the raw field an error breakdown cannot tell a value
+        # the model claimed from one the schema supplied on its behalf: a polymers list
+        # reading mixed_unspecified may be the model's reading or may be the empty-list
+        # fill standing in for it, and those are different failures (D30).
         predictions.append({"pmid": row["pmid"], "gold": gold, "pred": pred,
-                            "parsed": raw is not None})
+                            "raw": raw, "problems": problems, "parsed": raw is not None})
         truth_rel.append(bool(gold["relevant"]))
         pred_rel.append(bool(pred["relevant"]))
         poly.append((set(gold["polymers"]), set(pred["polymers"])))

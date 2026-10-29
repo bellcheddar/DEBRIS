@@ -545,3 +545,50 @@ than worrying about: a public ZeroGPU Space can be invoked by anyone, and the we
 needs it for roughly twenty minutes a week. The existing retry ladder in `pipeline/tag.py`
 already covers exhaustion, six attempts with a growing wait and then path B for that week,
 so the failure mode is a late refresh rather than a wrong one.
+
+## D30 - the Space is verified, and one headline control fails on the model not the Space
+
+Path A works. The Space answered three gold papers in 11.6 seconds through `gradio_client`,
+with valid JSON, sensible tags and self-consistency between 0.82 and 0.91. Getting there
+took four real faults, each found by running the thing rather than reading it:
+
+1. `torch==2.4.0` is not a version ZeroGPU supports (it names 2.8.0 as its oldest).
+2. The Space parsed the vocabulary with `tomllib`, which Python 3.10 does not have. The
+   vocabulary now travels as JSON, generated from `config/vocab.toml` at push time.
+3. `gradio==4.44.1` could not render its own page against the image's newer jinja2
+   (`TypeError: unhashable type: 'dict'`). The SDK version now matches the client.
+4. That bump exposed a conflict rather than a stale pin: `transformers==4.46.3` requires
+   `huggingface-hub<1.0` and gradio 6 requires `>=1.16.0`. transformers 5.20.2 resolves it.
+
+And one fault in this repo that would have broken every path A weekly run silently:
+`gradio_client` renamed its `hf_token` argument to `token`, so `RemoteTagger.__init__`
+raised `TypeError` before reaching the Space at all. Found by calling it.
+
+**The failing control is the model's doing.** `carotid_plaque_cohort`, the Marfella NEJM
+cohort, wants `{PE, PVC}` and gets `mixed_unspecified`. The local model returns exactly the
+same thing for that paper, in both the round 03 and round 04 prediction files, so the Space
+is faithful and the error is in the tagger. This is the single most consequential paper in
+the corpus and its abstract names polyethylene and polyvinyl chloride outright, so it is
+also the clearest case yet that polymer extraction is the weak field, even at 0.8701 F1.
+Whether round 05 fixes it goes into the comparison when it lands.
+
+**What I could not establish, and the fix for that.** The prediction records held only the
+post-validation tag, so there was no way to tell whether the model named
+`mixed_unspecified` or named nothing and `validate()` filled it in, which it does for any
+relevant paper with an empty polymer list. Those are different failures: one is a
+misreading, the other is the schema making a claim on the model's behalf. `score()` now
+records the raw parsed output and the list of repairs beside each prediction.
+
+**One change deliberately deferred.** That fill is probably wrong: `mixed_unspecified`
+means the study reported particles without identifying the polymer, which is a finding, and
+a model that names nothing is not evidence of it. Changing it would be a one-line edit, and
+I am not making it yet, because `validate()` also shaped the 1,600 training labels, so
+changing it mid-ladder would alter the training data and break the frozen comparison
+between rounds that the whole acceptance exercise depends on. It is the first thing to
+revisit once the ladder closes.
+
+**A self-inflicted one, recorded so it is not repeated.** Asking the local model for its raw
+output while the 7B fine-tune held the GPU returned
+`[METAL] Insufficient Memory` and killed the query. The fine-tune survived, but the hardware
+rules in the build spec say one resident model at a time for exactly this reason, and a
+diagnostic is not an exception to that.

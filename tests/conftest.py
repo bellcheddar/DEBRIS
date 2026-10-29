@@ -45,6 +45,12 @@ def insert_paper(conn, pmid, *, title="A title", doi_status="verified", year=202
         conn.executemany("INSERT INTO tag_rungs VALUES (?,?)", [(pmid, r) for r in rungs])
 
 
+@pytest.fixture(autouse=True)
+def quiet_build_log(tmp_path, monkeypatch):
+    """Keep test runs out of the real BUILD_LOG.md."""
+    monkeypatch.setenv("DEBRIS_LOG", str(tmp_path / "BUILD_LOG.md"))
+
+
 @pytest.fixture
 def corpus(tmp_path, monkeypatch):
     """A seven-paper corpus with one unverified, one irrelevant and one untagged paper."""

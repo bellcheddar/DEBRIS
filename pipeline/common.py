@@ -58,11 +58,16 @@ def now() -> str:
 
 
 def log(message: str) -> None:
-    """One timestamped line to BUILD_LOG.md and to stdout."""
+    """One timestamped line to BUILD_LOG.md and to stdout.
+
+    DEBRIS_LOG repoints the file so a test run does not write into the real build
+    log; the resolution happens per call, like DB_PATH in connect().
+    """
     stamp = dt.datetime.now().strftime("%Y-%m-%d %H:%M")
     line = f"- {stamp} {message}"
     print(line, flush=True)
-    with (ROOT / "BUILD_LOG.md").open("a") as fh:
+    target = Path(os.environ.get("DEBRIS_LOG", ROOT / "BUILD_LOG.md"))
+    with target.open("a") as fh:
         fh.write(line + "\n")
 
 

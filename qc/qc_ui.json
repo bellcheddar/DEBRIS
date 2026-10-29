@@ -1,0 +1,94 @@
+{
+  "base": "http://127.0.0.1:57733",
+  "pages": [
+    {
+      "page": "atlas",
+      "viewport": "desktop",
+      "status": 200,
+      "seconds": 0.585,
+      "screenshot": "qc/atlas-desktop.png",
+      "violations": 0,
+      "serious_or_critical": 0
+    },
+    {
+      "page": "body",
+      "viewport": "desktop",
+      "status": 200,
+      "seconds": 0.584,
+      "screenshot": "qc/body-desktop.png",
+      "violations": 0,
+      "serious_or_critical": 0
+    },
+    {
+      "page": "pathways",
+      "viewport": "desktop",
+      "status": 200,
+      "seconds": 0.538,
+      "screenshot": "qc/pathways-desktop.png",
+      "violations": 0,
+      "serious_or_critical": 0
+    },
+    {
+      "page": "papers",
+      "viewport": "desktop",
+      "status": 200,
+      "seconds": 0.601,
+      "screenshot": "qc/papers-desktop.png",
+      "violations": 0,
+      "serious_or_critical": 0
+    },
+    {
+      "page": "atlas",
+      "viewport": "mobile",
+      "status": 200,
+      "seconds": 0.571,
+      "screenshot": "qc/atlas-mobile.png",
+      "violations": 0,
+      "serious_or_critical": 0
+    },
+    {
+      "page": "body",
+      "viewport": "mobile",
+      "status": 200,
+      "seconds": 0.576,
+      "screenshot": "qc/body-mobile.png",
+      "violations": 0,
+      "serious_or_critical": 0
+    },
+    {
+      "page": "pathways",
+      "viewport": "mobile",
+      "status": 200,
+      "seconds": 0.537,
+      "screenshot": "qc/pathways-mobile.png",
+      "violations": 0,
+      "serious_or_critical": 0
+    },
+    {
+      "page": "papers",
+      "viewport": "mobile",
+      "status": 200,
+      "seconds": 0.583,
+      "screenshot": "qc/papers-mobile.png",
+      "violations": 0,
+      "serious_or_critical": 0
+    }
+  ],
+  "violations": [],
+  "console": [],
+  "network": [],
+  "interactions": [
+    {
+      "from": "atlas region",
+      "url": "http://127.0.0.1:57733/papers?polymers=PET&not_polymers=PS%2CPE%2CPP",
+      "ok": true
+    },
+    {
+      "from": "body node",
+      "title": "BRAIN",
+      "ok": true
+    }
+  ],
+  "status": "pass",
+  "atlas_over_budget": []
+}

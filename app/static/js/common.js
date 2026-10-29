@@ -56,7 +56,7 @@ const DEBRIS = (() => {
   async function openPaper(pmid) {
     const drawer = document.getElementById('drawer');
     if (!drawer) { window.location = '/papers?q=' + pmid; return; }
-    drawer.setAttribute('aria-hidden', 'false');
+    drawer.removeAttribute('inert');
     drawer.querySelector('.body').innerHTML = '<p class="empty">Loading…</p>';
     let p;
     try {
@@ -103,7 +103,7 @@ const DEBRIS = (() => {
   function wireDrawer() {
     const drawer = document.getElementById('drawer');
     if (!drawer) return;
-    const close = () => drawer.setAttribute('aria-hidden', 'true');
+    const close = () => drawer.setAttribute('inert', '');
     drawer.querySelector('.close').addEventListener('click', close);
     document.addEventListener('keydown', (e) => { if (e.key === 'Escape') close(); });
   }

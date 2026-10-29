@@ -55,3 +55,14 @@
 - 2026-10-29 01:18 novelty: run-test: 5 papers with a new combination, 14 events (7 triples), 7 new maximum rungs
 - 2026-10-29 01:18 novelty: run-3: 0 papers with a new combination, 0 events (0 triples), 1 new maximum rungs
 - 2026-10-29 01:19 train: mlx_lm.lora --model Qwen/Qwen2.5-3B-Instruct --train --data /Users/dellboy/Documents/Vibe_Coding/debris/data/train ...
+- 2026-10-29 01:23 qc ui: fail, 8 page renders, 24 serious or critical axe violations, 0 console errors, 0 failed requests
+- 2026-10-29 01:24 qc ui: fail, 8 page renders, 24 serious or critical axe violations, 0 console errors, 0 failed requests
+- 2026-10-29 01:25 qc ui: fail, 8 page renders, 8 serious or critical axe violations, 0 console errors, 0 failed requests
+- 2026-10-29 01:26 qc ui: pass, 8 page renders, 0 serious or critical axe violations, 0 console errors, 0 failed requests
+- 2026-10-29 01:26 novelty: run-test: 5 papers with a new combination, 14 events (7 triples), 7 new maximum rungs
+- 2026-10-29 01:26 novelty: run-test: 5 papers with a new combination, 14 events (7 triples), 7 new maximum rungs
+- 2026-10-29 01:26 novelty: run-test: 5 papers with a new combination, 14 events (7 triples), 7 new maximum rungs
+- 2026-10-29 01:26 novelty: run-test: 5 papers with a new combination, 14 events (7 triples), 7 new maximum rungs
+- 2026-10-29 01:26 novelty: run-2: 1 papers with a new combination, 2 events (1 triples), 1 new maximum rungs
+- 2026-10-29 01:26 novelty: run-test: 5 papers with a new combination, 14 events (7 triples), 7 new maximum rungs
+- 2026-10-29 01:26 novelty: run-3: 0 papers with a new combination, 0 events (0 triples), 1 new maximum rungs

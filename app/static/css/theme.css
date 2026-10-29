@@ -52,7 +52,9 @@ nav.tabs a{
   font-weight:800;font-size:12.5px;letter-spacing:0.08em;text-transform:uppercase;
   color:var(--el-muted);border-bottom:3px solid transparent;clip-path:var(--chamfer);
 }
-nav.tabs a .num{font-family:var(--mono);font-weight:400;font-size:11px;color:var(--other)}
+/* --other is a polymer colour and stays as it is; the nav numerals use the
+   muted ink instead so they clear 4.5:1 on white. */
+nav.tabs a .num{font-family:var(--mono);font-weight:400;font-size:11px;color:var(--el-muted)}
 nav.tabs a:hover{background:var(--el-tint);color:var(--el-ink);text-decoration:none}
 nav.tabs a[aria-current="page"]{color:var(--el-ink);background:var(--el-tint);
   border-bottom-color:var(--el-blue)}
@@ -100,7 +102,8 @@ main{padding:26px 0 60px}
 .tag.pvc{background:var(--pvc);color:#fff}
 .tag.other{background:var(--other);color:#fff}
 .tag.rung{background:var(--el-tint);border:1px solid var(--el-line);color:var(--el-ink)}
-.badge-new{background:var(--new);color:#fff;font-family:var(--display);font-weight:800;
+/* Dark ink on PET amber: white fell to 3.0:1 at this size. */
+.badge-new{background:var(--new);color:var(--el-fg);font-family:var(--display);font-weight:800;
   font-size:9.5px;letter-spacing:0.12em;padding:3px 8px;text-transform:uppercase}
 .badge-novel{background:var(--el-ink);color:#fff;font-family:var(--display);font-weight:800;
   font-size:9.5px;letter-spacing:0.12em;padding:3px 8px;text-transform:uppercase}
@@ -162,7 +165,9 @@ input:focus-visible,select:focus-visible,button:focus-visible,a:focus-visible,
 .drawer{position:fixed;inset:0 0 0 auto;width:min(620px,96vw);background:var(--el-card);
   border-left:1px solid var(--el-line);box-shadow:-14px 0 40px rgba(28,34,56,0.14);
   transform:translateX(100%);transition:transform 0.22s ease;z-index:60;overflow-y:auto;padding:24px}
-.drawer[aria-hidden="false"]{transform:translateX(0)}
+/* The drawer is inert while closed, which both hides it from assistive tech and
+   stops its close button being focusable; the open state is simply not inert. */
+.drawer:not([inert]){transform:translateX(0)}
 @media (prefers-reduced-motion:reduce){.drawer{transition:none}}
 .drawer h2{font-size:15px;line-height:1.4;padding-right:40px}
 .drawer .close{position:absolute;top:16px;right:18px;border:none;background:none;

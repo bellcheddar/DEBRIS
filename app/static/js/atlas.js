@@ -42,20 +42,22 @@
     let html = '';
     centres.forEach((c, i) => {
       html += `<circle cx="${c.x}" cy="${c.y}" r="${r}" fill="${colours[i]}" fill-opacity="0.17"
-        stroke="${colours[i]}" stroke-width="2"></circle>`;
+        stroke="${colours[i]}" stroke-width="2" pointer-events="none"></circle>`;
     });
     centres.forEach((c, i) => {
       const lx = [cx, cx + d * 1.55, cx - d * 1.55][i];
       const ly = [cy - d - 62, cy + d + 54, cy + d + 54][i];
       html += `<text class="nodelabel" x="${lx}" y="${ly}" text-anchor="middle"
-        fill="${colours[i]}">${DEBRIS.esc(sets[i])}</text>`;
+        pointer-events="none" fill="${colours[i]}">${DEBRIS.esc(sets[i])}</text>`;
     });
     Object.entries(anchors).forEach(([code, pos]) => {
       const n = regions[code] || 0;
       const query = vennQuery(code, keys);
       html += `<g class="venn-region" role="link" tabindex="0" style="cursor:pointer"
-        data-query="${query}" aria-label="${DEBRIS.esc(labels[code])}: ${n} papers">
-        <text class="count" x="${pos.x}" y="${pos.y}" text-anchor="middle"
+        data-query="${DEBRIS.esc(query)}" aria-label="${DEBRIS.esc(labels[code])}: ${n} papers">
+        <circle class="hit" cx="${pos.x}" cy="${pos.y - 5}" r="24" fill="#fff" fill-opacity="0"
+          pointer-events="all"></circle>
+        <text class="count" x="${pos.x}" y="${pos.y}" text-anchor="middle" pointer-events="none"
           style="font-size:15px;font-weight:500;fill:var(--el-ink)">${DEBRIS.fmt(n)}</text></g>`;
     });
     svg.innerHTML = html;
@@ -73,9 +75,9 @@
     let html = '';
     centres.forEach((c, i) => {
       html += `<circle cx="${c.x}" cy="${c.y}" r="${r}" fill="${colours[i]}" fill-opacity="0.17"
-        stroke="${colours[i]}" stroke-width="2"></circle>`;
+        stroke="${colours[i]}" stroke-width="2" pointer-events="none"></circle>`;
       html += `<text class="nodelabel" x="${c.x + (i ? 52 : -52)}" y="${cy - r - 18}"
-        text-anchor="middle" fill="${colours[i]}">${DEBRIS.esc(sets[i])}</text>`;
+        text-anchor="middle" pointer-events="none" fill="${colours[i]}">${DEBRIS.esc(sets[i])}</text>`;
     });
     const anchors = { '10': { x: 215 - dx - 54, y: cy + 5 }, '01': { x: 215 + dx + 54, y: cy + 5 },
                       '11': { x: 215, y: cy + 5 } };
@@ -83,8 +85,10 @@
     Object.entries(anchors).forEach(([code, pos]) => {
       const n = regions[code] || 0;
       html += `<g class="venn-region" role="link" tabindex="0" style="cursor:pointer"
-        data-query="${vennQuery(code, keys)}" aria-label="${DEBRIS.esc(labels[code])}: ${n} papers">
-        <text class="count" x="${pos.x}" y="${pos.y}" text-anchor="middle"
+        data-query="${DEBRIS.esc(vennQuery(code, keys))}" aria-label="${DEBRIS.esc(labels[code])}: ${n} papers">
+        <circle class="hit" cx="${pos.x}" cy="${pos.y - 5}" r="26" fill="#fff" fill-opacity="0"
+          pointer-events="all"></circle>
+        <text class="count" x="${pos.x}" y="${pos.y}" text-anchor="middle" pointer-events="none"
           style="font-size:15px;font-weight:500;fill:var(--el-ink)">${DEBRIS.fmt(n)}</text></g>`;
     });
     svg.innerHTML = html;

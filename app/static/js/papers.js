@@ -79,6 +79,14 @@
 
   table.on('rowClick', (_e, row) => DEBRIS.openPaper(row.getData().pmid));
 
+  /* Tabulator 6.3 nests role="rowgroup" inside role="rowgroup", which leaves the
+     header without an owned row and the inner group without a grid parent. Marking
+     the wrapper presentational lets the real header row be owned by the grid. */
+  const fixHeaderRoles = () => document.querySelectorAll('.tabulator-header-contents')
+    .forEach((el) => el.setAttribute('role', 'presentation'));
+  table.on('tableBuilt', fixHeaderRoles);
+  table.on('renderComplete', fixHeaderRoles);
+
   const refresh = () => {
     table.setData('/api/papers');
     const qs = new URLSearchParams(filters()).toString();

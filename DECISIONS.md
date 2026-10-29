@@ -56,3 +56,31 @@ unaffected, which is why the smoke test passed and only training broke.
 targets. Alternative considered and rejected: rewriting the splits into mlx-lm's `text`
 format so the buggy code path is skipped, which would have hidden the version conflict
 from the droplet and weekly runs.
+
+## D14. UI QC harness and the five defects it found (2026-10-29)
+
+`tools/qc_ui.py` starts gunicorn on a spare port, drives the preinstalled Chromium
+(`~/Library/Caches/ms-playwright/chromium-1248`, never `playwright install`), and records
+route status, console errors, failed requests, axe-core violations, the Atlas interactive
+time and the two click-throughs, writing screenshots and `qc/qc_ui.json`. Playwright and
+axe-core-python live in `requirements-qc.txt` so the droplet venv never installs them.
+
+The first run found five real defects, all fixed:
+
+1. Venn regions carried only the count glyphs as their hit area, and the backdrop circles
+   swallowed clicks aimed anywhere else. Each region now has an invisible 24 px hit circle
+   and the circles and set labels are `pointer-events="none"`.
+2. `data-query` was written into `innerHTML` unescaped, so `&not_polymers=` was parsed as
+   the `&not;` entity and the Atlas link read `polymers=PET¬_polymers=...`. Every region
+   query now goes through `DEBRIS.esc`.
+3. The interactive SVGs declared `role="img"`, which forbids focusable descendants; they
+   are now `role="group"`, which allows them.
+4. The paper drawer was hidden with `aria-hidden="true"` while its close button stayed
+   focusable. It now uses `inert` alone, and the CSS open state keys off `:not([inert])`.
+5. Contrast: the nav numerals used `--other` (3.06:1 on white) and the New badge was white
+   on PET amber (3.02:1). The numerals now use `--el-muted` (6.08:1) and the badge uses
+   `--el-fg` on the same amber (5.21:1), so no polymer colour changed.
+
+Also: Tabulator 6.3 nests `role="rowgroup"` inside `role="rowgroup"`, which trips
+`aria-required-children` and `aria-required-parent`. The wrapper is marked
+`role="presentation"` after every render rather than patching the vendored library.

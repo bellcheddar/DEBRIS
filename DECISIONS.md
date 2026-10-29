@@ -592,3 +592,43 @@ output while the 7B fine-tune held the GPU returned
 `[METAL] Insufficient Memory` and killed the query. The fine-tune survived, but the hardware
 rules in the build spec say one resident model at a time for exactly this reason, and a
 diagnostic is not an exception to that.
+
+## D31 - DEBRIS listed on the mdeller.com launcher
+
+Asked for directly, which is also the one thing in this build that reaches outside the
+project root: `CLAUDE.md` says never modify a sibling, and `mdeller-landing/apps.json` is a
+sibling. Done on instruction, as one entry plus a deploy, with no change to any other app.
+
+The launcher is driven entirely by `apps.json`, so health, hits and caching are three
+separate mechanisms rather than three fields:
+
+**Health** follows from `status: "live"`: `mdeller-stats.py` fetches every live app on a
+five-minute cron and records a real response time. DEBRIS answered in 56 ms on the first
+poll. The app's own `/healthz` route stays what `deploy.sh` verifies after a deploy; the
+launcher probes the site itself.
+
+**Hits** needed a judgement. The beacon must be a request a rendering engine makes after the
+page loads and never the HTML, which every scanner fetches. DEBRIS injects its JSON bundles
+server-side, so there is no post-render API call to use, which leaves a subresource, and the
+beacon is `^/static/css/theme\.css\b`. Two checks before settling on it. The stats script
+warns that an app whose vhost redirects or disables its access log reads a flat zero while
+its beacon fires perfectly, 28 uncounted address-days in ButtFold's case, so I confirmed
+against the live log that DEBRIS sets no `access_log` of its own, that its lines reach the
+shared log in the `vhost` format, and that all fourteen `theme.css` lines carry
+`"debris.mdeller.com"` as the host field the parser attributes on. It read 4 hits, 4 unique
+within a minute of the deploy.
+
+The known cost of a stylesheet beacon is that the year-long immutable cache stops repeat
+visitors re-requesting it, so the count is first view per asset version per browser rather
+than every view. Five of the eighteen existing apps count the same way, and matching them
+keeps the numbers on one page comparable, which is worth more here than making DEBRIS
+uniquely accurate.
+
+**Caching** needed nothing: the vhost already serves `/static/` with
+`max-age=31536000, immutable`, which is safe because every asset URL carries `?v=<mtime>`,
+so a changed file refetches while the 4.6 MB Plotly bundle and the fonts cache hard.
+
+Two follow-ups. The description says what the tagger records rather than claiming the corpus
+is tagged, because it is not yet; it wants a sentence with real tagged counts once the full
+pass finishes. And `index.html` is a build artifact and gitignored in that repo, so the
+commit there is `apps.json` alone.

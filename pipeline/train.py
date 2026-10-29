@@ -36,14 +36,33 @@ FLOOR = {"relevant_f1": 0.95, "polymers_f1": 0.85, "organ_systems_f1": 0.85,
 
 
 def run(cmd: list[str], log_path: Path | None = None, extra_env: dict | None = None) -> str:
+    """Run a subprocess, streaming its output to the log file as it arrives.
+
+    Captured output is useless while a five-hour fine-tune is in progress: it sits in the
+    pipe until the process exits, so the log file appears only at the end and the only
+    sign of life is the checkpoint files. PYTHONUNBUFFERED stops the child block-buffering
+    its own stdout now that it is writing to a pipe rather than a terminal.
+    """
     c.log("train: " + " ".join(cmd[:6]) + (" ..." if len(cmd) > 6 else ""))
-    env = dict(os.environ, TOKENIZERS_PARALLELISM="false", **(extra_env or {}))
-    proc = subprocess.run(cmd, capture_output=True, text=True, env=env)
-    output = proc.stdout + proc.stderr
-    if log_path:
-        log_path.write_text(output)
-    if proc.returncode != 0:
-        raise RuntimeError(f"{cmd[0]} failed ({proc.returncode}): {output[-2000:]}")
+    env = dict(os.environ, TOKENIZERS_PARALLELISM="false", PYTHONUNBUFFERED="1",
+               **(extra_env or {}))
+    chunks: list[str] = []
+    sink = log_path.open("w") if log_path else None
+    try:
+        proc = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
+                                text=True, bufsize=1, env=env)
+        for line in proc.stdout:
+            chunks.append(line)
+            if sink:
+                sink.write(line)
+                sink.flush()
+        code = proc.wait()
+    finally:
+        if sink:
+            sink.close()
+    output = "".join(chunks)
+    if code != 0:
+        raise RuntimeError(f"{cmd[0]} failed ({code}): {output[-2000:]}")
     return output
 
 

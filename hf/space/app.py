@@ -25,17 +25,30 @@ MODEL_ID = os.environ.get("DEBRIS_MODEL", "Dellboy/debris-tagger-v1")
 MAX_NEW_TOKENS = 480
 BATCH_LIMIT = 16
 
-VOCAB_PATH = os.path.join(os.path.dirname(__file__), "vocab.toml")
-SCHEMA_PATH = os.path.join(os.path.dirname(__file__), "schema.py")
-
-# vocab.toml and schema.py are copied into the Space by hf/push_model.py, so the
-# Space validates against exactly the vocabulary the tagger was trained on.
+# vocab.json and schema.py are copied into the Space by hf/push_model.py, so the
+# Space validates against exactly the vocabulary the tagger was trained on. The
+# vocabulary travels as JSON because Spaces run Python 3.10, which has no tomllib.
 import schema  # noqa: E402  (sits beside this file in the Space repo)
 
 tokenizer = AutoTokenizer.from_pretrained(MODEL_ID, token=os.environ.get("HF_TOKEN"))
-model = AutoModelForCausalLM.from_pretrained(
-    MODEL_ID, torch_dtype=torch.bfloat16, device_map="cuda",
-    token=os.environ.get("HF_TOKEN"))
+
+
+def load_model():
+    """Load the tagger in bf16, tolerating either spelling of the dtype argument.
+
+    transformers renamed `torch_dtype` to `dtype`, deprecating the old name before
+    removing it. Which one this Space's transformers accepts depends on the version
+    the image resolves, and getting it wrong costs a whole build cycle to discover,
+    so try the current name and fall back to the old one.
+    """
+    common = {"device_map": "cuda", "token": os.environ.get("HF_TOKEN")}
+    try:
+        return AutoModelForCausalLM.from_pretrained(MODEL_ID, dtype=torch.bfloat16, **common)
+    except TypeError:
+        return AutoModelForCausalLM.from_pretrained(MODEL_ID, torch_dtype=torch.bfloat16, **common)
+
+
+model = load_model()
 model.eval()
 
 

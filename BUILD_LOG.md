@@ -37,3 +37,4 @@
 - 2026-10-29 00:35 bootstrap ingest: 325/1600 labelled (233 relevant, 92 not), 0 problems, 0 vocabulary candidates
 - 2026-10-29 00:41 bootstrap ingest: 525/1600 labelled (279 relevant, 246 not), 0 problems, 0 vocabulary candidates
 - 2026-10-29 00:44 bootstrap ingest: 750/1600 labelled (288 relevant, 462 not), 0 problems, 0 vocabulary candidates
+- 2026-10-29 00:46 bootstrap ingest: 900/1600 labelled (295 relevant, 605 not), 0 problems, 1 vocabulary candidates

@@ -25,6 +25,8 @@ from pipeline import schema
 
 TARGET_TOTAL = 1600
 TARGET_NEGATIVES = 400
+# How many MeSH-only papers to admit to the stratified pool (see select()).
+MESH_ONLY_CAP = 250
 BATCH_SIZE = 25
 BATCH_DIR = c.LABELS / "batches"
 SESSION_DIR = c.LABELS / "session"
@@ -101,10 +103,34 @@ def select(conn) -> list[dict]:
     for r in negatives[:TARGET_NEGATIVES]:
         chosen[r["pmid"]] = "negative"
 
+    # Papers already labelled in an earlier pass stay in the selection, so a
+    # rebalance never throws away labelling work.
+    for path in sorted(SESSION_DIR.glob("*.jsonl")) if SESSION_DIR.exists() else []:
+        for line in path.read_text().splitlines():
+            if not line.strip():
+                continue
+            try:
+                pmid = str(json.loads(line).get("pmid", "")).strip()
+            except json.JSONDecodeError:
+                continue
+            if pmid in by_pmid and pmid not in chosen:
+                chosen[pmid] = "already_labelled"
+
     # Positives: verified DOIs first, then the rest, balanced across the
     # (strategy, year, organ) cells so no cell dominates the training set.
+    #
+    # The MeSH-only arm is largely bulk devices, drug carriers and laboratory
+    # plasticware, which the tagger must reject but which teach it nothing about
+    # assigning polymers, organs, pathways or rungs. It is capped so the label
+    # budget goes mostly to the text-word arm, which is the genuine micro and
+    # nanoplastic literature.
     pool = [r for r in rows if strategy_bucket(r["hit_strategy"]) != "negative"
             and r["pmid"] not in chosen]
+    mesh_only = [r for r in pool if strategy_bucket(r["hit_strategy"]) == "mesh"]
+    rng.shuffle(mesh_only)
+    keep_mesh = {r["pmid"] for r in mesh_only[:MESH_ONLY_CAP]}
+    pool = [r for r in pool if strategy_bucket(r["hit_strategy"]) != "mesh"
+            or r["pmid"] in keep_mesh]
     cells: dict[tuple, list] = collections.defaultdict(list)
     for r in pool:
         cells[(strategy_bucket(r["hit_strategy"]), year_bucket(r["year"]), organ_group(r))].append(r)
@@ -135,6 +161,21 @@ def select(conn) -> list[dict]:
     return out
 
 
+def already_labelled() -> set[str]:
+    """PMIDs that already carry a label in data/labels/session/."""
+    out: set[str] = set()
+    if not SESSION_DIR.exists():
+        return out
+    for path in SESSION_DIR.glob("*.jsonl"):
+        for line in path.read_text().splitlines():
+            if line.strip():
+                try:
+                    out.add(str(json.loads(line).get("pmid", "")).strip())
+                except json.JSONDecodeError:
+                    continue
+    return out - {""}
+
+
 def prepare() -> None:
     conn = c.connect()
     selected = select(conn)
@@ -144,8 +185,20 @@ def prepare() -> None:
         old.unlink()
 
     c.jsonl_write(c.LABELS / "selection.jsonl", selected)
-    for i in range(0, len(selected), BATCH_SIZE):
-        batch = selected[i:i + BATCH_SIZE]
+    # Batches hold only papers that still need a label, so a re-prepare after a
+    # rebalance never asks for work that is already done.
+    labelled = already_labelled()
+    todo = [r for r in selected if r["pmid"] not in labelled]
+    # In-scope papers first: the text-word arm and the gold set carry the whole
+    # tagging task (polymer, organ, pathway, rung), while the MeSH-only arm and the
+    # harvested negatives are mostly straightforward rejections. Labelling the hard
+    # part first means a budget cut costs the easy examples, not the useful ones.
+    priority = {"gold": 0, "stratified:both": 1, "stratified:textword": 1,
+                "stratified:mesh": 2, "negative": 3}
+    todo.sort(key=lambda r: (priority.get(":".join(r["selection"].split(":")[:2]), 2),
+                             r["pmid"]))
+    for i in range(0, len(todo), BATCH_SIZE):
+        batch = todo[i:i + BATCH_SIZE]
         n = i // BATCH_SIZE + 1
         payload = [{"pmid": r["pmid"], "title": r["title"],
                     "journal": f"{r['journal']} ({r['year'] or '?'})",
@@ -156,8 +209,9 @@ def prepare() -> None:
             json.dumps(payload, indent=1, ensure_ascii=False))
 
     counts = collections.Counter(r["selection"].split(":")[0] for r in selected)
-    c.log(f"bootstrap prepare: {len(selected)} papers in "
-          f"{(len(selected) + BATCH_SIZE - 1) // BATCH_SIZE} batches, mix {dict(counts)}")
+    c.log(f"bootstrap prepare: {len(selected)} papers selected, {len(labelled)} already "
+          f"labelled, {len(todo)} to label in "
+          f"{(len(todo) + BATCH_SIZE - 1) // BATCH_SIZE} batches, mix {dict(counts)}")
     (c.LABELS / "PROMPT.md").write_text(
         "# Bootstrap labelling prompt\n\n## System\n\n" + schema.SYSTEM_PROMPT +
         "\n\n## Instructions\n\n" + schema.LABEL_INSTRUCTIONS + "\n")

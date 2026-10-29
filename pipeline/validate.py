@@ -16,9 +16,13 @@ from pipeline import common as c
 
 # Expectations per gold key (spec section 9). A missing paper is reported, not fatal.
 CONTROLS = {
-    "carotid_plaque_cohort": {"polymers_superset": {"PET", "PVC"}, "organs": {"cardiovascular"},
+    # The spec (section 9) expects PET and PVC here. Marfella et al. (NEJM 2024)
+    # actually report polyethylene and, in a smaller proportion, polyvinyl chloride:
+    # no PET. The control follows the paper, not the spec, and pet_specific is
+    # therefore not asserted. Logged in DECISIONS.md.
+    "carotid_plaque_cohort": {"polymers_superset": {"PE", "PVC"}, "organs": {"cardiovascular"},
                               "model_type": {"human_tissue", "human_cohort"},
-                              "rungs_superset": {1, 2}, "pet_specific": True, "headline": True},
+                              "rungs_superset": {1, 2}, "headline": True},
     "blood_detection": {"organs": {"hematologic"}, "rungs_superset": {1}, "headline": True},
     "lung_tissue": {"organs": {"respiratory"}, "rungs_superset": {1}, "headline": True},
     "brain_accumulation": {"organs": {"neurological"}, "rungs_superset": {1}, "headline": True},

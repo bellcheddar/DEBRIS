@@ -26,6 +26,9 @@ echo "==> Service user '${APP_USER}'"
 id -u "$APP_USER" &>/dev/null || useradd --system --home "$APP_DIR" --shell /usr/sbin/nologin "$APP_USER"
 mkdir -p "$APP_DIR/data" "$APP_DIR/app/static/data"
 chown -R "$APP_USER:$APP_USER" "$APP_DIR"
+# useradd --home creates the directory 0700; nginx runs as www-data and serves
+# app/static/ straight from disk, so the path has to be traversable by others.
+chmod 755 "$APP_DIR"
 
 echo "==> Python venv"
 if [[ ! -x "$APP_DIR/.venv/bin/python" ]]; then

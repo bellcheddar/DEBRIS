@@ -41,8 +41,8 @@ if [[ "$DATA_ONLY" -eq 1 ]]; then
   # The weekly swap. SQLite goes to a temp name and is moved into place on the
   # droplet so a reader never sees a half-copied file.
   echo "==> Syncing data only"
-  rsync -az --info=stats1 data/debris.sqlite "${SSH_TARGET}:${APP_DIR}/data/debris.sqlite.incoming"
-  rsync -az --delete --info=stats1 app/static/data/ "${SSH_TARGET}:${APP_DIR}/app/static/data/"
+  rsync -az --info=stats1 --chmod=F644 data/debris.sqlite "${SSH_TARGET}:${APP_DIR}/data/debris.sqlite.incoming"
+  rsync -az --delete --info=stats1 --chmod=D755,F644 app/static/data/ "${SSH_TARGET}:${APP_DIR}/app/static/data/"
   ssh "$SSH_TARGET" bash -s <<REMOTE
 set -euo pipefail
 cd "${APP_DIR}"
@@ -55,7 +55,7 @@ REMOTE
 fi
 
 echo "==> Syncing code and static assets"
-rsync -az --delete --info=stats1 \
+rsync -az --delete --info=stats1 --chmod=D755,F644 \
   --exclude '.venv/' --exclude '.pixi/' --exclude 'data/' --exclude '__pycache__/' \
   --exclude '*.pyc' --exclude '.git/' --exclude '.env' --exclude 'wandb/' \
   --exclude 'tests/qc_screenshots/' --exclude 'node_modules/' \
@@ -64,9 +64,9 @@ rsync -az --delete --info=stats1 \
 echo "==> Syncing the database and the chart bundles"
 ssh "$SSH_TARGET" "mkdir -p ${APP_DIR}/data ${APP_DIR}/app/static/data"
 if [[ -f data/debris.sqlite ]]; then
-  rsync -az --info=stats1 data/debris.sqlite "${SSH_TARGET}:${APP_DIR}/data/debris.sqlite.incoming"
+  rsync -az --info=stats1 --chmod=F644 data/debris.sqlite "${SSH_TARGET}:${APP_DIR}/data/debris.sqlite.incoming"
 fi
-rsync -az --delete --info=stats1 app/static/data/ "${SSH_TARGET}:${APP_DIR}/app/static/data/"
+rsync -az --delete --info=stats1 --chmod=D755,F644 app/static/data/ "${SSH_TARGET}:${APP_DIR}/app/static/data/"
 
 # The droplet's .env carries the serving values only; no API keys are deployed.
 ssh "$SSH_TARGET" bash -s <<REMOTE

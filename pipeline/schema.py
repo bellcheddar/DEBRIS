@@ -41,9 +41,20 @@ LABEL_INSTRUCTIONS = """Tag the article against the DEBRIS schema.
 
 relevant: true only if the article concerns micro/nanoplastics (or plastic particles,
 or their leachates) in relation to a disease state, pathology, toxicity or pathway in
-humans, animals, tissue or cells. false for positron emission tomography, marine or
-environmental ecology with no health endpoint, polymer chemistry or recycling, and
-analytical method development with no health endpoint. When relevant is false, use
+humans, animals, tissue or cells. false for positron emission tomography, polymer
+chemistry or recycling, and analytical method development with no health endpoint.
+Wildlife surveys and trophic-transfer work (counting particles in whales, seabirds,
+fish or invertebrates, or tracing them up a food chain) are false; a controlled
+exposure experiment that measures pathology, oxidative stress, immune or genotoxic
+endpoints is true whatever the species. Also false for bulk polymer
+devices and implants (a Dacron or PET vascular graft, PVC tubing, PMMA cement,
+polypropylene mesh) where no particles, wear debris or leachate are studied; for
+exposure to monomers or additives alone (vinyl chloride, bisphenol A, phthalates)
+with no particle involvement; and for drugs that merely carry a polymer name
+(sodium polystyrene sulfonate). Particulate wear debris and degradation products
+shed from an implant are relevant. Particles used only as an inert tool are not:
+polystyrene beads as a phagocytosis tracer or a calibration standard, polystyrene
+spheres as a culture scaffold, a polymer used only to carry a drug. When relevant is false, use
 empty lists, disease_categories ["none"], size_class "unspecified", confidence as
 usual, and a one-line summary of what the paper is actually about.
 

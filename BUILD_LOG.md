@@ -28,3 +28,8 @@
 - 2026-10-29 00:15 aggregate: wrote 5 bundles, 17 kB total; verified 7427, tagged 0
 - 2026-10-29 00:15 validate: gold controls 3/9 clean, negatives misclassified 0/0, headline failures 4
 - 2026-10-29 00:15 validate: headline control failures: carotid_plaque_cohort: not tagged | blood_detection: not tagged | lung_tissue: not tagged | brain_accumulation: not tagged
+- 2026-10-29 00:17 bootstrap prepare: 1600 papers in 64 batches, mix {'stratified': 1193, 'gold': 7, 'negative': 400}
+- 2026-10-29 00:20 bootstrap prepare: 1600 papers in 64 batches, mix {'stratified': 1168, 'already_labelled': 25, 'gold': 7, 'negative': 400}
+- 2026-10-29 00:20 bootstrap prepare: 1600 papers selected, 25 already labelled, 1575 to label in 63 batches, mix {'stratified': 1168, 'already_labelled': 25, 'gold': 7, 'negative': 400}
+- 2026-10-29 00:22 bootstrap prepare: 1600 papers selected, 50 already labelled, 1550 to label in 62 batches, mix {'already_labelled': 50, 'stratified': 1143, 'gold': 7, 'negative': 400}
+- 2026-10-29 00:28 bootstrap ingest: 150/1600 labelled (79 relevant, 71 not), 0 problems, 0 vocabulary candidates

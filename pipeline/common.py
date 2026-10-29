@@ -8,6 +8,7 @@ from __future__ import annotations
 import datetime as dt
 import json
 import os
+import re
 import sqlite3
 import threading
 import time
@@ -189,6 +190,56 @@ def wandb_api_key() -> str | None:
         return wandb.api.api_key or None
     except Exception:
         return None
+
+
+ROUND_PATTERN = re.compile(r"-round(\d+)")
+
+
+def model_stem(model_id: str) -> str:
+    """`qwen-2.5-3b` from `Qwen/Qwen2.5-3B-Instruct`.
+
+    The run-name convention is {project}-{model}-{ver}-{parameters}-round{NN}, so the
+    family, its version and its size are separated and the instruct suffix dropped.
+    Quantisation is appended by the caller when the base weights are quantised; these
+    fine-tunes run on the full-precision model, so there is nothing to add.
+    """
+    name = model_id.rstrip("/").split("/")[-1].lower().replace("-instruct", "")
+    match = re.match(r"^([a-z]+)([\d.]+)[-_]?(.*)$", name)
+    if not match:
+        return name
+    family, version, rest = match.groups()
+    return "-".join(part for part in (family, version, rest) if part)
+
+
+def wandb_round(project: str, entity: str | None = None) -> int:
+    """The next round number, read from the wandb project itself.
+
+    A local counter goes wrong across machines and after a clone, and the convention is
+    that a round is never reused and never restarts at 01 for a project that already has
+    runs. The fallback counts what is on disk, which is the best available answer when
+    the server cannot be reached.
+    """
+    highest = 0
+    try:
+        import wandb
+        api = wandb.Api()
+        for run in api.runs(f"{entity or api.default_entity}/{project}", per_page=100):
+            for text in (run.name or "", (run.config or {}).get("round_name", "")):
+                found = ROUND_PATTERN.search(text or "")
+                if found:
+                    highest = max(highest, int(found.group(1)))
+    except Exception as exc:
+        log(f"wandb: could not read the round number from the project ({type(exc).__name__}); "
+            f"counting the local run directories instead")
+        for path in (ROOT / "wandb").glob("*run-*"):
+            found = ROUND_PATTERN.search(path.name)
+            if found:
+                highest = max(highest, int(found.group(1)))
+    return highest + 1
+
+
+def wandb_run_name(project: str, model_id: str, round_number: int) -> str:
+    return f"{project}-{model_stem(model_id)}-round{round_number:02d}"
 
 
 def token_expiry(token: str) -> str | None:

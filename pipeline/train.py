@@ -35,9 +35,9 @@ FLOOR = {"relevant_f1": 0.95, "polymers_f1": 0.85, "organ_systems_f1": 0.85,
          "model_type_accuracy": 0.90, "valid_json": 0.98}
 
 
-def run(cmd: list[str], log_path: Path | None = None) -> str:
+def run(cmd: list[str], log_path: Path | None = None, extra_env: dict | None = None) -> str:
     c.log("train: " + " ".join(cmd[:6]) + (" ..." if len(cmd) > 6 else ""))
-    env = dict(os.environ, TOKENIZERS_PARALLELISM="false")
+    env = dict(os.environ, TOKENIZERS_PARALLELISM="false", **(extra_env or {}))
     proc = subprocess.run(cmd, capture_output=True, text=True, env=env)
     output = proc.stdout + proc.stderr
     if log_path:
@@ -87,7 +87,21 @@ def model_depth(model_id: str) -> int | None:
     return cfg.get("num_hidden_layers")
 
 
-def train(iters: int, num_layers: int, model_id: str, batch_size: int) -> Path:
+def wandb_env(run_name: str, project: str, model_id: str) -> dict:
+    """The trainer's own wandb run, named and grouped like the rest of the account.
+
+    mlx-lm exposes no run-name flag and would otherwise name the run after the adapter
+    directory, so the name travels in the subprocess environment. The fine-tune and the
+    scoring pass share one group, so a round reads as a single experiment with two
+    stages rather than two unrelated rows.
+    """
+    return {"WANDB_NAME": run_name, "WANDB_RUN_GROUP": run_name, "WANDB_JOB_TYPE": "sft",
+            "WANDB_PROJECT": project, "WANDB_TAGS": ",".join(["lora", c.model_stem(model_id)]),
+            "WANDB_NOTES": "DEBRIS tag schema fine-tune (spec 5.5)"}
+
+
+def train(iters: int, num_layers: int, model_id: str, batch_size: int,
+          run_name: str | None = None) -> Path:
     log_path = c.ROOT / "data" / "train" / "lora_train.log"
     # Checkpoints from a previous, longer run would still be here, and the validation
     # loss in this run's log says nothing about them.
@@ -100,9 +114,13 @@ def train(iters: int, num_layers: int, model_id: str, batch_size: int) -> Path:
            "--learning-rate", "1e-5", "--adapter-path", str(ADAPTER), "--seed", "42",
            "--steps-per-eval", "100", "--steps-per-report", "20"]
     cfg = c.load_toml("wandb.toml")
+    project = cfg.get("project", "debris")
+    extra_env = None
     if c.wandb_api_key():
-        cmd += lora_report_args(cfg.get("project", "debris"))
-    run(cmd, log_path)
+        cmd += lora_report_args(project)
+        if run_name:
+            extra_env = wandb_env(run_name, project, model_id)
+    run(cmd, log_path, extra_env=extra_env)
     return log_path
 
 
@@ -393,6 +411,8 @@ def main() -> None:
     ap.add_argument("--retrain", action="store_true",
                     help="fine-tune again even if an adapter is already saved")
     ap.add_argument("--skip-q4-score", action="store_true")
+    ap.add_argument("--round", type=int, default=0, metavar="NN",
+                    help="force the wandb round number instead of reading it from the project")
     ap.add_argument("--select-every", type=int, default=0, metavar="N",
                     help="score every Nth checkpoint on the validation split and fuse "
                          "the best one instead of the last (about 5 min per checkpoint)")
@@ -405,8 +425,17 @@ def main() -> None:
         c.log(f"train: {model_id} has {depth} layers, so adapting all {depth} "
               f"rather than the {args.num_layers} requested")
         args.num_layers = depth
+    # The round is read from the wandb project, so it stays right across machines and
+    # after a clone, and is fixed once here: the fine-tune and the scoring pass must land
+    # in the same round rather than one ticking past the other.
+    wandb_cfg = c.load_toml("wandb.toml")
+    project = wandb_cfg.get("project", "debris")
+    round_number = args.round or c.wandb_round(project, wandb_cfg.get("entity") or None)
+    run_name = c.wandb_run_name(project, model_id, round_number)
+    c.log(f"train: wandb run {run_name}")
     config = {"model_id": model_id, "iters": args.iters, "num_layers": args.num_layers,
-              "batch_size": args.batch_size,
+              "batch_size": args.batch_size, "round": round_number, "round_name": run_name,
+              "select_every": args.select_every,
               "label_source": "build session (no ANTHROPIC_API_KEY)" if not c.api_key("ANTHROPIC_API_KEY")
               else "claude-sonnet-4-5"}
 
@@ -416,7 +445,8 @@ def main() -> None:
             c.log("train: adapter already present, reusing it (--retrain to start over)")
         else:
             started = time.monotonic()
-            log_path = train(args.iters, args.num_layers, model_id, args.batch_size)
+            log_path = train(args.iters, args.num_layers, model_id, args.batch_size,
+                             run_name=run_name)
             c.log(f"train: LoRA finished in {(time.monotonic() - started) / 60:.1f} min")
             if args.select_every:
                 select_checkpoint(args.iters, model_id, args.select_every)
@@ -470,8 +500,12 @@ def log_to_wandb(metrics: dict, q4_metrics: dict | None, config: dict,
     cfg = c.load_toml("wandb.toml")
     if not c.wandb_api_key():
         os.environ["WANDB_MODE"] = "offline"
+    group = config.get("round_name") or "debris"
     run_ = wandb.init(project=cfg.get("project", "debris"), entity=cfg.get("entity") or None,
-                      job_type="train", name="debris_v1", dir=str(c.ROOT), config=config)
+                      job_type="eval", name=f"{group}-eval", group=group, dir=str(c.ROOT),
+                      tags=["lora", c.model_stem(config.get("model_id", "")), "test-split"],
+                      notes="Acceptance metrics over the frozen test split (spec 5.5)",
+                      config=config)
     # mlx_lm.lora streams its own curve when the version supports it; the log is replayed
     # here as well so this run carries loss against iteration whether it did or not.
     for point in parse_training_log(log_path) if log_path.exists() else []:

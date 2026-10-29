@@ -490,3 +490,43 @@ now reads 2/8 and 3/8 and 2/8 for the three 16-layer runs against 4/8 for the 32
 The 7B run in flight was launched before this fix and holds the old module in memory, so it
 will write offline and needs one `wandb sync` when it finishes. Restarting it to gain live
 logging would cost the hours already spent, which is not a trade worth making for a chart.
+
+## D29 - wandb run names follow the account convention
+
+The runs were named `debris_v1` and `bootstrap-labels`, which the vibe-coding skill rules
+out explicitly: the account convention is
+`{project}-{model}-{ver}-{parameters}-round{NN}`, matching
+`faffabout-llama-3.1-8b-8bit-round01` and `binman-qwen-2.5-3b-4bit-round01`. Five training
+runs sharing one name are indistinguishable in a project list, which is most of why the
+ladder was being tracked in DECISIONS.md by hand instead of being read off the project.
+
+`c.model_stem()` derives `qwen-2.5-3b` from `Qwen/Qwen2.5-3B-Instruct` (verified against the
+account's llama example, which it renders `llama-3.1-8b`). No quantisation suffix here: these
+fine-tunes run on full-precision base weights, unlike BINMAN's 4-bit run. `c.wandb_round()`
+reads the next round from the project rather than a local counter, so it survives a clone and
+another machine, with the local run directories as the offline fallback.
+
+The seven runs already on the forge were renamed through `display_name`, since assigning
+`.name` is silently ignored, and given groups, job types, tags, notes and round numbers.
+Ordering came from the offline directory names, which carry the real start time: `created_at`
+on the server is the sync time, so every run reads 15:56 and cannot order them.
+
+Two judgements inside that:
+
+**The checkpoint evaluation is not a round.** Round 03's iteration-700 checkpoint was scored
+in its own run, and it is an evaluation of round 03's training rather than a training stage of
+its own, so it is `debris-qwen-2.5-3b-round03-eval-ckpt700` inside round 03's group instead of
+consuming round 04. The convention's one-round-per-stage rule is about training stages.
+
+**The label runs take no round.** A dataset run has no model, so the pattern does not apply:
+they are `debris-bootstrap-labels` and `debris-bootstrap-labels-split`.
+
+Each fine-tune now produces two runs in one group, which is the shape the convention describes
+for a multi-stage experiment: mlx-lm's own `sft` run carries the live curve, named through
+`WANDB_NAME` in the subprocess environment because mlx-lm has no run-name flag and would
+otherwise name it after the adapter directory, and the scoring pass follows as `...-eval` with
+the acceptance metrics. Round 01 was backfilled from its archive, so the ladder now reads off
+the project: round01 2/8, round02 2/8, round03 3/8, round04 4/8.
+
+The 7B run in flight was launched before this and will arrive as `debris_v1` offline; it gets
+synced and renamed to round 05 when it lands.

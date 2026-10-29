@@ -178,3 +178,6 @@
 - 2026-10-29 11:07 train: Qwen/Qwen2.5-7B-Instruct has 28 layers, so adapting all 28 rather than the 32 requested
 - 2026-10-29 11:07 train: mlx_lm.lora --model Qwen/Qwen2.5-7B-Instruct --train --data /Users/dellboy/Documents/Vibe_Coding/debris/data/train ...
 - 2026-10-29 11:45 hf: this token expires 2026-11-03T01:43:44.000Z, which is too soon for a weekly timer. Create one at https://huggingface.co/settings/tokens with write scope, or pass --allow-expiring to push with it anyway and stay on path B.
+- 2026-10-29 12:11 hf: pushed Dellboy/debris-tagger-v1
+- 2026-10-29 12:11 hf: pushed Space Dellboy/debris-tagger; set its hardware to zero-a10g in the Space settings if it is not already
+- 2026-10-29 12:12 hf: pushed Space Dellboy/debris-tagger; set its hardware to zero-a10g in the Space settings if it is not already

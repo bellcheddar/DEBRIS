@@ -1,0 +1,25 @@
+Loading pretrained model
+Loading datasets
+Training
+Trainable parameters: 0.216% (6.652M/3085.939M)
+Starting training..., iters: 800
+
+Fetching 9 files:   0%|          | 0/9 [00:00<?, ?it/s]
+Fetching 9 files: 100%|██████████| 9/9 [00:00<00:00, 3041.80it/s]
+Traceback (most recent call last):
+  File "/Users/dellboy/Documents/Vibe_Coding/debris/.pixi/envs/default/bin/mlx_lm.lora", line 10, in <module>
+    sys.exit(main())
+             ^^^^^^
+  File "/Users/dellboy/Documents/Vibe_Coding/debris/.pixi/envs/default/lib/python3.12/site-packages/mlx_lm/lora.py", line 362, in main
+    run(types.SimpleNamespace(**args))
+  File "/Users/dellboy/Documents/Vibe_Coding/debris/.pixi/envs/default/lib/python3.12/site-packages/mlx_lm/lora.py", line 334, in run
+    train_model(args, model, train_set, valid_set, training_callback)
+  File "/Users/dellboy/Documents/Vibe_Coding/debris/.pixi/envs/default/lib/python3.12/site-packages/mlx_lm/lora.py", line 288, in train_model
+    train(
+  File "/Users/dellboy/Documents/Vibe_Coding/debris/.pixi/envs/default/lib/python3.12/site-packages/mlx_lm/tuner/trainer.py", line 259, in train
+    for it, batch in zip(
+                     ^^^^
+  File "/Users/dellboy/Documents/Vibe_Coding/debris/.pixi/envs/default/lib/python3.12/site-packages/mlx_lm/tuner/trainer.py", line 154, in iterate_batches
+    batch_arr[j, :truncated_length] = batch[j][:truncated_length]
+    ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^
+TypeError: int() argument must be a string, a bytes-like object or a real number, not 'tokenizers.Encoding'

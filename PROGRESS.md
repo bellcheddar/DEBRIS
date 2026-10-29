@@ -2,7 +2,7 @@
 
 Rewritten after every phase and at least every 30 minutes during compute.
 
-## Phase 1 Corpus (95 %)
+## Phase 1 Corpus (100 %)
 
 - [x] Reuse map scanned and recorded in REUSE.md
 - [x] pixi environment (python 3.12, mlx-lm 0.29.1, Metal available) and uv app venv
@@ -13,17 +13,18 @@ Rewritten after every phase and at least every 30 minutes during compute.
 - [x] Elora design system, four tabs, Papers tab live with the untagged corpus
 - [x] `pipeline/aggregate.py` and the five static bundles
 - [x] 48 tests green (schema, DOI with mocked HTTP, aggregate totals vs SQL, novelty, routes)
-- [ ] Bootstrap labels (1,600) and the wandb dataset artifact: in progress
-- [ ] Phase 1 deploy to debris.mdeller.com
+- [x] Bootstrap labels (1,600: 868 relevant, 732 not) and the wandb dataset artifact (offline)
+- [x] Phase 1 deploy to debris.mdeller.com (live over HTTPS, ingest banner shown)
 
-## Phase 2 Tagger (15 %)
+## Phase 2 Tagger (40 %)
 
 - [x] `pipeline/tag.py` (local mlx and remote Space paths, priority tiers, review queue)
 - [x] `pipeline/train.py` (LoRA, fuse, q4, field-by-field scoring, model card, wandb)
 - [x] `pipeline/novelty.py`, `pipeline/validate.py`, `pipeline/drift.py`, `tools/smoke_test.py`
 - [x] `hf/space/app.py` and `hf/push_model.py` written, ready for a token
-- [ ] Bootstrap labels written, split, logged
-- [ ] Smoke test, training run, acceptance floor
+- [x] Bootstrap labels written, canonicalised, split 1,277/161/162, logged to wandb
+- [x] Smoke test: 11.2 papers/min, 10.6 h projected for 7,113 untagged, inside the 24 h budget
+- [ ] Training run (debris_v1, LoRA 800 iters) and the 5.5 acceptance floor
 - [ ] Full corpus tagged
 
 ## Phase 3 App polish (60 %)

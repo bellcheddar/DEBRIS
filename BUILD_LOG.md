@@ -38,3 +38,20 @@
 - 2026-10-29 00:41 bootstrap ingest: 525/1600 labelled (279 relevant, 246 not), 0 problems, 0 vocabulary candidates
 - 2026-10-29 00:44 bootstrap ingest: 750/1600 labelled (288 relevant, 462 not), 0 problems, 0 vocabulary candidates
 - 2026-10-29 00:46 bootstrap ingest: 900/1600 labelled (295 relevant, 605 not), 0 problems, 1 vocabulary candidates
+- 2026-10-29 01:13 bootstrap ingest: 1600/1600 labelled (868 relevant, 732 not), 0 problems, 11 vocabulary candidates
+- 2026-10-29 01:15 bootstrap ingest: 1600/1600 labelled (868 relevant, 732 not), 0 problems, 11 vocabulary candidates
+- 2026-10-29 01:15 bootstrap split: train 1277, valid 161, test 162
+- 2026-10-29 01:15 bootstrap wandb: no WANDB_API_KEY; WANDB_MODE=offline
+- 2026-10-29 01:15 bootstrap wandb: no WANDB_API_KEY; WANDB_MODE=offline
+- 2026-10-29 01:15 bootstrap wandb: logged 1600 labels, artifact debris-train, run offline
+- 2026-10-29 01:15 smoke: loading Qwen/Qwen2.5-3B-Instruct
+- 2026-10-29 01:17 smoke: {"model": "Qwen/Qwen2.5-3B-Instruct", "n": 20, "load_seconds": 3.0, "seconds_per_paper": 5.38, "papers_per_minute": 11.2, "valid_json_rate": 0.0, "untagged_corpus": 7113, "projected_hours": 10.62, "budget_hours": 24.0, "within_budget": true, "common_problems": ["missing relevant", "not a JSON object"]}
+- 2026-10-29 01:17 train: mlx_lm.lora --model Qwen/Qwen2.5-3B-Instruct --train --data /Users/dellboy/Documents/Vibe_Coding/debris/data/train ...
+- 2026-10-29 01:18 novelty: run-test: 5 papers with a new combination, 14 events (7 triples), 7 new maximum rungs
+- 2026-10-29 01:18 novelty: run-test: 5 papers with a new combination, 14 events (7 triples), 7 new maximum rungs
+- 2026-10-29 01:18 novelty: run-test: 5 papers with a new combination, 14 events (7 triples), 7 new maximum rungs
+- 2026-10-29 01:18 novelty: run-test: 5 papers with a new combination, 14 events (7 triples), 7 new maximum rungs
+- 2026-10-29 01:18 novelty: run-2: 1 papers with a new combination, 2 events (1 triples), 1 new maximum rungs
+- 2026-10-29 01:18 novelty: run-test: 5 papers with a new combination, 14 events (7 triples), 7 new maximum rungs
+- 2026-10-29 01:18 novelty: run-3: 0 papers with a new combination, 0 events (0 triples), 1 new maximum rungs
+- 2026-10-29 01:19 train: mlx_lm.lora --model Qwen/Qwen2.5-3B-Instruct --train --data /Users/dellboy/Documents/Vibe_Coding/debris/data/train ...

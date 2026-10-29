@@ -305,7 +305,7 @@ def log_to_wandb(metrics: dict, q4_metrics: dict | None, config: dict,
         artifact = wandb.Artifact("debris-tagger-card", type="model-card")
         artifact.add_file(str(c.ROOT / "MODEL_CARD.md"))
         run_.log_artifact(artifact)
-    url = run_.get_url()
+    url = getattr(run_, "url", None) or "offline"
     run_.finish()
     return url
 

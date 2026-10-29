@@ -1,0 +1,16 @@
+{
+ "model": "Qwen/Qwen2.5-3B-Instruct",
+ "n": 20,
+ "load_seconds": 3.0,
+ "seconds_per_paper": 5.38,
+ "papers_per_minute": 11.2,
+ "valid_json_rate": 0.0,
+ "untagged_corpus": 7113,
+ "projected_hours": 10.62,
+ "budget_hours": 24.0,
+ "within_budget": true,
+ "common_problems": [
+  "missing relevant",
+  "not a JSON object"
+ ]
+}

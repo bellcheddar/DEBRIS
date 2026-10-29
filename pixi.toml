@@ -22,6 +22,9 @@ lxml = "*"
 
 [pypi-dependencies]
 mlx-lm = "*"
+# transformers 5.x changed apply_chat_template to return a BatchEncoding, which
+# mlx-lm 0.29 feeds straight into its batcher; pin to the 4.x line it targets.
+transformers = ">=4.48,<5"
 # Flask is also in requirements.txt for the droplet venv; it is here so one
 # `pixi run test` covers the pipeline and the app in a single suite.
 flask = "*"

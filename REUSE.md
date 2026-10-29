@@ -19,3 +19,12 @@ folders and no sibling project is modified (spec section 3).
 | Flask tab layout, Tabulator table, detail drawer, `/healthz`, vendored Plotly with `?v=<mtime>` cache busting | `CODSWALLOP`, `AlphaFraud/alphafraud` | `app/` | Design system swapped for Elora (spec 6.2); four DEBRIS tabs; no request-time compute (all chart data pre-aggregated to `app/static/data/*.json`) |
 | Icon house style and favicon set | `marcs-vibe-icon` skill | `icons/` | DEBRIS mark in Elora blue `#385098` |
 | README house standard | `marcs-vibe-coding` skill (`readme_forge`) | `README.md` | DEBRIS content |
+
+## 14. Commented version bound on transformers
+
+Source: `chatMCD/space/requirements.txt`, which carries `transformers>=4.51` with the
+reason written beside it ("Qwen3 support landed in 4.51"). chatMCD pins a floor only, so
+the bound itself is not reusable; what was lifted is the habit of recording why a version
+bound exists next to the bound. DEBRIS needs a ceiling instead (`>=4.48,<5`, see
+DECISIONS.md D13) because mlx-lm 0.29 cannot read transformers 5's chat-template return
+value. Nothing was copied from the sibling and nothing in it was modified.

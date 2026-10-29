@@ -372,8 +372,8 @@ def log_wandb() -> None:
     artifact.add_file(str(c.CONFIG / "vocab.toml"))
     artifact.add_file(str(c.LABELS / "PROMPT.md"))
     run.log_artifact(artifact)
+    url = getattr(run, "url", None) or "offline"
     run.finish()
-    url = run.get_url() or "offline"
     c.log(f"bootstrap wandb: logged {len(records)} labels, artifact "
           f"{cfg.get('dataset_artifact', 'debris-train')}, run {url}")
     Path(c.ROOT / "GATE_NOTES.md").write_text(

@@ -19,21 +19,36 @@
 
 <header class="site">
   <div class="wrap brandrow">
-    <a class="elora" href="https://eloratherapeutics.com">Elora<span class="eyebrow">Therapeutics</span></a>
+    <a class="elora" href="https://eloratherapeutics.com" rel="noopener">Elora<span class="eyebrow">Therapeutics</span></a>
     <div class="titleblock">
       <h1>Debris</h1>
       <span class="expand">Disease Evidence from Bioaccumulated plastic Residues: Indexed Studies</span>
     </div>
-    <div class="stamp">
-      Last updated <b>{{ meta.last_ingest_date or 'pending first ingest' }}</b><br>
-      <b>{{ '{:,}'.format(meta.verified_papers or 0) }}</b> verified papers<br>
-      <b>{{ '{:,}'.format(meta.pet_papers or 0) }}</b> name PET
+    <button type="button" class="pulse" data-state="{{ health.state }}"
+            aria-expanded="true" aria-controls="healthpanel" title="{{ health.detail }}">
+      <span class="dot" aria-hidden="true"></span>
+      <span class="pulse-label">{{ health.label }}</span>
+    </button>
+    <div class="healthrow">
+      <dl id="healthpanel" class="healthgrid">
+        <div><dt>Verified</dt><dd class="mono">{{ '{:,}'.format(meta.verified_papers or 0) }}</dd></div>
+        <div><dt>Tagged</dt><dd class="mono">{{ '{:,}'.format(meta.tagged_papers or 0) }}</dd></div>
+        <div><dt>PET</dt><dd class="mono">{{ '{:,}'.format(meta.pet_papers or 0) }}</dd></div>
+        <div><dt>New</dt><dd class="mono">{{ '{:,}'.format(meta.new_this_week or 0) }}</dd></div>
+        <div><dt>Review</dt><dd class="mono">{{ '{:,}'.format(meta.review_queue or 0) }}</dd></div>
+        <div><dt>Updated</dt><dd class="mono">{{ meta.last_ingest_date or 'pending' }}</dd></div>
+        <div><dt>Tagger</dt><dd class="mono">{{ meta.model_version or 'pending' }}</dd></div>
+      </dl>
+      <nav class="brandlinks" aria-label="Related sites">
+        <a href="https://eloratherapeutics.com" rel="noopener">Elora</a>
+        <a href="https://marcdeller.com" rel="noopener">marcdeller.com</a>
+        <a href="https://github.com/bellcheddar/DEBRIS" rel="noopener">GitHub</a>
+      </nav>
     </div>
   </div>
   <div class="workshop">
     <div class="wrap">
       <span>Micro and nanoplastics in human disease: a DOI-verified, machine-tagged corpus refreshed weekly.</span>
-      <span class="mono">NHLBI/NIEHS workshop 2026-12-07/08</span>
     </div>
   </div>
 </header>

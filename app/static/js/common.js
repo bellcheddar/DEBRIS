@@ -108,6 +108,21 @@ const DEBRIS = (() => {
     document.addEventListener('keydown', (e) => { if (e.key === 'Escape') close(); });
   }
 
+  function wireHealth() {
+    // The chip collapses its own figures. It matters on a phone, where leaving the
+    // panel open pushes the tabs off the first screen; the state itself stays visible
+    // in the chip either way, so collapsing hides detail and never the status.
+    const chip = document.querySelector('.pulse[aria-controls]');
+    if (!chip) return;
+    const panel = document.getElementById(chip.getAttribute('aria-controls'));
+    chip.addEventListener('click', () => {
+      const open = chip.getAttribute('aria-expanded') !== 'true';
+      chip.setAttribute('aria-expanded', open ? 'true' : 'false');
+      if (panel) panel.hidden = !open;
+    });
+  }
+
   document.addEventListener('DOMContentLoaded', wireDrawer);
+  document.addEventListener('DOMContentLoaded', wireHealth);
   return { T, colourFor, layout, config, plot, fmt, chips, openPaper, esc, label, polymerTagClass };
 })();

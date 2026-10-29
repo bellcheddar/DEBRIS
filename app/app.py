@@ -10,6 +10,7 @@ is Elora Therapeutics (spec 6.2).
 from __future__ import annotations
 
 import csv
+import datetime as dt
 import io
 import json
 import os
@@ -70,10 +71,55 @@ def asset_version(relative: str) -> int:
     return int(path.stat().st_mtime) if path.exists() else 0
 
 
+STALE_DAYS = 10  # the refresh is weekly, with a little slack for one missed run
+
+
+def health_of(meta: dict) -> dict:
+    """The header indicator's state, derived from what the pipeline actually recorded.
+
+    Every signal here is a number the corpus carries, so the light cannot read green
+    while the data is stale, the tagger is drifting or half the corpus is queued for
+    review. Three states: `ok` when nothing is outstanding, `working` while the corpus
+    is still being built (which is not a fault), and `attention` when a check fails.
+    """
+    verified = meta.get("verified_papers") or 0
+    tagged = meta.get("tagged_papers") or 0
+    queued = meta.get("review_queue") or 0
+    drift = meta.get("drift_f1")
+    try:
+        age = (dt.date.today() - dt.date.fromisoformat(meta.get("last_ingest_date") or "")).days
+    except (TypeError, ValueError):
+        age = None
+
+    problems, working = [], []
+    if verified == 0:
+        problems.append("no verified papers in the corpus")
+    if age is not None and age > STALE_DAYS:
+        problems.append(f"last refresh {age} days ago")
+    if drift is not None and drift < 0.90:
+        problems.append(f"relevance drift at {drift:.2f}")
+    if tagged and queued / tagged > 0.25:
+        problems.append("review queue over a quarter of the tagged corpus")
+    if age is None:
+        working.append("awaiting the first completed ingest")
+    if verified and tagged < verified:
+        working.append(f"{verified - tagged:,} papers still to tag")
+    if meta.get("provisional_tags"):
+        working.append("tags provisional until the tagger meets its floor")
+
+    if problems:
+        return {"state": "attention", "label": "Needs attention", "detail": problems[0]}
+    if working:
+        return {"state": "working", "label": "Ingest running", "detail": working[0]}
+    return {"state": "ok", "label": "All systems operational",
+            "detail": f"refreshed {'today' if age == 0 else f'{age} days ago'}"}
+
+
 @app.context_processor
 def template_globals() -> dict:
     meta = load_bundle("meta")
-    return {"tabs": TABS, "meta": meta, "vocab": vocab(), "asset_version": asset_version}
+    return {"tabs": TABS, "meta": meta, "vocab": vocab(), "asset_version": asset_version,
+            "health": health_of(meta)}
 
 
 # -------------------------------------------------------------------------- pages

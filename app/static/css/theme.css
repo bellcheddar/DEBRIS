@@ -5,7 +5,7 @@
 :root{
   --el-blue:#385098;--el-ink:#2A3C78;--el-soft:#E3E8F4;--el-tint:#F0F3FA;--el-bg:#F8F8F8;
   --el-fg:#1C2238;--el-muted:#5A6180;--el-line:#D6DAE6;--el-card:#FFFFFF;
-  --pet:#C8872B;--ps:#2C8C86;--pe-pp:#B84C62;--pvc:#6E5BA6;--other:#8A93AD;--new:#C8872B;
+  --el-ok:#2F7D62;--pet:#C8872B;--ps:#2C8C86;--pe-pp:#B84C62;--pvc:#6E5BA6;--other:#8A93AD;--new:#C8872B;
   --display:'Montserrat',Helvetica,Arial,sans-serif;--mono:'IBM Plex Mono',Menlo,monospace;
   --chamfer:polygon(0 0, calc(100% - 14px) 0, 100% 14px, 100% 100%, 0 100%);
   --gap:18px;--radius:3px;
@@ -28,19 +28,63 @@ h1,h2,h3{margin:0;font-weight:700;letter-spacing:-0.01em}
 .chamfer{clip-path:var(--chamfer)}
 
 header.site{background:var(--el-card);border-bottom:1px solid var(--el-line)}
-.brandrow{display:flex;align-items:flex-end;gap:28px;flex-wrap:wrap;padding:22px 0 16px}
-.elora{display:block;font-weight:800;font-size:17px;letter-spacing:0.1em;color:var(--el-ink);
-  text-transform:uppercase;line-height:1}
-.elora .eyebrow{display:block;font-weight:600;font-size:9.5px;letter-spacing:0.4em;
-  color:var(--el-muted);margin-top:4px}
+/* The horizontal padding is repeated from .wrap deliberately: this rule follows it in
+   the cascade, so a bare `padding:22px 0 16px` would zero it and hang the wordmark and
+   the health panel outside the column every other element lines up on. */
+.brandrow{display:flex;align-items:flex-end;gap:28px;flex-wrap:wrap;padding:22px 24px 16px}
+.elora{display:block;font-weight:800;font-size:26px;letter-spacing:0.1em;color:var(--el-ink);
+  text-transform:uppercase;line-height:1;align-self:center;flex:0 0 auto}
+.elora:hover{text-decoration:none;color:var(--el-blue)}
+.elora .eyebrow{display:block;font-weight:600;font-size:11px;letter-spacing:0.38em;
+  color:var(--el-muted);margin-top:6px}
 .titleblock{flex:1 1 420px;min-width:0}
 .titleblock h1{font-weight:800;font-size:clamp(28px,4.2vw,44px);letter-spacing:0.08em;
   text-transform:uppercase;color:var(--el-ink);line-height:1}
 .titleblock .expand{display:block;color:var(--el-muted);font-size:12px;letter-spacing:0.04em;
   margin-top:7px}
-.stamp{text-align:right;font-family:var(--mono);font-size:11.5px;color:var(--el-muted);
-  line-height:1.7;white-space:nowrap}
-.stamp b{color:var(--el-ink);font-weight:500}
+/* ------------------------------------------------------------------ health panel */
+/* The figures take a line of their own under the title, so the title keeps its width
+   and the header stays two lines deep. */
+.healthrow{flex:1 0 100%;display:flex;flex-wrap:wrap;align-items:baseline;gap:6px 18px;
+  justify-content:space-between;margin-top:2px}
+.pulse{align-self:center;display:inline-flex;align-items:center;gap:9px;cursor:pointer;
+  background:var(--el-tint);border:1px solid var(--el-line);clip-path:var(--chamfer);
+  padding:7px 14px 6px;font-family:var(--display);font-weight:800;font-size:10.5px;
+  letter-spacing:0.14em;text-transform:uppercase;color:var(--el-ink)}
+.pulse:hover{background:var(--el-soft)}
+.pulse .dot{width:9px;height:9px;border-radius:50%;flex:0 0 auto;background:var(--el-muted)}
+.pulse[data-state="ok"] .dot{background:var(--el-ok)}
+.pulse[data-state="working"] .dot{background:var(--pet)}
+.pulse[data-state="attention"] .dot{background:var(--pe-pp)}
+/* One wrapping row of pairs, not a stacked list: seven stacked rows made the header
+   taller than the content it introduces. */
+.healthgrid{display:flex;flex-wrap:wrap;gap:3px 15px;margin:0}
+.healthgrid>div{display:flex;align-items:baseline;gap:6px}
+.healthgrid dt{text-transform:uppercase;letter-spacing:0.16em;font-size:9px;font-weight:700;
+  color:var(--el-muted)}
+.healthgrid dd{margin:0;color:var(--el-ink);font-size:12px}
+.brandlinks{display:flex;gap:12px;flex-wrap:wrap;justify-content:flex-end;
+  font-size:10px;font-weight:700;letter-spacing:0.16em;text-transform:uppercase}
+.brandlinks a{color:var(--el-muted);border-bottom:1px solid var(--el-line);padding-bottom:2px}
+.brandlinks a:hover,.brandlinks a:focus-visible{color:var(--el-blue);
+  border-bottom-color:currentColor;text-decoration:none}
+
+/* The ring only animates where motion is welcome; the colour carries the state either
+   way, so nothing is lost when it is switched off. */
+@media (prefers-reduced-motion:no-preference){
+  .pulse[data-state="ok"] .dot{animation:el-pulse-ok 2.4s ease-out infinite}
+  .pulse[data-state="working"] .dot{animation:el-pulse-work 1.6s ease-out infinite}
+}
+@keyframes el-pulse-ok{
+  0%{box-shadow:0 0 0 0 rgba(47,125,98,0.55)}
+  70%{box-shadow:0 0 0 8px rgba(47,125,98,0)}
+  100%{box-shadow:0 0 0 0 rgba(47,125,98,0)}
+}
+@keyframes el-pulse-work{
+  0%{box-shadow:0 0 0 0 rgba(200,135,43,0.55)}
+  70%{box-shadow:0 0 0 8px rgba(200,135,43,0)}
+  100%{box-shadow:0 0 0 0 rgba(200,135,43,0)}
+}
 .workshop{background:var(--el-tint);border-top:1px solid var(--el-line);
   font-size:11.5px;letter-spacing:0.04em;color:var(--el-ink);padding:7px 0}
 .workshop .wrap{display:flex;gap:14px;justify-content:space-between;flex-wrap:wrap}
@@ -196,8 +240,10 @@ footer.site .mono{font-size:11px}
 }
 @media (max-width:768px){
   .wrap{padding:0 16px}
-  .brandrow{padding:16px 0 12px;gap:14px}
-  .stamp{text-align:left}
+  .brandrow{padding:16px 24px 12px;gap:14px}
+  .elora{font-size:22px}
+  .healthrow{gap:6px 12px}
+  .brandlinks{justify-content:flex-start}
   .titleblock h1{letter-spacing:0.06em}
   .kpi .value{font-size:25px}
   .drawer{width:100vw}

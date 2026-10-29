@@ -201,3 +201,6 @@
 - 2026-10-29 15:59 aggregate: wrote 5 bundles, 9 kB total; verified 9323, tagged 0
 - 2026-10-29 15:59 qc ui: pass, 8 page renders, 0 serious or critical axe violations, 0 console errors, 0 failed requests
 - 2026-10-29 16:01 qc ui: pass, 8 page renders, 0 serious or critical axe violations, 0 console errors, 0 failed requests
+- 2026-10-29 16:04 train: LoRA finished in 297.0 min
+- 2026-10-29 16:20 train: checkpoint 400: 3/8 floors, score 0.9549, relevant 0.9432, organs 0.7292, pathways 0.6481
+- 2026-10-29 16:37 train: checkpoint 800: 3/8 floors, score 0.9593, relevant 0.9461, organs 0.7599, pathways 0.6779

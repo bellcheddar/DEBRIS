@@ -6,6 +6,10 @@ a q4 copy for Studio-side inference. Wrapper adapted from chatMCD's train script
 
   pixi run train              # train, fuse, convert, then score the test split
   pixi run train --score-only # re-score an existing adapter
+  pixi run train --retrain    # start the fine-tune again from the base model
+
+Each stage checks for its own output first, so an interrupted run resumes where it
+stopped instead of repeating the fine-tune.
 """
 from __future__ import annotations
 
@@ -78,7 +82,7 @@ def parse_training_log(path: Path) -> list[dict]:
 
 def fuse_and_quantise(model_id: str) -> None:
     run(["mlx_lm.fuse", "--model", model_id, "--adapter-path", str(ADAPTER),
-         "--save-path", str(FUSED), "--de-quantize"])
+         "--save-path", str(FUSED), "--dequantize"])
     run(["mlx_lm.convert", "--hf-path", str(FUSED), "-q", "--mlx-path", str(Q4)])
 
 
@@ -232,6 +236,8 @@ def main() -> None:
     ap.add_argument("--batch-size", type=int, default=4)
     ap.add_argument("--model", default=None)
     ap.add_argument("--score-only", action="store_true")
+    ap.add_argument("--retrain", action="store_true",
+                    help="fine-tune again even if an adapter is already saved")
     ap.add_argument("--skip-q4-score", action="store_true")
     args = ap.parse_args()
 
@@ -244,11 +250,17 @@ def main() -> None:
 
     log_path = c.TRAIN / "lora_train.log"
     if not args.score_only:
-        started = time.monotonic()
-        log_path = train(args.iters, args.num_layers, model_id, args.batch_size)
-        c.log(f"train: LoRA finished in {(time.monotonic() - started) / 60:.1f} min")
-        fuse_and_quantise(model_id)
-        c.log("train: fused and quantised")
+        if (ADAPTER / "adapters.safetensors").exists() and not args.retrain:
+            c.log("train: adapter already present, reusing it (--retrain to start over)")
+        else:
+            started = time.monotonic()
+            log_path = train(args.iters, args.num_layers, model_id, args.batch_size)
+            c.log(f"train: LoRA finished in {(time.monotonic() - started) / 60:.1f} min")
+        if (FUSED / "config.json").exists() and not args.retrain:
+            c.log("train: fused model already present, reusing it")
+        else:
+            fuse_and_quantise(model_id)
+            c.log("train: fused and quantised")
 
     metrics = score(str(FUSED) if FUSED.exists() else model_id,
                     None if FUSED.exists() else str(ADAPTER))

@@ -45,3 +45,11 @@
 - 2026-10-29 01:24 qc ui: fail, 8 page renders, 24 serious or critical axe violations, 0 console errors, 0 failed requests
 - 2026-10-29 01:25 qc ui: fail, 8 page renders, 8 serious or critical axe violations, 0 console errors, 0 failed requests
 - 2026-10-29 01:26 qc ui: pass, 8 page renders, 0 serious or critical axe violations, 0 console errors, 0 failed requests
+- 2026-10-29 02:12 train: LoRA finished in 53.5 min
+- 2026-10-29 02:12 train: mlx_lm.fuse --model Qwen/Qwen2.5-3B-Instruct --adapter-path /Users/dellboy/Documents/Vibe_Coding/debris/data/adapters/debris_v1 --save-path ...
+- 2026-10-29 02:38 train: adapter already present, reusing it (--retrain to start over)
+- 2026-10-29 02:38 train: mlx_lm.fuse --model Qwen/Qwen2.5-3B-Instruct --adapter-path /Users/dellboy/Documents/Vibe_Coding/debris/data/adapters/debris_v1 --save-path ...
+- 2026-10-29 02:39 train: adapter already present, reusing it (--retrain to start over)
+- 2026-10-29 02:39 train: mlx_lm.fuse --model Qwen/Qwen2.5-3B-Instruct --adapter-path /Users/dellboy/Documents/Vibe_Coding/debris/data/adapters/debris_v1 --save-path ...
+- 2026-10-29 02:39 train: mlx_lm.convert --hf-path /Users/dellboy/Documents/Vibe_Coding/debris/data/adapters/debris_v1_fused -q --mlx-path /Users/dellboy/Documents/Vibe_Coding/debris/data/adapters/debris_v1_q4
+- 2026-10-29 02:39 train: fused and quantised

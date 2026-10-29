@@ -1,0 +1,9 @@
+{
+  "README.md": {
+    "repo": "debris",
+    "emoji": "🧪",
+    "title": "DEBRIS",
+    "tagline": "Every DOI-verified paper that puts a plastic particle inside a human disease, tagged and mapped.",
+    "why": "Why it matters: the evidence that micro and nanoplastics reach human tissue has outgrown anyone's reading list, and most of it sits in journals a clinician never opens. DEBRIS harvests every PubMed record that implicates PET and other polymers in disease, verifies each DOI at Crossref, and has a single fine-tuned 3B model read the abstract and record what the paper actually shows: which polymer, which organ, which pathway, which kind of study, and how far that claim sits from a human outcome. It is useful for: finding the papers behind a claim, seeing which polymer and organ pairs nobody has studied yet, and watching the field move week by week without re-reading it."
+  }
+}

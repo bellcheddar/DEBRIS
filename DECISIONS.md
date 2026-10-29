@@ -84,3 +84,33 @@ The first run found five real defects, all fixed:
 Also: Tabulator 6.3 nests `role="rowgroup"` inside `role="rowgroup"`, which trips
 `aria-required-children` and `aria-required-parent`. The wrapper is marked
 `role="presentation"` after every render rather than patching the vendored library.
+
+## D15 Cleared 1,981 orphaned files from the pixi environment
+
+`mlx_lm.fuse` died immediately after the fine-tune with
+`ImportError: cannot import name 'PreTrainedConfig'`, raised from a file called
+`transformers/models/encoder_decoder/configuration_encoder_decoder 2.py`. The downgrade
+in D13, from transformers 5.21.0 to the 4.x line, had not replaced the 5.x modules: it
+had written the 4.x ones alongside them under Finder-style " 2" names. transformers 4.57
+builds its lazy import map by listing the files in each model directory, so it picked up
+the 5.x copy and imported it against the 4.x `configuration_utils`.
+
+1,981 such files were present across `transformers` (1,760), `huggingface_hub` (107),
+`tokenizers` (16) and `gradio_client` (1). None appeared in any package `RECORD`, which
+confirms they were orphans rather than shipped files, so all were deleted. The app
+`.venv` was checked and is clean. The environment is regenerable from `pixi.lock`, so
+nothing is lost if it needs rebuilding.
+
+The fine-tune itself had completed before the crash, 800 iterations in 53.5 minutes,
+validation loss 0.813 to 0.765, with the adapter saved. Rather than repeat it,
+`pipeline/train.py` now checks for each stage's output first: the fine-tune is skipped
+when `data/adapters/debris_v1/adapters.safetensors` exists and the fuse is skipped when
+the fused model exists. `--retrain` forces both. This matches the resumability the build
+instructions ask of every other stage.
+
+## D16 `mlx_lm.fuse --dequantize`, not `--de-quantize`
+
+Spec line 199 gives the fuse command as `--de-quantize`. mlx-lm 0.29.1 spells the flag
+`--dequantize` and rejects the hyphenated form, so the code uses the spelling the
+installed CLI accepts. The intent, a de-quantised fused model in Hugging Face layout so
+transformers can load it on the Space, is unchanged. The spec file is left as written.

@@ -59,6 +59,26 @@ def pending(conn, limit: int | None, only_tier: int | None,
     return ordered[:limit] if limit else ordered
 
 
+def local_model_choice(model: str | None, adapter: str | None,
+                       tuning: dict) -> tuple[str, str | None]:
+    """Pick the local weights: q4 by default, fused when the q4 copy scored worse.
+
+    train.py drops a USE_FUSED marker when q4 lost more than two F1 points against the
+    fused model; honour it rather than quietly tagging the corpus with the weaker copy.
+    With neither built, fall back to the base model plus the raw adapter.
+    """
+    names = ["debris_v1_q4", "debris_v1_fused"]
+    if (c.ROOT / "USE_FUSED").exists():
+        names.reverse()
+    for name in names:
+        if (c.ADAPTERS / name).exists():
+            return model or str(c.ADAPTERS / name), adapter
+    base = model or tuning.get("model_id", "Qwen/Qwen2.5-3B-Instruct")
+    if adapter is None and (c.ADAPTERS / "debris_v1").exists():
+        adapter = str(c.ADAPTERS / "debris_v1")
+    return base, adapter
+
+
 # ------------------------------------------------------------------ local (mlx)
 
 class LocalTagger:
@@ -212,14 +232,7 @@ def main() -> None:
                               c.api_key("HF_TOKEN"), hf.get("batch_size", 16))
         path = "zerogpu_space"
     else:
-        fused = c.ADAPTERS / "debris_v1_q4"
-        if not fused.exists():
-            fused = c.ADAPTERS / "debris_v1_fused"
-        model_path = args.model or (str(fused) if fused.exists()
-                                    else tuning.get("model_id", "Qwen/Qwen2.5-3B-Instruct"))
-        adapter = args.adapter
-        if not fused.exists() and (c.ADAPTERS / "debris_v1").exists() and not args.adapter:
-            adapter = str(c.ADAPTERS / "debris_v1")
+        model_path, adapter = local_model_choice(args.model, args.adapter, tuning)
         tagger = LocalTagger(model_path, adapter)
         path = "studio_mlx"
 

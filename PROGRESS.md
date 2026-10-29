@@ -12,11 +12,11 @@ Rewritten after every phase and at least every 30 minutes during compute.
 - [x] SQLite schema with every index, `papers` populated
 - [x] Elora design system, four tabs, Papers tab live with the untagged corpus
 - [x] `pipeline/aggregate.py` and the five static bundles
-- [x] 48 tests green (schema, DOI with mocked HTTP, aggregate totals vs SQL, novelty, routes)
+- [x] 57 tests green (schema, DOI with mocked HTTP, aggregate totals vs SQL, novelty, routes)
 - [x] Bootstrap labels (1,600: 868 relevant, 732 not) and the wandb dataset artifact (offline)
 - [x] Phase 1 deploy to debris.mdeller.com (live over HTTPS, ingest banner shown)
 
-## Phase 2 Tagger (40 %)
+## Phase 2 Tagger (70 %)
 
 - [x] `pipeline/tag.py` (local mlx and remote Space paths, priority tiers, review queue)
 - [x] `pipeline/train.py` (LoRA, fuse, q4, field-by-field scoring, model card, wandb)
@@ -24,14 +24,18 @@ Rewritten after every phase and at least every 30 minutes during compute.
 - [x] `hf/space/app.py` and `hf/push_model.py` written, ready for a token
 - [x] Bootstrap labels written, canonicalised, split 1,277/161/162, logged to wandb
 - [x] Smoke test: 11.2 papers/min, 10.6 h projected for 7,113 untagged, inside the 24 h budget
-- [ ] Training run (debris_v1, LoRA 800 iters) and the 5.5 acceptance floor
+- [x] Training run: debris_v1, LoRA 800 iterations in 53.5 min, validation loss 0.813 to 0.765
+- [x] Stale 5.x transformers files cleared from the pixi environment (D15), train stages resumable
+- [ ] Fuse, q4 convert and the 5.5 acceptance floor on the 162-paper test split
 - [ ] Full corpus tagged
 
-## Phase 3 App polish (60 %)
+## Phase 3 App polish (85 %)
 
 - [x] Atlas (Venn, evidence ladder, year series), Body (SVG map), Pathways (Sankey, radar), Papers (feed, Tabulator, drawer)
 - [x] Icons and favicon set, self-hosted Montserrat and IBM Plex Mono
-- [ ] Playwright screenshots at 1440x900 and 390x844, axe-core
+- [x] `tools/qc_ui.py`: 8 page renders, 0 serious or critical axe violations, 0 console errors
+- [x] Atlas interactive in 0.59 s against the 1.5 s budget; both click-throughs working
+- [ ] QC re-run against the tagged corpus, chart totals reconciled against SQL
 
 ## Phase 4 Weekly, QC, delivery (40 %)
 

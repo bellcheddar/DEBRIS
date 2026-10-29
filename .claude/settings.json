@@ -6,7 +6,7 @@
       "Bash(mlx_lm.lora:*)", "Bash(mlx_lm.fuse:*)", "Bash(mlx_lm.convert:*)", "Bash(mlx_lm.generate:*)",
       "Bash(wandb:*)", "Bash(huggingface-cli:*)", "Bash(hf:*)",
       "Bash(caffeinate:*)", "Bash(git init:*)", "Bash(git add:*)", "Bash(git commit:*)",
-      "Bash(git status:*)", "Bash(git diff:*)", "Bash(git log:*)",
+      "Bash(git status:*)", "Bash(git diff:*)", "Bash(git log:*)", "Bash(git push:*)",
       "Bash(curl:*)", "Bash(wget:*)", "Bash(brew install:*)", "Bash(brew list:*)",
       "Bash(sysctl:*)", "Bash(system_profiler:*)", "Bash(df:*)", "Bash(osascript:*)",
       "Bash(tar:*)", "Bash(gzip:*)", "Bash(gunzip:*)", "Bash(mkdir:*)", "Bash(ls:*)", "Bash(find:*)", "Bash(grep:*)",
@@ -16,7 +16,7 @@
       "Bash(ssh:*)", "Bash(scp:*)", "Bash(rsync:*)", "Bash(./deploy/deploy.sh:*)", "Bash(bash deploy/deploy.sh:*)"
     ],
     "deny": [
-      "Bash(git push:*)", "Bash(gh repo create:*)", "Bash(sudo:*)",
+      "Bash(gh repo create:*)", "Bash(sudo:*)",
       "Bash(rm -rf /:*)", "Bash(rm -rf ~:*)", "Bash(playwright install:*)"
     ]
   }

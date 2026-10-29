@@ -108,8 +108,14 @@ def binary_f1(truth: list[bool], pred: list[bool]) -> float:
     return 2 * tp / (2 * tp + fp + fn)
 
 
-def score(model_path: str, adapter_path: str | None = None, split: str = "test") -> dict:
-    """Score a model against the held-out split, field by field (spec 5.5)."""
+def score(model_path: str, adapter_path: str | None = None, split: str = "test",
+          label: str = "fused") -> dict:
+    """Score a model against the held-out split, field by field (spec 5.5).
+
+    Predictions are written to `data/train/predictions_<label>.jsonl` so a shortfall can
+    be read field by field, and one rung of the fallback ladder compared with the next,
+    without scoring the split again.
+    """
     from pipeline.tag import LocalTagger
 
     rows = list(c.jsonl_read(c.TRAIN / f"{split}_meta.jsonl"))
@@ -120,6 +126,7 @@ def score(model_path: str, adapter_path: str | None = None, split: str = "test")
     truth_rel, pred_rel = [], []
     poly, organ, path_pairs, disease = [], [], [], []
     rung_exact = rung_within = model_ok = valid_json = 0
+    predictions = []
     started = time.monotonic()
     for i, row in enumerate(rows, 1):
         gold = row["tag"]
@@ -130,6 +137,8 @@ def score(model_path: str, adapter_path: str | None = None, split: str = "test")
         if pred is None:
             pred = {"relevant": False, "polymers": [], "organ_systems": [], "pathways": [],
                     "disease_categories": [], "evidence_rungs": [], "model_type": "review"}
+        predictions.append({"pmid": row["pmid"], "gold": gold, "pred": pred,
+                            "parsed": raw is not None})
         truth_rel.append(bool(gold["relevant"]))
         pred_rel.append(bool(pred["relevant"]))
         poly.append((set(gold["polymers"]), set(pred["polymers"])))
@@ -143,6 +152,7 @@ def score(model_path: str, adapter_path: str | None = None, split: str = "test")
         if i % 20 == 0:
             print(f"  scored {i}/{len(rows)}", flush=True)
     n = len(rows)
+    c.jsonl_write(c.TRAIN / f"predictions_{label}.jsonl", predictions)
     return {
         "n": n,
         "relevant_f1": round(binary_f1(truth_rel, pred_rel), 4),
@@ -263,10 +273,10 @@ def main() -> None:
             c.log("train: fused and quantised")
 
     metrics = score(str(FUSED) if FUSED.exists() else model_id,
-                    None if FUSED.exists() else str(ADAPTER))
+                    None if FUSED.exists() else str(ADAPTER), label="fused")
     q4_metrics = None
     if Q4.exists() and not args.skip_q4_score:
-        q4_metrics = score(str(Q4))
+        q4_metrics = score(str(Q4), label="q4")
         gap = metrics["relevant_f1"] - q4_metrics["relevant_f1"]
         c.log(f"train: q4 vs fused relevant F1 gap {gap:+.3f}")
         if gap > 0.02:

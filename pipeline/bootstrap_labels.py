@@ -287,9 +287,11 @@ def ingest() -> None:
 
     conn = c.connect()
     with conn:
+        # Every label file is re-read on each ingest, so the counts are absolute:
+        # setting them keeps a second ingest from doubling what the first recorded.
         conn.executemany(
             """INSERT INTO vocab_candidates (field,value,count,first_seen) VALUES (?,?,?,?)
-               ON CONFLICT(field,value) DO UPDATE SET count=vocab_candidates.count+excluded.count""",
+               ON CONFLICT(field,value) DO UPDATE SET count=excluded.count""",
             [(f, v, n, c.now()) for (f, v), n in candidates.items()])
 
     relevant = sum(1 for r in records if r["tag"]["relevant"])

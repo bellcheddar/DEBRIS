@@ -143,10 +143,22 @@ class RemoteTagger:
 
 # ----------------------------------------------------------------------- storage
 
+def candidates_of(tag: dict) -> set[tuple[str, str]]:
+    """The out-of-vocabulary values a stored tag proposes. Only polymers and pathways
+    are open fields; the closed ones drop unknown values rather than proposing them."""
+    return {(field, value) for field in ("polymers", "pathways")
+            for value in tag.get(field) or [] if str(value).startswith("other:")}
+
+
 def store(conn, pmid: str, tag: dict, sampled: dict | None, problems: list[str],
           candidates: list[tuple[str, str]], source: str, model_version: str) -> str:
     """Write one tag and its fan-out tables. Returns the review reason, or ''."""
     consistency = schema.self_consistency(tag, sampled)
+    # vocab_candidates counts papers, so a re-tag moves the paper between values
+    # rather than counting it twice.
+    row = conn.execute("SELECT tag_json FROM tags WHERE pmid=?", (pmid,)).fetchone()
+    already = candidates_of(json.loads(row[0])) if row else set()
+    proposed = set(candidates)
     reason = ""
     if tag["confidence"] < 0.6:
         reason = "low confidence"
@@ -193,9 +205,15 @@ def store(conn, pmid: str, tag: dict, sampled: dict | None, problems: list[str],
         else:
             conn.execute("UPDATE review_queue SET resolved_at=? WHERE pmid=? AND resolved_at IS NULL",
                          (c.now(), pmid))
-        conn.executemany("""INSERT INTO vocab_candidates (field,value,count,first_seen) VALUES (?,?,1,?)
-                            ON CONFLICT(field,value) DO UPDATE SET count=vocab_candidates.count+1""",
-                         [(f, v, c.now()) for f, v in candidates])
+        for field, value in sorted(proposed - already):
+            conn.execute("""INSERT INTO vocab_candidates (field,value,count,first_seen)
+                            VALUES (?,?,1,?) ON CONFLICT(field,value)
+                            DO UPDATE SET count=vocab_candidates.count+1""",
+                         (field, value, c.now()))
+        for field, value in sorted(already - proposed):
+            conn.execute("""UPDATE vocab_candidates SET count = count - 1
+                            WHERE field=? AND value=?""", (field, value))
+        conn.execute("DELETE FROM vocab_candidates WHERE count <= 0")
     return reason
 
 

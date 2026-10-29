@@ -1,6 +1,8 @@
 """Tagging priority tiers and the choice of local weights."""
 from __future__ import annotations
 
+from pipeline import common as c
+from pipeline import schema
 from pipeline import tag
 
 
@@ -70,3 +72,62 @@ def test_an_explicit_model_wins(tmp_path, monkeypatch):
     (tmp_path / "debris_v1_q4").mkdir()
     model, _ = tag.local_model_choice("some/other-model", None, {})
     assert model == "some/other-model"
+
+
+# -------------------------------------------------- vocabulary candidate counting
+
+def tagged_db(tmp_path):
+    db = tmp_path / "t.sqlite"
+    c.init_db(db)
+    conn = c.connect(db)
+    conn.execute("INSERT INTO papers (pmid, doi_status, title, abstract) VALUES ('1','verified','t','a')")
+    conn.commit()
+    return conn
+
+
+def tag_with(pathways: list[str]) -> tuple[dict, list[tuple[str, str]]]:
+    raw = {"relevant": True, "polymers": ["PET"], "size_class": "microplastic",
+           "organ_systems": ["cardiovascular"], "disease_categories": ["atherosclerosis_mace"],
+           "disease_terms": ["plaque"], "pathways": pathways, "model_type": "in_vitro",
+           "evidence_rungs": [3], "pet_specific": True, "summary": "s", "confidence": 0.9}
+    label, _, candidates = schema.validate(raw)
+    return label, candidates
+
+
+def counts(conn) -> dict:
+    return {r["value"]: r["count"]
+            for r in conn.execute("SELECT value, count FROM vocab_candidates")}
+
+
+def test_a_candidate_is_counted_once_per_paper(tmp_path):
+    conn = tagged_db(tmp_path)
+    label, candidates = tag_with(["other:protein_corona"])
+    for _ in range(3):
+        tag.store(conn, "1", label, label, [], candidates, "test", "v1")
+    assert counts(conn) == {"other:protein_corona": 1}
+
+
+def test_a_retag_moves_the_paper_between_candidates(tmp_path):
+    conn = tagged_db(tmp_path)
+    first, first_cands = tag_with(["other:protein_corona"])
+    tag.store(conn, "1", first, first, [], first_cands, "test", "v1")
+    second, second_cands = tag_with(["other:lipid_metabolism"])
+    tag.store(conn, "1", second, second, [], second_cands, "test", "v1")
+    assert counts(conn) == {"other:lipid_metabolism": 1}
+
+
+def test_an_in_vocabulary_retag_clears_the_candidate(tmp_path):
+    conn = tagged_db(tmp_path)
+    label, candidates = tag_with(["other:protein_corona"])
+    tag.store(conn, "1", label, label, [], candidates, "test", "v1")
+    clean, clean_cands = tag_with(["oxidative_stress"])
+    assert clean_cands == []
+    tag.store(conn, "1", clean, clean, [], clean_cands, "test", "v1")
+    assert counts(conn) == {}
+
+
+def test_an_out_of_vocabulary_value_queues_the_paper_for_review(tmp_path):
+    conn = tagged_db(tmp_path)
+    label, candidates = tag_with(["other:protein_corona"])
+    reason = tag.store(conn, "1", label, label, [], candidates, "test", "v1")
+    assert reason == "out-of-vocabulary value"

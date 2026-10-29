@@ -114,3 +114,29 @@ Spec line 199 gives the fuse command as `--de-quantize`. mlx-lm 0.29.1 spells th
 `--dequantize` and rejects the hyphenated form, so the code uses the spelling the
 installed CLI accepts. The intent, a de-quantised fused model in Hugging Face layout so
 transformers can load it on the Space, is unchanged. The spec file is left as written.
+
+## D17 `vocab_candidates.count` counts papers, once each
+
+The first FINDINGS.md draft listed `other:lipid_metabolism` against 32 papers when only 16
+labels carried it. Both writers added to the stored count. `bootstrap_labels.py ingest`
+re-reads every label file on each run, so its tally is already absolute and the second
+ingest doubled it; `tag.py store()` added one per tagging pass, so a re-tag would count
+the same paper again.
+
+The ingest now sets the count instead of adding to it, and `store()` takes the difference
+against the paper's previous tag: a value the paper has stopped proposing is decremented
+and rows that reach zero are deleted. The spec's schema is unchanged. The stored counts
+were repaired by re-running the ingest, and five tests cover the accounting.
+
+## D18 `tools/findings.py` generates FINDINGS.md
+
+Spec 6 item 6 lists ten things FINDINGS.md must carry, all of them numbers that live in
+the database. Writing them by hand would date the moment the corpus moved, so the
+document is generated: `pixi run findings`. Each section reads `data/debris.sqlite`,
+`data/train/metrics.json` or the launchd plist, and the Venn gap section calls
+`aggregate.venn_counts` on the same population the Atlas chart draws from, so the
+document and the chart cannot disagree.
+
+Drift recommendations are appended to FINDINGS.md by `pipeline/drift.py` (spec 5.7).
+Regeneration keeps everything from the first `## Drift recommendation` heading onwards,
+so a generated refresh never discards them.

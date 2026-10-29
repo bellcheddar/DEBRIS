@@ -53,3 +53,4 @@
 - 2026-10-29 02:39 train: mlx_lm.fuse --model Qwen/Qwen2.5-3B-Instruct --adapter-path /Users/dellboy/Documents/Vibe_Coding/debris/data/adapters/debris_v1 --save-path ...
 - 2026-10-29 02:39 train: mlx_lm.convert --hf-path /Users/dellboy/Documents/Vibe_Coding/debris/data/adapters/debris_v1_fused -q --mlx-path /Users/dellboy/Documents/Vibe_Coding/debris/data/adapters/debris_v1_q4
 - 2026-10-29 02:39 train: fused and quantised
+- 2026-10-29 02:45 bootstrap ingest: 1600/1600 labelled (868 relevant, 732 not), 0 problems, 11 vocabulary candidates

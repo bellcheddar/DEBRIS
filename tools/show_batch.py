@@ -12,7 +12,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 BATCHES = ROOT / "data" / "labels" / "batches"
-HEAD, TAIL = 560, 380
+HEAD, TAIL = 520, 340
 
 
 def trim(text: str) -> str:

@@ -75,11 +75,18 @@ def funnel_section(conn) -> str:
     verified = conn.execute(
         "SELECT COUNT(*) FROM papers WHERE doi_status='verified'").fetchone()[0]
     retracted = conn.execute("SELECT COUNT(*) FROM papers WHERE retracted = 1").fetchone()[0]
+    controls = conn.execute(f"""SELECT COUNT(*) FROM papers WHERE doi_status = 'verified'
+                                AND COALESCE(hit_strategy, '') = '{c.CORPUS_STRATEGY}'"""
+                            ).fetchone()[0]
     return (f"## Verification funnel\n\nA paper is admitted when Crossref resolves its DOI "
             f"and `token_set_ratio` between the PubMed and Crossref titles, case-folded, "
             f"is at least 90. Only verified papers are counted in the charts; the Papers "
             f"tab has an \"include unverified\" switch, off by default.\n\n{body}\n\n"
-            f"{fmt(verified)} papers are verified. {fmt(no_abstract)} have no abstract, so "
+            f"{fmt(verified)} papers are verified. {fmt(controls)} of those were harvested "
+            f"on purpose as negative controls, positron emission tomography and CT work "
+            f"above all, so that the tagger can be shown refusing them; they are not part "
+            f"of the corpus and are excluded from every count the site publishes, which "
+            f"leaves {fmt(verified - controls)}. {fmt(no_abstract)} have no abstract, so "
             f"they are stored but never tagged. {fmt(retracted)} are flagged retracted by a "
             f"Crossref `update-to` relation: they are struck through in the app and never "
             f"deleted.\n")

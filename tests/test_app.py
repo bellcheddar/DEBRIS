@@ -12,7 +12,7 @@ def test_all_pages_200(client):
 def test_healthz_reports_the_corpus(client):
     payload = client.get("/healthz").get_json()
     assert payload["status"] == "ok"
-    assert payload["papers_in_db"] == 8
+    assert payload["papers_in_db"] == 10
     assert payload["database"] is True
 
 

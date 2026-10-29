@@ -632,3 +632,72 @@ Two follow-ups. The description says what the tagger records rather than claimin
 is tagged, because it is not yet; it wants a sentence with real tagged counts once the full
 pass finishes. And `index.html` is a build artifact and gitignored in that repo, so the
 commit there is `apps.json` alone.
+
+## D32 The negative controls were in the published corpus, and no keyword filter replaces the tagger
+
+Marc spotted positron emission tomography and CT papers in the Papers feed, including the
+most recent entry, and asked for them to be filtered out up front. Two separate problems
+sat behind that, and only one of them was a defect.
+
+**The defect.** Every one of those papers carries `hit_strategy = negative`. They are the
+402 hard negatives the harvest collects on purpose so that `validate.check_negatives` can
+show the tagger refusing them, and PET/CT is the trap they exist for, because `PET` means
+polyethylene terephthalate here and positron emission tomography in a radiology journal.
+They verify at Crossref like any other paper and nothing in the app, the aggregate or the
+counts filtered on provenance, so 362 of them were being published as corpus. The headline
+figure of 9,685 verified papers was 9,323 corpus papers plus 362 controls. The architecture
+was already most of the way there: `paper_filters` carries `(t.relevant IS NULL OR
+t.relevant = 1)`, so the controls would have dropped out of the feed by themselves the
+moment tagging ran. They were visible only because nothing is tagged yet, and that
+`IS NULL` accommodation is what keeps the Papers tab populated during phase 1.
+
+Relying on it would still have been wrong. A control must not reach the site because of
+what it is, not because the tagger happened to agree, so the exclusion is on provenance:
+`common.corpus_clause()`, one definition, interpolated through every published query, and
+inlined once in `app/app.py` with a comment saying why, because the app venv holds only
+Flask and gunicorn and cannot import from the pipeline. A paper the real strategies also
+found keeps its place: `textword,negative` is corpus, and 34 papers are in that position.
+`meta` now reports `control_papers` alongside `verified_papers` so the funnel still adds up.
+
+The suite had no test for any of this, which is how it shipped. There are nine now, and I
+checked they fail without the fix: seven do, including the untagged control that reproduces
+what Marc saw and a control the tagger has wrongly called relevant, which must stay out
+regardless. The two that pass without it are invariants that do not depend on it.
+
+**The thing that was not a defect.** A filter on imaging terms would have been a mistake.
+Nine corpus papers mention a scanner and seven of them name a plastic as well: polystyrene
+tracked through an asthmatic mouse lung by PET, the in vivo fate of inhaled nanoplastics,
+PLA toxicokinetics by radiotracer, polyethylene renal dysfunction by SPECT. Imaging is the
+method in those papers, not the subject, and they are among the most mechanistically useful
+work in the corpus. Three more are sodium polystyrene sulfonate, which is Kayexalate, a
+polystyrene resin given as a drug: whether a Kayexalate crystal is a microplastic is a
+scientific judgement, and a keyword filter would have had to make it blind and would have
+been wrong either way. That judgement belongs to the relevance head, which is the one
+metric comfortably clear of its floor at 0.9711.
+
+**What the measurement did turn up.** 970 corpus papers never name a plastic anywhere in
+title or abstract, 919 of them from the MeSH strategy alone. They are Dacron grafts,
+silicone implants, ceramic hip replacements, hemoperfusion cartridges and wheelchair
+propulsion studies. The MeSH indexing is not wrong: Dacron genuinely is polyethylene
+terephthalate. They are simply medical devices rather than environmental exposure, and
+because they carry words like `patient` and `cohort` they were being sorted into tier 2 and
+tagged ahead of the real corpus.
+
+So the demotion is on ordering, not admission. Tier 6 is a paper that never names a plastic,
+tier 7 a deliberate control, and both are still tagged: a wrongly demoted paper is tagged
+later, never dropped, which is the only safe failure mode for a keyword test. 14.2 % of the
+corpus moves to the back, so a tagging pass that dies at hour six has finished the papers
+that matter. I sampled 22 of the 970 and every one was a graft, a prosthesis or unrelated.
+`PE`, `PP`, `PA`, `PC` and `PU` are deliberately not in the polymer vocabulary, because in
+this literature they read as pulmonary embolism, the posteroanterior view and protein C far
+more often than as polymers; a paper reporting a microplastic finding names one in full
+somewhere in its abstract almost without exception, and `PS` and bare `PET` are in.
+
+`tools/screen.py` (`pixi run screen`) prints the tier split, lists the nine imaging papers
+with whether each names a plastic, and after tagging reports what the tagger said per tier.
+A tier 7 that comes back relevant is a tagger mistake by construction; a tier 6 that does is
+worth reading. The precision question is now measured rather than argued about.
+
+**Reversing it.** Drop the clause from `corpus_clause`, or widen `CORPUS_STRATEGY`, and the
+controls return to the corpus. The tiers are ordering only, so removing tiers 6 and 7
+changes the sequence of a tagging run and nothing about its output.

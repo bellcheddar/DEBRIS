@@ -5,7 +5,12 @@ is stored and the pair gives a self-consistency score. Papers are tagged in prio
 tiers so the app has the papers that matter first:
 
   1 gold set, 2 human tissue and cohort text hits, 3 other human hits,
-  4 animal and in vitro, 5 reviews and the rest
+  4 animal and in vitro, 5 reviews and the rest, 6 papers that never name a plastic,
+  7 the deliberate negative controls
+
+Tiers 6 and 7 are an ordering, never an exclusion: every paper is still tagged, and the
+tagger's relevance head is what decides what the corpus publishes. Demoting them means
+a pass that is interrupted part way through has finished the papers that matter.
 
   pixi run tag --local            # the mlx model on this machine (path B)
   pixi run tag --remote           # the Hugging Face ZeroGPU Space (path A)
@@ -31,11 +36,45 @@ TIER_PATTERNS = (
     (4, r"mice|mouse|rat|zebrafish|in vivo|cell line|caco-2|hepg2|a549|organoid|in vitro"),
 )
 
+PLASTICS_WORDS = re.compile(
+    r"plastic|polymer|polyethylen|polystyren|terephthalat|polypropylen|polyvinyl|polyamide|"
+    r"nylon|polycarbonate|polyurethane|polyurethan|pmma|acrylate|polylactic|polyester|"
+    r"microbead|microfib|tyre wear|tire wear|phthalate|bisphenol|\bmnps?\b|\bmps\b|"
+    r"\bpvc\b|\bhdpe\b|\bldpe\b|\bpla\b|\bpcl\b|\bps\b|\bptfe\b|\bpsnp|\bpslm")
+# PE, PP, PA, PC and PU are left out on purpose: in this literature they read as pulmonary
+# embolism, the posteroanterior view, protein C and so on far more often than as polymers.
+# Leaving them out costs nothing, since a paper that reports a microplastic finding names
+# one in full somewhere in its abstract almost without exception.
+PET_ABBREVIATION = re.compile(r"\bpet\b")
+# `PET` is polyethylene terephthalate in this corpus and positron emission tomography in a
+# radiology journal, which is why the harvest never searches PET[tiab] on its own. Only the
+# second reading arrives with a scanner attached, so that is what tells them apart.
+PET_AS_IMAGING = re.compile(r"\bpet[ /-]?(ct|mri|mr\b|scan|imag)|fdg|\b18f|68ga|"
+                            r"positron emission|radiotracer|psma")
+
+
+def names_a_plastic(haystack: str) -> bool:
+    """Whether a title and abstract mention a plastic at all, spelled out or abbreviated.
+
+    A paper that never does cannot be reporting a microplastic finding however human its
+    study design, and the MeSH strategy brings in a steady supply of them: Dacron grafts
+    are polyethylene terephthalate, so the indexing is right and the paper is still about
+    a vascular prosthesis. They are demoted rather than dropped, because this is a keyword
+    test and keyword tests are wrong often enough that they must not be final.
+    """
+    if PLASTICS_WORDS.search(haystack):
+        return True
+    return bool(PET_ABBREVIATION.search(haystack) and not PET_AS_IMAGING.search(haystack))
+
 
 def tier_of(row, gold: set[str]) -> int:
     if row["pmid"] in gold:
         return 1
+    if (row["hit_strategy"] or "") == c.CORPUS_STRATEGY:
+        return 7
     haystack = f"{row['title']} {row['abstract'][:1200]}".lower()
+    if not names_a_plastic(haystack):
+        return 6
     if re.search(r"\breview\b|meta-analysis|systematic", (row["pub_types"] or "").lower()):
         return 5
     for tier, pattern in TIER_PATTERNS:
@@ -50,7 +89,8 @@ def pending(conn, limit: int | None, only_tier: int | None,
     if not retag:
         where += " AND t.pmid IS NULL"
     rows = conn.execute(
-        f"""SELECT p.pmid, p.title, p.abstract, p.journal, p.year, p.mesh, p.pub_types
+        f"""SELECT p.pmid, p.title, p.abstract, p.journal, p.year, p.mesh, p.pub_types,
+                   p.hit_strategy
             FROM papers p LEFT JOIN tags t USING (pmid) WHERE {where}""").fetchall()
     gold = {r[0] for r in conn.execute("SELECT pmid FROM gold_set WHERE pmid <> ''")}
     ordered = sorted(rows, key=lambda r: (tier_of(r, gold), -(r["year"] or 0)))

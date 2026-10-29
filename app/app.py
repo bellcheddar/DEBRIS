@@ -155,6 +155,11 @@ def paper_filters(args) -> tuple[str, list]:
     """WHERE clause shared by /api/papers and the CSV download."""
     clauses = ["p.status <> 'no_abstract' OR p.abstract <> ''"]
     params: list = []
+    # Papers found only by the negative-control strategy are harvested on purpose as hard
+    # negatives for the tagger (PET imaging, CT, Dacron grafts) and are never corpus, so
+    # the unverified switch does not reveal them either. Inlined rather than imported from
+    # pipeline.common.corpus_clause because the app venv holds only Flask and gunicorn.
+    clauses.append("COALESCE(p.hit_strategy, '') <> 'negative'")
     if args.get("unverified", "0") not in ("1", "true"):
         clauses.append("p.doi_status = 'verified'")
     # Untagged corpora (phase 1) must still list; relevance filters only once tagged.

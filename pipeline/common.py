@@ -36,6 +36,22 @@ for _d in (RAW, LABELS, TRAIN, MANIFESTS, SNAPSHOTS, ADAPTERS, STATIC_DATA):
 
 USER_AGENT = "DEBRIS/1.0 (+https://debris.mdeller.com; mailto:marc@marcdeller.com)"
 
+# A paper whose only harvest strategy is `negative` was pulled in on purpose as a hard
+# negative for the tagger: positron emission tomography, CT, Dacron grafts, silicone
+# implants. Those are real published papers and they verify at Crossref like any other,
+# so they stay in the database because validate.py proves the tagger refuses them. They
+# are not part of the evidence map. The exclusion is on provenance rather than on the
+# tag, so a control cannot reach the site even if the tagger wrongly calls it relevant.
+# A paper that a real strategy also found keeps its place: `textword,negative` is corpus.
+CORPUS_STRATEGY = "negative"
+
+
+def corpus_clause(alias: str = "p") -> str:
+    """The SQL every published count and listing filters on. See CORPUS_STRATEGY."""
+    at = f"{alias}." if alias else ""
+    return (f"{at}doi_status = 'verified' "
+            f"AND COALESCE({at}hit_strategy, '') <> '{CORPUS_STRATEGY}'")
+
 
 # --------------------------------------------------------------------------- config
 

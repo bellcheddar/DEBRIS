@@ -6,9 +6,10 @@ from pipeline import schema
 from pipeline import tag
 
 
-def paper(title="", abstract="", pub_types="", pmid="1", year=2024) -> dict:
+def paper(title="", abstract="", pub_types="", pmid="1", year=2024,
+          hit_strategy="mesh") -> dict:
     return {"pmid": pmid, "title": title, "abstract": abstract,
-            "pub_types": pub_types, "year": year}
+            "pub_types": pub_types, "year": year, "hit_strategy": hit_strategy}
 
 
 def test_gold_papers_are_tagged_first():
@@ -145,3 +146,43 @@ def test_dose_evidence_separates_dose_from_size_dependence():
     assert not dose_evidence("particles of different diameters showed size-dependent uptake")
     assert not dose_evidence("mice were exposed to 100 mg/L polystyrene for 28 days")
     assert not dose_evidence("polystyrene nanoplastics induced cardiomyocyte apoptosis")
+
+
+def test_a_paper_that_never_names_a_plastic_goes_behind_the_corpus():
+    """The MeSH strategy indexes implant materials, so these arrive looking like cohorts."""
+    graft = paper(title="Dacron prosthetic vascular jacket in the Ross operation",
+                  abstract="A patient cohort followed for ten years.")
+    assert tag.tier_of(graft, set()) == 6
+    assert tag.tier_of(paper(title="Wheelchair axle position in C7 tetraplegia"), set()) == 6
+
+
+def test_the_pet_abbreviation_still_counts_as_a_plastic():
+    """`PET exposure in mice` is polyethylene terephthalate and must keep its own tier."""
+    assert tag.tier_of(paper(title="PET exposure in mice", abstract="In vivo."), set()) == 4
+
+
+def test_a_scanner_tells_the_other_pet_apart():
+    """Same three letters, and only one of them comes with a radiotracer."""
+    assert tag.tier_of(paper(title="Role of PET/CT in diffuse large B-cell lymphoma"), set()) == 6
+    assert tag.tier_of(paper(title="FDG PET imaging of aortitis",
+                             abstract="A patient cohort."), set()) == 6
+    assert not tag.names_a_plastic("68ga-psma-11 pet for renal cell carcinoma")
+
+
+def test_imaging_used_to_track_particles_is_not_demoted():
+    """Five of the nine imaging papers in the corpus are real microplastics work."""
+    tracked = paper(title="Tracking ultrafine polystyrene in an asthmatic mouse model "
+                          "using positron emission tomography", abstract="In vivo.")
+    assert tag.tier_of(tracked, set()) == 4
+    assert tag.names_a_plastic("unraveling the in vivo fate of inhaled micro- and "
+                               "nanoplastics with pet imaging")
+
+
+def test_a_deliberate_control_is_tagged_last():
+    """Tagged, because validate.py has to show the tagger refusing it, but tagged last."""
+    control = paper(title="Microplastics in a patient cohort", hit_strategy="negative")
+    assert tag.tier_of(control, set()) == 7
+    # a paper the real strategies also found keeps its place
+    assert tag.tier_of(paper(title="Microplastics in carotid plaque",
+                             abstract="A patient cohort.",
+                             hit_strategy="textword,negative"), set()) == 2

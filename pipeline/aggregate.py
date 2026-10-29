@@ -33,6 +33,10 @@ BODY_NODES = [
 ]
 
 
+CORPUS = c.corpus_clause()
+CORPUS_ANY = c.corpus_clause("")
+
+
 def latest_run(conn) -> str | None:
     row = conn.execute("""SELECT run_id FROM ingest_runs WHERE harvested > 0
                           ORDER BY started_at DESC LIMIT 1""").fetchone()
@@ -41,7 +45,7 @@ def latest_run(conn) -> str | None:
 
 def verified_pmids(conn, pet_only: bool = False, organs: list[str] | None = None) -> set[str]:
     sql = ["SELECT p.pmid FROM papers p LEFT JOIN tags t USING (pmid)",
-           "WHERE p.doi_status = 'verified' AND (t.relevant IS NULL OR t.relevant = 1)"]
+           f"WHERE {CORPUS} AND (t.relevant IS NULL OR t.relevant = 1)"]
     params: list = []
     if pet_only:
         sql.append("AND t.pet_specific = 1")
@@ -84,7 +88,7 @@ def ladder_rows(conn, pet_only: bool) -> list[dict]:
         JOIN tags t USING (pmid)
         JOIN tag_diseases d ON d.pmid = p.pmid
         JOIN tag_rungs r ON r.pmid = p.pmid
-        WHERE p.doi_status = 'verified' AND t.relevant = 1 {pet_clause}
+        WHERE {CORPUS} AND t.relevant = 1 {pet_clause}
         GROUP BY d.disease_category, r.rung""").fetchall()
     grid: dict[str, list[int]] = {}
     for row in rows:
@@ -111,9 +115,9 @@ def atlas_bundle(conn) -> dict:
         cells[chip["key"]] = {}
         for variant, pet_only in (("all", False), ("pet", True)):
             pmids = verified_pmids(conn, pet_only=pet_only, organs=organs or None)
-            organ_count = conn.execute("""SELECT COUNT(DISTINCT organ_system) FROM tag_organs
+            organ_count = conn.execute(f"""SELECT COUNT(DISTINCT organ_system) FROM tag_organs
                                           WHERE pmid IN (SELECT pmid FROM papers
-                                          WHERE doi_status='verified')""").fetchone()[0]
+                                          WHERE {CORPUS_ANY})""").fetchone()[0]
             cells[chip["key"]][variant] = {
                 "verified": len(pmids),
                 "pet": len(pmids & verified_pmids(conn, pet_only=True, organs=organs or None)),
@@ -121,11 +125,11 @@ def atlas_bundle(conn) -> dict:
                 "venn_main": venn_counts(pmids, polymers, MAIN_SETS),
                 "venn_secondary": venn_counts(pmids, polymers, SECONDARY_SETS),
             }
-    years = conn.execute("""
+    years = conn.execute(f"""
         SELECT p.year AS year, COUNT(*) AS n,
                SUM(CASE WHEN t.pet_specific = 1 THEN 1 ELSE 0 END) AS pet_n
         FROM papers p LEFT JOIN tags t USING (pmid)
-        WHERE p.doi_status = 'verified' AND p.year IS NOT NULL
+        WHERE {CORPUS} AND p.year IS NOT NULL
           AND (t.relevant IS NULL OR t.relevant = 1)
         GROUP BY p.year ORDER BY p.year""").fetchall()
     return {
@@ -149,7 +153,7 @@ def body_bundle(conn) -> dict:
         pmids = [r[0] for r in conn.execute(
             f"""SELECT DISTINCT p.pmid FROM papers p JOIN tags t USING (pmid)
                 JOIN tag_organs o ON o.pmid = p.pmid
-                WHERE p.doi_status='verified' AND t.relevant=1
+                WHERE {CORPUS} AND t.relevant=1
                   AND o.organ_system IN ({marks})""", organs)]
         if not pmids:
             nodes.append({"key": key, "label": label, "organs": organs, "x": x, "y": y,
@@ -189,19 +193,19 @@ def body_bundle(conn) -> dict:
 
 def pathways_bundle(conn) -> dict:
     """Sankey polymers to pathways to disease categories, plus the per-category radar."""
-    poly_path = conn.execute("""
+    poly_path = conn.execute(f"""
         SELECT pl.polymer AS a, pa.pathway AS b, COUNT(DISTINCT p.pmid) AS n
         FROM papers p JOIN tags t USING (pmid)
         JOIN tag_polymers pl ON pl.pmid = p.pmid
         JOIN tag_pathways pa ON pa.pmid = p.pmid
-        WHERE p.doi_status='verified' AND t.relevant=1
+        WHERE {CORPUS} AND t.relevant=1
         GROUP BY pl.polymer, pa.pathway HAVING n > 0""").fetchall()
-    path_dis = conn.execute("""
+    path_dis = conn.execute(f"""
         SELECT pa.pathway AS a, d.disease_category AS b, COUNT(DISTINCT p.pmid) AS n
         FROM papers p JOIN tags t USING (pmid)
         JOIN tag_pathways pa ON pa.pmid = p.pmid
         JOIN tag_diseases d ON d.pmid = p.pmid
-        WHERE p.doi_status='verified' AND t.relevant=1 AND d.disease_category <> 'none'
+        WHERE {CORPUS} AND t.relevant=1 AND d.disease_category <> 'none'
         GROUP BY pa.pathway, d.disease_category HAVING n > 0""").fetchall()
 
     labels: list[str] = []
@@ -240,15 +244,15 @@ def pathways_bundle(conn) -> dict:
             continue
         all_counts, pet_counts = [], []
         for pathway in axes:
-            all_counts.append(conn.execute("""
+            all_counts.append(conn.execute(f"""
                 SELECT COUNT(DISTINCT p.pmid) FROM papers p JOIN tags t USING (pmid)
                 JOIN tag_diseases d ON d.pmid=p.pmid JOIN tag_pathways pa ON pa.pmid=p.pmid
-                WHERE p.doi_status='verified' AND t.relevant=1 AND d.disease_category=?
+                WHERE {CORPUS} AND t.relevant=1 AND d.disease_category=?
                   AND pa.pathway=?""", (cat, pathway)).fetchone()[0])
-            pet_counts.append(conn.execute("""
+            pet_counts.append(conn.execute(f"""
                 SELECT COUNT(DISTINCT p.pmid) FROM papers p JOIN tags t USING (pmid)
                 JOIN tag_diseases d ON d.pmid=p.pmid JOIN tag_pathways pa ON pa.pmid=p.pmid
-                WHERE p.doi_status='verified' AND t.relevant=1 AND t.pet_specific=1
+                WHERE {CORPUS} AND t.relevant=1 AND t.pet_specific=1
                   AND d.disease_category=? AND pa.pathway=?""", (cat, pathway)).fetchone()[0])
         if sum(all_counts) == 0:
             continue
@@ -273,13 +277,13 @@ def feed_bundle(conn) -> dict:
     run = latest_run(conn)
     rows = []
     if run:
-        rows = conn.execute("""
+        rows = conn.execute(f"""
             SELECT p.pmid, p.title, p.journal, p.year, p.doi, p.retracted, t.summary,
                    (SELECT GROUP_CONCAT(polymer) FROM tag_polymers WHERE pmid=p.pmid) AS polymers,
                    (SELECT GROUP_CONCAT(rung) FROM tag_rungs WHERE pmid=p.pmid) AS rungs,
                    (SELECT COUNT(*) FROM novelty_events WHERE pmid=p.pmid AND ingest_run=?) AS novel
             FROM papers p LEFT JOIN tags t USING (pmid)
-            WHERE p.ingest_run = ? AND p.doi_status='verified'
+            WHERE p.ingest_run = ? AND {CORPUS}
               AND (t.relevant IS NULL OR t.relevant=1)
             ORDER BY novel DESC, p.year DESC LIMIT 36""", (run, run)).fetchall()
     feed = []
@@ -296,23 +300,28 @@ def feed_bundle(conn) -> dict:
 
 def meta_bundle(conn) -> dict:
     run = latest_run(conn)
-    verified = conn.execute("SELECT COUNT(*) FROM papers WHERE doi_status='verified'").fetchone()[0]
-    tagged = conn.execute("""SELECT COUNT(*) FROM tags t JOIN papers p USING (pmid)
-                             WHERE p.doi_status='verified'""").fetchone()[0]
-    relevant = conn.execute("""SELECT COUNT(*) FROM tags t JOIN papers p USING (pmid)
-                               WHERE p.doi_status='verified' AND t.relevant=1""").fetchone()[0]
-    pet = conn.execute("""SELECT COUNT(*) FROM tags t JOIN papers p USING (pmid)
-                          WHERE p.doi_status='verified' AND t.relevant=1
+    verified = conn.execute(f"SELECT COUNT(*) FROM papers WHERE {CORPUS_ANY}").fetchone()[0]
+    # Reported so the funnel still adds up: the controls are harvested, verified and
+    # tagged, they are simply not corpus. See common.CORPUS_STRATEGY.
+    controls = conn.execute(f"""SELECT COUNT(*) FROM papers WHERE doi_status = 'verified'
+                                AND COALESCE(hit_strategy, '') = '{c.CORPUS_STRATEGY}'"""
+                            ).fetchone()[0]
+    tagged = conn.execute(f"""SELECT COUNT(*) FROM tags t JOIN papers p USING (pmid)
+                             WHERE {CORPUS}""").fetchone()[0]
+    relevant = conn.execute(f"""SELECT COUNT(*) FROM tags t JOIN papers p USING (pmid)
+                               WHERE {CORPUS} AND t.relevant=1""").fetchone()[0]
+    pet = conn.execute(f"""SELECT COUNT(*) FROM tags t JOIN papers p USING (pmid)
+                          WHERE {CORPUS} AND t.relevant=1
                             AND t.pet_specific=1""").fetchone()[0]
-    organs = conn.execute("""SELECT COUNT(DISTINCT organ_system) FROM tag_organs
+    organs = conn.execute(f"""SELECT COUNT(DISTINCT organ_system) FROM tag_organs
                              WHERE pmid IN (SELECT pmid FROM papers
-                             WHERE doi_status='verified')""").fetchone()[0]
-    new_this_week = conn.execute("""SELECT COUNT(*) FROM papers WHERE ingest_run=?
-                                    AND doi_status='verified'""", (run,)).fetchone()[0] if run else 0
+                             WHERE {CORPUS_ANY})""").fetchone()[0]
+    new_this_week = conn.execute(f"""SELECT COUNT(*) FROM papers WHERE ingest_run=?
+                                    AND {CORPUS_ANY}""", (run,)).fetchone()[0] if run else 0
     novel = conn.execute("SELECT COUNT(DISTINCT pmid) FROM novelty_events WHERE ingest_run=?",
                          (run,)).fetchone()[0] if run else 0
     queued = conn.execute("SELECT COUNT(*) FROM review_queue WHERE resolved_at IS NULL").fetchone()[0]
-    first_year = conn.execute("""SELECT MIN(year) FROM papers WHERE doi_status='verified'
+    first_year = conn.execute(f"""SELECT MIN(year) FROM papers WHERE {CORPUS_ANY}
                                  AND year IS NOT NULL""").fetchone()[0]
     row = conn.execute("""SELECT model_version, inference_path, finished_at, started_at
                           FROM ingest_runs WHERE run_id=?""", (run,)).fetchone() if run else None
@@ -325,7 +334,8 @@ def meta_bundle(conn) -> dict:
         "generated_at": c.now(),
         "last_ingest": stamp,
         "last_ingest_date": (stamp or "")[:10] or dt.date.today().isoformat(),
-        "verified_papers": verified, "tagged_papers": tagged, "relevant_papers": relevant,
+        "verified_papers": verified, "control_papers": controls,
+        "tagged_papers": tagged, "relevant_papers": relevant,
         "pet_papers": pet, "organ_systems_covered": organs, "new_this_week": new_this_week,
         "novel_this_week": novel, "review_queue": queued, "first_year": first_year,
         "model_version": (model_version[0] if model_version else None),

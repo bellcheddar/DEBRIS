@@ -1,6 +1,6 @@
 # DEBRIS findings
 
-Generated from `data/debris.sqlite` on 2026-10-29 07:07 UTC. Regenerate with `pixi run findings`.
+Generated from `data/debris.sqlite` on 2026-10-29 18:48 UTC. Regenerate with `pixi run findings`.
 
 DEBRIS indexes what the literature reports. A tag records a polymer detected, an association observed or a mechanism shown; nothing here asserts that plastics cause disease in people. The evidence rungs are ordered so a reader can see how far from a human outcome each claim sits.
 
@@ -46,24 +46,24 @@ A paper is admitted when Crossref resolves its DOI and `token_set_ratio` between
 | title_mismatch | 134 | 1.3% | 0 |
 | unresolved | 66 | 0.7% | 0 |
 
-9,685 papers are verified. 404 have no abstract, so they are stored but never tagged. 13 are flagged retracted by a Crossref `update-to` relation: they are struck through in the app and never deleted.
+9,685 papers are verified. 362 of those were harvested on purpose as negative controls, positron emission tomography and CT work above all, so that the tagger can be shown refusing them; they are not part of the corpus and are excluded from every count the site publishes, which leaves 9,323. 404 have no abstract, so they are stored but never tagged. 13 are flagged retracted by a Crossref `update-to` relation: they are struck through in the app and never deleted.
 
 ## Tagger
 
-`debris_v1` is a single LoRA fine-tune of `Qwen/Qwen2.5-3B-Instruct`, trained once on the task and the schema rather than on facts. The weekly refresh never retrains it. Validation loss ran 2.447 to 0.765 over 800 iterations. Scored on the held-out split of 162 papers, which no training or validation step saw.
+`debris_v1` is a single LoRA fine-tune of `Qwen/Qwen2.5-3B-Instruct`, trained once on the task and the schema rather than on facts. The weekly refresh never retrains it. Validation loss ran 2.429 to 0.82 over 1600 iterations. Scored on the held-out split of 162 papers, which no training or validation step saw.
 
 | Field | Fused | Floor | Meets floor | q4 |
 |---|---|---|---|---|
-| `relevant_f1` | 0.9438 | 0.95 | **no** | 0.7928 |
-| `polymers_f1` | 0.8316 | 0.85 | **no** | 0.624 |
-| `organ_systems_f1` | 0.7095 | 0.85 | **no** | 0.5339 |
-| `pathways_f1` | 0.6095 | 0.75 | **no** | 0.4173 |
-| `rungs_exact` | 0.7531 | 0.7 | yes | 0.5 |
-| `rungs_within_one` | 0.7963 | 0.9 | **no** | 0.6667 |
-| `model_type_accuracy` | 0.8457 | 0.9 | **no** | 0.784 |
-| `valid_json` | 0.9938 | 0.98 | yes | 1.0 |
+| `relevant_f1` | 0.9711 | 0.95 | yes | 0.948 |
+| `polymers_f1` | 0.8701 | 0.85 | yes | 0.8111 |
+| `organ_systems_f1` | 0.8043 | 0.85 | **no** | 0.6704 |
+| `pathways_f1` | 0.6332 | 0.75 | **no** | 0.5363 |
+| `rungs_exact` | 0.8457 | 0.7 | yes | 0.7346 |
+| `rungs_within_one` | 0.8642 | 0.9 | **no** | 0.7469 |
+| `model_type_accuracy` | 0.8523 | 0.9 | **no** | 0.7841 |
+| `valid_json` | 1.0 | 0.98 | yes | 0.9877 |
 
-Below floor: relevant_f1 0.944 < 0.95; polymers_f1 0.832 < 0.85; organ_systems_f1 0.710 < 0.85; pathways_f1 0.610 < 0.75; rungs_within_one 0.796 < 0.9; model_type_accuracy 0.846 < 0.9. Full card in `MODEL_CARD.md`; the run and its loss curve are in wandb (offline under `wandb/` while no API key is set).
+Below floor: organ_systems_f1 0.804 < 0.85; pathways_f1 0.633 < 0.75; rungs_within_one 0.864 < 0.9; model_type_accuracy 0.852 < 0.9. Full card in `MODEL_CARD.md`; the run and its loss curve are in wandb (offline under `wandb/` while no API key is set).
 
 ## PET share by organ system
 
@@ -115,7 +115,7 @@ No papers are tagged yet.
 
 |  |  |
 |---|---|
-| Inference path | B, the mlx model on the Studio (no HF_TOKEN present) |
+| Inference path | A, the Hugging Face ZeroGPU Space |
 | Model version | debris_v1 |
 | Weights | `data/adapters/debris_v1_fused` |
 | Next scheduled run | Sunday 2026-11-01 at 02:00 local, `com.mdeller.debris.weekly.plist` |

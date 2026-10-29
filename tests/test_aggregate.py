@@ -4,18 +4,25 @@ from __future__ import annotations
 from pipeline import aggregate
 from pipeline import common as c
 
+# These queries are written out by hand rather than imported, so a mistake in the aggregate
+# cannot hide behind the same mistake in the test. The one rule stated once is the corpus
+# rule: a paper harvested only as a negative control is not corpus, whatever its tag says.
+NOT_CONTROL = "COALESCE(p.hit_strategy,'') <> 'negative'"
+
 
 def test_meta_matches_sql(corpus):
     conn = c.connect(corpus)
     meta = aggregate.meta_bundle(conn)
     assert meta["verified_papers"] == conn.execute(
-        "SELECT COUNT(*) FROM papers WHERE doi_status='verified'").fetchone()[0]
+        f"""SELECT COUNT(*) FROM papers p WHERE doi_status='verified'
+              AND {NOT_CONTROL}""").fetchone()[0]
     assert meta["relevant_papers"] == conn.execute(
-        """SELECT COUNT(*) FROM tags t JOIN papers p USING (pmid)
-           WHERE p.doi_status='verified' AND t.relevant=1""").fetchone()[0]
+        f"""SELECT COUNT(*) FROM tags t JOIN papers p USING (pmid)
+           WHERE p.doi_status='verified' AND t.relevant=1 AND {NOT_CONTROL}""").fetchone()[0]
     assert meta["pet_papers"] == conn.execute(
-        """SELECT COUNT(*) FROM tags t JOIN papers p USING (pmid)
-           WHERE p.doi_status='verified' AND t.relevant=1 AND t.pet_specific=1""").fetchone()[0]
+        f"""SELECT COUNT(*) FROM tags t JOIN papers p USING (pmid)
+           WHERE p.doi_status='verified' AND t.relevant=1 AND {NOT_CONTROL} AND t.pet_specific=1
+             AND {NOT_CONTROL}""").fetchone()[0]
     assert meta["review_queue"] == 1
 
 
@@ -29,7 +36,7 @@ def test_venn_regions_sum_to_papers_with_those_polymers(corpus):
     expected = conn.execute(
         f"""SELECT COUNT(DISTINCT p.pmid) FROM papers p JOIN tags t USING (pmid)
             JOIN tag_polymers pl ON pl.pmid=p.pmid
-            WHERE p.doi_status='verified' AND t.relevant=1
+            WHERE p.doi_status='verified' AND t.relevant=1 AND {NOT_CONTROL}
               AND pl.polymer IN ({marks})""", list(main_members)).fetchone()[0]
     assert sum(regions.values()) == expected, "a paper is counted in exactly one region"
 
@@ -47,9 +54,9 @@ def test_organ_chip_narrows_the_corpus(corpus):
     cells = aggregate.atlas_bundle(conn)["cells"]
     assert cells["heart"]["all"]["verified"] < cells["all"]["all"]["verified"]
     assert cells["heart"]["all"]["verified"] == conn.execute(
-        """SELECT COUNT(DISTINCT p.pmid) FROM papers p JOIN tags t USING (pmid)
+        f"""SELECT COUNT(DISTINCT p.pmid) FROM papers p JOIN tags t USING (pmid)
            JOIN tag_organs o ON o.pmid=p.pmid
-           WHERE p.doi_status='verified' AND t.relevant=1
+           WHERE p.doi_status='verified' AND t.relevant=1 AND {NOT_CONTROL}
              AND o.organ_system='cardiovascular'""").fetchone()[0]
 
 
@@ -59,9 +66,9 @@ def test_ladder_rows_do_not_double_count_a_paper_within_a_rung(corpus):
     for row in rows:
         for rung_index, count in enumerate(row["rungs"], 1):
             expected = conn.execute(
-                """SELECT COUNT(DISTINCT p.pmid) FROM papers p JOIN tags t USING (pmid)
+                f"""SELECT COUNT(DISTINCT p.pmid) FROM papers p JOIN tags t USING (pmid)
                    JOIN tag_diseases d ON d.pmid=p.pmid JOIN tag_rungs r ON r.pmid=p.pmid
-                   WHERE p.doi_status='verified' AND t.relevant=1
+                   WHERE p.doi_status='verified' AND t.relevant=1 AND {NOT_CONTROL}
                      AND d.disease_category=? AND r.rung=?""",
                 (row["key"], rung_index)).fetchone()[0]
             assert count == expected
@@ -88,7 +95,7 @@ def test_body_counts_match_sql(corpus):
         expected = conn.execute(
             f"""SELECT COUNT(DISTINCT p.pmid) FROM papers p JOIN tags t USING (pmid)
                 JOIN tag_organs o ON o.pmid=p.pmid
-                WHERE p.doi_status='verified' AND t.relevant=1
+                WHERE p.doi_status='verified' AND t.relevant=1 AND {NOT_CONTROL}
                   AND o.organ_system IN ({marks})""", node["organs"]).fetchone()[0]
         assert node["count"] == expected
         assert node["pet_count"] <= node["count"]
@@ -109,5 +116,6 @@ def test_unverified_and_irrelevant_papers_are_excluded(corpus):
     bundle = aggregate.atlas_bundle(conn)
     # 1006 is unresolved, 1007 is irrelevant: neither may reach a chart.
     assert bundle["cells"]["all"]["all"]["verified"] == conn.execute(
-        """SELECT COUNT(*) FROM papers p LEFT JOIN tags t USING (pmid)
-           WHERE p.doi_status='verified' AND (t.relevant IS NULL OR t.relevant=1)""").fetchone()[0]
+        f"""SELECT COUNT(*) FROM papers p LEFT JOIN tags t USING (pmid)
+           WHERE p.doi_status='verified' AND (t.relevant IS NULL OR t.relevant=1)
+             AND {NOT_CONTROL}""").fetchone()[0]

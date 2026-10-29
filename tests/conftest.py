@@ -18,13 +18,14 @@ def insert_paper(conn, pmid, *, title="A title", doi_status="verified", year=202
                  journal="J Test", relevant=1, polymers=("PET",), organs=("cardiovascular",),
                  diseases=(("atherosclerosis_mace", "carotid artery disease"),),
                  pathways=("oxidative_stress",), rungs=(1, 2), pet=1, run="run-test",
-                 abstract="An abstract long enough to be tagged.", model_type="human_tissue"):
+                 abstract="An abstract long enough to be tagged.", model_type="human_tissue",
+                 strategy="mesh"):
     conn.execute("""INSERT INTO papers (pmid,doi,doi_status,retracted,title,abstract,journal,year,
                       month,authors,mesh,pub_types,edat,hit_strategy,ingested_at,ingest_run,status)
                     VALUES (?,?,?,0,?,?,?,?,1,'Author A','Microplastics','Journal Article',
-                      '2024-01-01','mesh',?,?,'tagged')""",
+                      '2024-01-01',?,?,?,'tagged')""",
                  (pmid, f"10.1000/{pmid}", doi_status, title, abstract, journal, year,
-                  c.now(), run))
+                  strategy, c.now(), run))
     if relevant is not None:
         tag = {"relevant": bool(relevant), "polymers": list(polymers), "size_class": "micro",
                "organ_systems": list(organs), "disease_categories": [d[0] for d in diseases],
@@ -53,7 +54,8 @@ def quiet_build_log(tmp_path, monkeypatch):
 
 @pytest.fixture
 def corpus(tmp_path, monkeypatch):
-    """A seven-paper corpus with one unverified, one irrelevant and one untagged paper."""
+    """Ten papers: one unverified, one irrelevant, one untagged and two negative
+    controls, one of them untagged and one wrongly tagged relevant."""
     db = tmp_path / "debris.sqlite"
     c.init_db(db)
     conn = sqlite3.connect(db)
@@ -76,6 +78,10 @@ def corpus(tmp_path, monkeypatch):
                      pathways=(), rungs=(), pet=0, model_type="not_applicable",
                      title="Positron emission tomography staging")
         insert_paper(conn, "1008", relevant=None)
+        insert_paper(conn, "1009", relevant=None, strategy="negative",
+                     title="Role of PET/CT in diffuse large B-cell lymphoma")
+        insert_paper(conn, "1010", strategy="negative",
+                     title="FDG PET/CT in aortitis treatment response")
         conn.execute("INSERT INTO review_queue (pmid,reason,queued_at) VALUES ('1004','low confidence',?)",
                      (c.now(),))
         conn.execute("""INSERT INTO novelty_events (pmid,kind,key,ingest_run)

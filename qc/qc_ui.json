@@ -1,11 +1,11 @@
 {
-  "base": "http://127.0.0.1:54762",
+  "base": "http://127.0.0.1:59896",
   "pages": [
     {
       "page": "atlas",
       "viewport": "desktop",
       "status": 200,
-      "seconds": 0.583,
+      "seconds": 0.594,
       "screenshot": "qc/atlas-desktop.png",
       "violations": 0,
       "serious_or_critical": 0
@@ -14,7 +14,7 @@
       "page": "body",
       "viewport": "desktop",
       "status": 200,
-      "seconds": 0.584,
+      "seconds": 0.579,
       "screenshot": "qc/body-desktop.png",
       "violations": 0,
       "serious_or_critical": 0
@@ -23,7 +23,7 @@
       "page": "pathways",
       "viewport": "desktop",
       "status": 200,
-      "seconds": 0.539,
+      "seconds": 0.554,
       "screenshot": "qc/pathways-desktop.png",
       "violations": 0,
       "serious_or_critical": 0
@@ -32,7 +32,7 @@
       "page": "papers",
       "viewport": "desktop",
       "status": 200,
-      "seconds": 0.651,
+      "seconds": 0.591,
       "screenshot": "qc/papers-desktop.png",
       "violations": 0,
       "serious_or_critical": 0
@@ -41,7 +41,7 @@
       "page": "atlas",
       "viewport": "mobile",
       "status": 200,
-      "seconds": 0.573,
+      "seconds": 0.577,
       "screenshot": "qc/atlas-mobile.png",
       "violations": 0,
       "serious_or_critical": 0
@@ -50,7 +50,7 @@
       "page": "body",
       "viewport": "mobile",
       "status": 200,
-      "seconds": 0.576,
+      "seconds": 0.575,
       "screenshot": "qc/body-mobile.png",
       "violations": 0,
       "serious_or_critical": 0
@@ -68,7 +68,7 @@
       "page": "papers",
       "viewport": "mobile",
       "status": 200,
-      "seconds": 0.578,
+      "seconds": 0.58,
       "screenshot": "qc/papers-mobile.png",
       "violations": 0,
       "serious_or_critical": 0
@@ -80,7 +80,7 @@
   "interactions": [
     {
       "from": "atlas region",
-      "url": "http://127.0.0.1:54762/papers?polymers=PET&not_polymers=PS%2CPE%2CPP",
+      "url": "http://127.0.0.1:59896/papers?polymers=PET&not_polymers=PS%2CPE%2CPP",
       "ok": true
     },
     {

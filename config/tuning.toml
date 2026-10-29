@@ -1,0 +1,13 @@
+cpu_workers = 14
+io_workers = 8
+model_backend = "mlx"
+model_id = "Qwen/Qwen2.5-3B-Instruct"
+model_instances = 1
+tag_batch_size = 8
+memory_headroom_gb = 24
+max_compute_hours = 24
+ncbi_rate_per_second = 3
+
+[env]
+TOKENIZERS_PARALLELISM = "false"
+OMP_NUM_THREADS = "14"

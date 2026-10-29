@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Path B (spec 5.6): the weekly refresh on the Studio with the q4 mlx model, used
+     when there is no HF_TOKEN or no ZeroGPU quota. Loaded by the build with
+     launchctl bootstrap gui/$(id -u). Sunday 02:00 local. -->
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+  <key>Label</key>
+  <string>com.mdeller.debris.weekly</string>
+  <key>ProgramArguments</key>
+  <array>
+    <string>/bin/bash</string>
+    <string>-lc</string>
+    <string>cd /Users/dellboy/Documents/Vibe_Coding/debris &amp;&amp; /usr/bin/caffeinate -dimsu /opt/homebrew/bin/pixi run weekly --local &amp;&amp; /bin/bash deploy/deploy.sh --data-only</string>
+  </array>
+  <key>StartCalendarInterval</key>
+  <dict>
+    <key>Weekday</key><integer>0</integer>
+    <key>Hour</key><integer>2</integer>
+    <key>Minute</key><integer>0</integer>
+  </dict>
+  <key>StandardOutPath</key>
+  <string>/Users/dellboy/Documents/Vibe_Coding/debris/data/weekly.log</string>
+  <key>StandardErrorPath</key>
+  <string>/Users/dellboy/Documents/Vibe_Coding/debris/data/weekly.err.log</string>
+  <key>WorkingDirectory</key>
+  <string>/Users/dellboy/Documents/Vibe_Coding/debris</string>
+  <key>RunAtLoad</key>
+  <false/>
+</dict>
+</plist>

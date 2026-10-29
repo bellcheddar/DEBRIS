@@ -1,0 +1,23 @@
+# systemd unit for the DEBRIS web app (gunicorn behind nginx). Always on.
+# Copied from AlphaFraud/deploy/alphafraud-web.service; names, paths and port changed.
+[Unit]
+Description=DEBRIS web app (gunicorn)
+After=network.target
+
+[Service]
+Type=simple
+User=debris
+Group=debris
+WorkingDirectory=/opt/debris
+EnvironmentFile=-/opt/debris/.env
+ExecStart=/opt/debris/.venv/bin/gunicorn --config /opt/debris/deploy/gunicorn.conf.py wsgi:app
+Restart=on-failure
+RestartSec=3
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=full
+ProtectHome=true
+ReadWritePaths=/opt/debris
+
+[Install]
+WantedBy=multi-user.target

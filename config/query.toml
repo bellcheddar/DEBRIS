@@ -1,0 +1,77 @@
+# PubMed queries (spec 5.1 and 5.3). Never search PET[tiab] alone: it matches
+# positron emission tomography.
+
+start_year = 2004
+efetch_batch = 200
+tool_name = "DEBRIS"
+contact_email = "marc@marcdeller.com"
+
+[strategies.mesh]
+label = "A (MeSH)"
+term = """("Microplastics"[Mesh] OR "Polyethylene Terephthalates"[Mesh] OR "Polystyrenes"[Mesh] OR "Polyethylene"[Mesh] OR "Polypropylenes"[Mesh] OR "Polyvinyl Chloride"[Mesh]) AND ("Cardiovascular Diseases"[Mesh] OR "Lung Diseases"[Mesh] OR "Hematologic Diseases"[Mesh] OR "Neoplasms"[Mesh] OR "Kidney Diseases"[Mesh] OR "Liver Diseases"[Mesh] OR "Brain Diseases"[Mesh] OR "Nervous System Diseases"[Mesh] OR "Sleep Wake Disorders"[Mesh] OR "Gastrointestinal Diseases"[Mesh] OR "Pregnancy Complications"[Mesh] OR "Inflammation"[Mesh] OR "Oxidative Stress"[Mesh] OR "Thrombosis"[Mesh] OR "Metabolic Diseases"[Mesh] OR "Immune System Diseases"[Mesh]) AND 2004:3000[dp]"""
+
+[strategies.textword]
+label = "B (text word)"
+term = """(microplastic*[tiab] OR nanoplastic*[tiab] OR "micro-nanoplastic*"[tiab] OR "micro(nano)plastic*"[tiab] OR "plastic particle*"[tiab]) AND (disease[tiab] OR cancer[tiab] OR tumour[tiab] OR tumor[tiab] OR cardiovascular[tiab] OR atherosclero*[tiab] OR thrombo*[tiab] OR platelet*[tiab] OR lung[tiab] OR pulmonary[tiab] OR asthma[tiab] OR fibrosis[tiab] OR blood[tiab] OR an?emia[tiab] OR kidney[tiab] OR renal[tiab] OR liver[tiab] OR hepat*[tiab] OR brain[tiab] OR neuro*[tiab] OR sleep[tiab] OR circadian[tiab] OR placenta*[tiab] OR colorectal[tiab] OR intestin*[tiab] OR inflamm*[tiab] OR "oxidative stress"[tiab]) AND 2004:3000[dp]"""
+
+# Gold seed set (spec 5.3 and Appendix C): resolved by search at run time, never
+# hand-typed. Each entry names what the paper must be, so the resolver can log what
+# it actually found.
+[[gold]]
+key = "carotid_plaque_cohort"
+expect = "NEJM 2024 carotid plaque MNP cohort (Marfella et al.)"
+term = '''(microplastic*[tiab] OR nanoplastic*[tiab]) AND (carotid[tiab] AND (plaque[tiab] OR atheroma[tiab])) AND "N Engl J Med"[ta]'''
+[[gold]]
+key = "blood_detection"
+expect = "Environment International 2022 blood detection (Leslie et al.)"
+term = '''(plastic particle*[tiab] OR microplastic*[tiab] OR nanoplastic*[tiab]) AND "human blood"[tiab] AND "Environ Int"[ta] AND 2022[dp]'''
+[[gold]]
+key = "lung_tissue"
+expect = "Science of the Total Environment 2022 lung tissue (Jenner et al.)"
+term = '''microplastic*[tiab] AND "human lung"[tiab] AND "Sci Total Environ"[ta] AND 2022[dp]'''
+[[gold]]
+key = "brain_accumulation"
+expect = "Nature Medicine 2025 brain accumulation (Nihart et al.)"
+term = '''(microplastic*[tiab] OR nanoplastic*[tiab]) AND brain[tiab] AND "Nat Med"[ta]'''
+[[gold]]
+key = "placenta_detection"
+expect = "Environment International 2021 placenta detection (Ragusa et al.)"
+term = '''microplastic*[tiab] AND placenta*[tiab] AND "Environ Int"[ta] AND 2021[dp]'''
+[[gold]]
+key = "colorectal_1"
+expect = "most-cited colorectal or intestinal MNP study"
+term = '''(microplastic*[tiab] OR nanoplastic*[tiab]) AND (colorectal[tiab] OR "colon cancer"[tiab]) AND (human[tiab] OR patient*[tiab] OR tissue[tiab])'''
+sort = "relevance"
+[[gold]]
+key = "colorectal_2"
+expect = "second colorectal or intestinal migration/inflammation study"
+term = '''(microplastic*[tiab] OR nanoplastic*[tiab]) AND (intestin*[tiab] OR gut[tiab]) AND (inflamm*[tiab] OR barrier[tiab] OR migration[tiab])'''
+sort = "relevance"
+[[gold]]
+key = "pet_leachate"
+expect = "PET leachate toxicity study"
+term = '''("polyethylene terephthalate"[tiab] OR PET[tiab]) AND (leachate*[tiab] OR migration[tiab]) AND (toxic*[tiab] OR cytotox*[tiab]) NOT "positron emission"[tiab]'''
+sort = "relevance"
+[[gold]]
+key = "broad_review"
+expect = "broad MNP human-health review"
+term = '''(microplastic*[tiab] OR nanoplastic*[tiab]) AND "human health"[tiab] AND review[pt]'''
+sort = "relevance"
+
+# Negatives (spec 5.3): relevant = false, never shown. ~400 in total.
+[[negatives]]
+key = "pet_scan_oncology"
+retmax = 120
+term = '''("positron emission tomography"[tiab] OR "PET/CT"[tiab]) AND (oncolog*[tiab] OR staging[tiab] OR tumour[tiab] OR tumor[tiab]) AND 2015:3000[dp]'''
+[[negatives]]
+key = "marine_ecology"
+retmax = 120
+term = '''microplastic*[tiab] AND (fish[tiab] OR mussel*[tiab] OR seawater[tiab] OR sediment*[tiab] OR "marine environment"[tiab]) NOT human*[tiab]'''
+[[negatives]]
+key = "polymer_chemistry_recycling"
+retmax = 90
+term = '''(polyethylene terephthalate[tiab] OR polystyrene[tiab]) AND (recycl*[tiab] OR depolymeri*[tiab] OR catalys*[tiab] OR synthesis[tiab]) NOT (disease[tiab] OR toxic*[tiab])'''
+[[negatives]]
+key = "analytical_methods"
+retmax = 90
+term = '''microplastic*[tiab] AND (("Raman"[tiab] OR "FTIR"[tiab] OR "pyrolysis GC"[tiab]) AND (method*[tiab] OR quantif*[tiab] OR identificat*[tiab])) NOT (disease[tiab] OR patient*[tiab])'''

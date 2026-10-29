@@ -1,0 +1,7 @@
+# Hugging Face targets for inference path A. HF_TOKEN comes from the environment, never from this file.
+model_repo = "Dellboy/debris-tagger-v1"
+space_repo = "Dellboy/debris-tagger"
+space_hardware = "zero-a10g"
+private_model = true
+batch_size = 16
+weekly_budget_minutes = 20

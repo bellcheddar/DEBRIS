@@ -1,0 +1,25 @@
+# systemd oneshot: the weekly DEBRIS refresh. Triggered by debris-weekly.timer.
+# Harvest since the EDAT watermark, verify DOIs, tag through the Hugging Face Space,
+# score novelty, aggregate, then swap the SQLite and the JSON bundles atomically.
+# The web app opens both per request, so no restart is needed after a run.
+[Unit]
+Description=DEBRIS weekly refresh (harvest, verify, tag, aggregate)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+User=debris
+Group=debris
+WorkingDirectory=/opt/debris
+EnvironmentFile=-/opt/debris/.env
+ExecStart=/opt/debris/deploy/weekly.sh
+TimeoutStartSec=5400
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=full
+ProtectHome=true
+ReadWritePaths=/opt/debris
+
+[Install]
+WantedBy=multi-user.target

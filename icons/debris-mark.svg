@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 300" role="img" aria-label="DEBRIS">
+  <title>DEBRIS</title>
+  <desc>Plastic fragments settling through a body outline, with the DEBRIS wordmark.</desc>
+  <rect width="300" height="300" fill="#F8F8F8"/>
+  <!-- Torso outline: the body map of tab 02, reduced to a single stroke. -->
+  <path d="M150 42c-13 0-23 10-23 23 0 9 4 17 10 21-5 2-9 5-12 9-8 4-23 9-32 15-10 7-15 16-17 28-4 19-7 40-8 58"
+        fill="none" stroke="#385098" stroke-width="7" stroke-linecap="round"/>
+  <path d="M150 42c13 0 23 10 23 23 0 9-4 17-10 21 5 2 9 5 12 9 8 4 23 9 32 15 10 7 15 16 17 28 4 19 7 40 8 58"
+        fill="none" stroke="#385098" stroke-width="7" stroke-linecap="round"/>
+  <path d="M118 196c-1 22-3 45-4 66h72c-1-21-3-44-4-66z" fill="none" stroke="#2A3C78" stroke-width="6"/>
+  <!-- Fragments, PET amber first: the polymer the app keeps in view. -->
+  <path d="M104 118l24-10 10 20-21 13z" fill="#C8872B"/>
+  <path d="M166 136l24 7-7 24-20-14z" fill="#385098"/>
+  <path d="M112 176l20 4 3 23-23-7z" fill="#2A3C78"/>
+  <path d="M164 192l21-7 7 21-21 7z" fill="#385098" opacity="0.6"/>
+  <text x="150" y="282" text-anchor="middle" font-family="Montserrat, Helvetica, Arial, sans-serif"
+        font-size="34" font-weight="800" letter-spacing="4.5" fill="#2A3C78">DEBRIS</text>
+</svg>

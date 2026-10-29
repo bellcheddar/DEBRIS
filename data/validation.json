@@ -1,0 +1,131 @@
+{
+ "funnel": {
+  "doi_status": {
+   "missing": 248,
+   "title_mismatch": 2368,
+   "unresolved": 89,
+   "verified": 7427
+  },
+  "hit_strategy": {
+   "mesh": 3190,
+   "mesh,textword": 1826,
+   "mesh,textword,negative": 4,
+   "negative": 368,
+   "textword": 4713,
+   "textword,negative": 30,
+   "unknown": 1
+  },
+  "retracted": 14,
+  "no_abstract": 404,
+  "tagged": 0,
+  "relevant": 0,
+  "queued": 0
+ },
+ "controls": [
+  {
+   "key": "carotid_plaque_cohort",
+   "pmid": "38446676",
+   "expect": "NEJM 2024 carotid plaque MNP cohort (Marfella et al.)",
+   "title": "Microplastics and Nanoplastics in Atheromas and Cardiovascular Events.",
+   "doi_status": "verified",
+   "problems": [
+    "not tagged"
+   ],
+   "tag": null
+  },
+  {
+   "key": "blood_detection",
+   "pmid": "35932534",
+   "expect": "Environment International 2022 blood detection (Leslie et al.)",
+   "title": "Letter to the editor, discovery and quantification of plastic particle pollution in human blood.",
+   "doi_status": "verified",
+   "problems": [
+    "not tagged"
+   ],
+   "tag": null
+  },
+  {
+   "key": "lung_tissue",
+   "pmid": "35364151",
+   "expect": "Science of the Total Environment 2022 lung tissue (Jenner et al.)",
+   "title": "Detection of microplastics in human lung tissue using \u03bcFTIR spectroscopy.",
+   "doi_status": "verified",
+   "problems": [
+    "not tagged"
+   ],
+   "tag": null
+  },
+  {
+   "key": "brain_accumulation",
+   "pmid": "41233598",
+   "expect": "Nature Medicine 2025 brain accumulation (Nihart et al.)",
+   "title": "Reply to: Challenges in studying microplastics in human brain.",
+   "doi_status": "verified",
+   "problems": [
+    "not tagged"
+   ],
+   "tag": null
+  },
+  {
+   "key": "placenta_detection",
+   "pmid": "33395930",
+   "expect": "Environment International 2021 placenta detection (Ragusa et al.)",
+   "title": "Plasticenta: First evidence of microplastics in human placenta.",
+   "doi_status": "verified",
+   "problems": [
+    "not tagged"
+   ],
+   "tag": null
+  },
+  {
+   "key": "colorectal_1",
+   "pmid": "40602120",
+   "expect": "most-cited colorectal or intestinal MNP study",
+   "title": "Associations between microplastics in human feces and colorectal cancer risk.",
+   "doi_status": "verified",
+   "problems": [],
+   "tag": null
+  },
+  {
+   "key": "colorectal_2",
+   "pmid": "39272937",
+   "expect": "second colorectal or intestinal migration/inflammation study",
+   "title": "Orally Ingested Micro- and Nano-Plastics: A Hidden Driver of Inflammatory Bowel Disease and Colorectal Cancer.",
+   "doi_status": "title_mismatch",
+   "problems": [],
+   "tag": null
+  },
+  {
+   "key": "pet_leachate",
+   "pmid": "38587644",
+   "expect": "PET leachate toxicity study",
+   "title": "Targeting CXCR4/CXCL12 axis via [177Lu]Lu-DOTAGA.(SA.FAPi)2 with CXCR4 antagonist in triple-negative breast cancer.",
+   "doi_status": "title_mismatch",
+   "problems": [],
+   "tag": null
+  },
+  {
+   "key": "broad_review",
+   "pmid": "38460665",
+   "expect": "broad MNP human-health review",
+   "title": "The potential impact of nano- and microplastics on human health: Understanding human health risks.",
+   "doi_status": "verified",
+   "problems": [
+    "not tagged"
+   ],
+   "tag": null
+  }
+ ],
+ "negatives": {
+  "n": 0,
+  "misclassified": 0,
+  "rate": null,
+  "examples": []
+ },
+ "headline_failures": [
+  "carotid_plaque_cohort: not tagged",
+  "blood_detection: not tagged",
+  "lung_tissue: not tagged",
+  "brain_accumulation: not tagged"
+ ]
+}

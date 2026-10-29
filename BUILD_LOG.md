@@ -1,0 +1,30 @@
+# DEBRIS build log
+
+- 2026-10-28 23:35 scaffold written by Claude (spec v2.0); build not yet started
+- 2026-10-28 23:49 harvest: start harvest-20261029T034957Z (no NCBI key, 3 req/s)
+- 2026-10-28 23:49 harvest: strategy A (MeSH) returned 5020 PMIDs
+- 2026-10-28 23:49 harvest: strategy B (text word) returned 6573 PMIDs
+- 2026-10-28 23:50 harvest: negatives 'pet_scan_oncology' returned 120 PMIDs
+- 2026-10-28 23:50 harvest: negatives 'marine_ecology' returned 120 PMIDs
+- 2026-10-28 23:50 harvest: negatives 'polymer_chemistry_recycling' returned 90 PMIDs
+- 2026-10-28 23:50 harvest: negatives 'analytical_methods' returned 90 PMIDs
+- 2026-10-28 23:50 harvest: gold set resolved 9/9, negatives 402
+- 2026-10-28 23:50 harvest: union 10132 PMIDs, 10132 to fetch
+- 2026-10-28 23:51 harvest: done harvest-20261029T034957Z: fetched 10132, new 10132, updated 0, table {'harvested': 9728, 'no_abstract': 404}
+- 2026-10-28 23:52 verify: 10132 papers to check at Crossref (polite pool, 10 req/s)
+- 2026-10-29 00:01 aggregate: wrote 5 bundles, 16 kB total; verified 3882, tagged 0
+- 2026-10-29 00:09 verify: funnel {'missing': 248, 'title_mismatch': 2619, 'unresolved': 89, 'verified': 7176}, retracted 14, verified total 7176
+- 2026-10-29 00:10 verify: 2956 papers to check at Crossref (polite pool, 10 req/s)
+- 2026-10-29 00:11 novelty: run-test: 5 papers with a new combination, 14 events (7 triples), 7 new maximum rungs
+- 2026-10-29 00:11 novelty: run-test: 5 papers with a new combination, 14 events (7 triples), 7 new maximum rungs
+- 2026-10-29 00:11 novelty: run-test: 5 papers with a new combination, 14 events (7 triples), 7 new maximum rungs
+- 2026-10-29 00:11 novelty: run-test: 5 papers with a new combination, 14 events (7 triples), 7 new maximum rungs
+- 2026-10-29 00:11 novelty: run-2: 1 papers with a new combination, 2 events (1 triples), 1 new maximum rungs
+- 2026-10-29 00:11 novelty: run-test: 5 papers with a new combination, 14 events (7 triples), 7 new maximum rungs
+- 2026-10-29 00:11 novelty: run-3: 0 papers with a new combination, 0 events (0 triples), 1 new maximum rungs
+- 2026-10-29 00:12 validate: gold controls 3/9 clean, negatives misclassified 0/0, headline failures 4
+- 2026-10-29 00:12 validate: headline control failures: carotid_plaque_cohort: not tagged | blood_detection: not tagged | lung_tissue: not tagged | brain_accumulation: not tagged
+- 2026-10-29 00:15 verify: funnel {'missing': 248, 'title_mismatch': 2368, 'unresolved': 89, 'verified': 7427}, retracted 14, verified total 7427
+- 2026-10-29 00:15 aggregate: wrote 5 bundles, 17 kB total; verified 7427, tagged 0
+- 2026-10-29 00:15 validate: gold controls 3/9 clean, negatives misclassified 0/0, headline failures 4
+- 2026-10-29 00:15 validate: headline control failures: carotid_plaque_cohort: not tagged | blood_detection: not tagged | lung_tissue: not tagged | brain_accumulation: not tagged

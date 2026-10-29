@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% block title %}02 Body{% endblock %}
+
+{% block content %}
+<section class="card">
+  <h2>Where the particles have been reported</h2>
+  <p class="sub">One node per organ system with verified tagged papers. Node radius is proportional to the square root of the paper count, so area reads as count. A ring marks a node with a paper the latest run flagged as a new combination.</p>
+  <div class="chiprow">
+    <label class="switch"><input type="checkbox" id="pet-only"> PET only: recolour by PET density</label>
+  </div>
+  <div class="grid sidebar">
+    <figure>
+      <svg id="bodymap" class="bodymap" viewBox="0 0 360 720" role="img"
+           aria-label="Human silhouette with one clickable node per organ system">
+        <g aria-hidden="true">
+          <!-- Silhouette: head, neck, torso, arms and legs as one outline. -->
+          <path class="silhouette" d="M180 18c-19 0-33 15-33 35 0 13 5 24 13 31-6 3-11 7-14 12-10 5-30 12-42 20-13 9-20 21-23 37-5 26-9 54-11 79-1 10 5 17 14 18 9 1 16-5 18-14 3-17 6-36 9-51l3 73c-2 30-5 62-6 92-1 13 8 21 21 21h12l-4 128c-1 12 8 21 20 21 11 0 20-8 21-19l14-118 14 118c1 11 10 19 21 19 12 0 21-9 20-21l-4-128h12c13 0 22-8 21-21-1-30-4-62-6-92l3-73c3 15 6 34 9 51 2 9 9 15 18 14 9-1 15-8 14-18-2-25-6-53-11-79-3-16-10-28-23-37-12-8-32-15-42-20-3-5-8-9-14-12 8-7 13-18 13-31 0-20-14-35-33-35z"/>
+        </g>
+        <g id="nodes"></g>
+      </svg>
+      <figcaption>Counts are verified papers tagged to that organ system. A paper tagged to two systems appears at both nodes.</figcaption>
+    </figure>
+    <div id="panel" class="card" style="margin:0">
+      <h2 id="panel-title">Select an organ</h2>
+      <p class="sub" id="panel-sub">Click a node for its count, its PET share, the polymers reported there, the pathways most often co-tagged and the five strongest papers by evidence rung.</p>
+      <div id="panel-body"></div>
+    </div>
+  </div>
+</section>
+
+{% include "_drawer.html" %}
+{% endblock %}
+
+{% block scripts %}
+<script>window.BODY = {{ bundle|tojson }};</script>
+<script src="{{ url_for('static', filename='js/body.js') }}?v={{ asset_version('js/body.js') }}"></script>
+{% endblock %}

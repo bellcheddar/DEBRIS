@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="DEBRIS">
+  <title>DEBRIS</title>
+  <!-- Elora blue on off-white, with the 14 px chamfer of the design system scaled
+       to the tile. Four plastic fragments settling through a body outline: legible
+       as a mark at 16 px because the fragments stay above 6 px. -->
+  <path d="M0 0h50l14 14v50H0z" fill="#F8F8F8"/>
+  <path d="M0 0h50l14 14v50H0z" fill="none" stroke="#D6DAE6" stroke-width="2"/>
+  <circle cx="32" cy="34" r="20" fill="none" stroke="#385098" stroke-width="3"/>
+  <path d="M22 20l7-3 3 6-6 4z" fill="#C8872B"/>
+  <path d="M38 26l7 2-2 7-6-4z" fill="#385098"/>
+  <path d="M24 38l6 1 1 7-7-2z" fill="#2A3C78"/>
+  <path d="M36 40l6-2 2 6-6 2z" fill="#385098" opacity="0.65"/>
+</svg>

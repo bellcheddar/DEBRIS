@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+{% block title %}04 Papers{% endblock %}
+{% block head %}
+<link rel="stylesheet" href="{{ url_for('static', filename='vendor/tabulator.min.css') }}?v={{ asset_version('vendor/tabulator.min.css') }}">
+{% endblock %}
+
+{% block content %}
+<section class="card">
+  <h2>New this week</h2>
+  <p class="sub">Papers admitted by the most recent ingest run. NOVEL marks a polymer, organ or pathway combination the corpus had not seen before.</p>
+  {% if bundle.new_this_week %}
+  <div class="feed">
+    {% for p in bundle.new_this_week %}
+    <article class="paper{% if p.retracted %} retracted{% endif %}">
+      <div class="meta">
+        <span class="mono">{{ p.journal }} {{ p.year }}</span>
+        <span class="badge-new">New</span>
+        {% if p.novel %}<span class="badge-novel">Novel</span>{% endif %}
+        {% if p.retracted %}<span class="badge-novel">Retracted</span>{% endif %}
+      </div>
+      <h3>{{ p.title }}</h3>
+      {% if p.summary %}<p class="summary">{{ p.summary }}</p>{% endif %}
+      <div class="tags">
+        {% for poly in p.polymers %}<span class="tag {{ bundle.polymer_class.get(poly, 'other') }}">{{ poly }}</span>{% endfor %}
+        {% for r in p.rungs %}<span class="tag rung">Rung {{ r }}</span>{% endfor %}
+      </div>
+      <div class="meta">
+        <a class="mono" href="https://pubmed.ncbi.nlm.nih.gov/{{ p.pmid }}/">PMID {{ p.pmid }}</a>
+        {% if p.doi %}<a class="mono" href="https://doi.org/{{ p.doi }}">doi:{{ p.doi }}</a>{% endif %}
+        <button class="chip" type="button" data-pmid="{{ p.pmid }}">Detail</button>
+      </div>
+    </article>
+    {% endfor %}
+  </div>
+  {% else %}
+  <p class="empty">No new papers in the most recent run.</p>
+  {% endif %}
+</section>
+
+<section class="card">
+  <h2>Every verified paper</h2>
+  <p class="sub">Click a row for the abstract, the MeSH terms and the tag JSON. Filters and search run client side; the download respects the switches below.</p>
+  <div class="chiprow">
+    <input type="search" id="search" placeholder="Search title, journal, summary or PMID" style="flex:1 1 260px" aria-label="Search papers">
+    <select id="polymer" aria-label="Filter by polymer">
+      <option value="">All polymers</option>
+      {% for p in vocab.polymers %}<option value="{{ p }}">{{ vocab.polymer_labels.get(p, p) }}</option>{% endfor %}
+    </select>
+    <select id="organ" aria-label="Filter by organ system">
+      <option value="">All organ systems</option>
+      {% for o in vocab.organ_systems %}<option value="{{ o }}">{{ vocab.organ_labels.get(o, o) }}</option>{% endfor %}
+    </select>
+    <select id="rung" aria-label="Filter by evidence rung">
+      <option value="">All rungs</option>
+      {% for r in vocab.rungs %}<option value="{{ r.rung }}">Rung {{ r.rung }}: {{ r.label }}</option>{% endfor %}
+    </select>
+    <label class="switch"><input type="checkbox" id="pet"> PET-specific only</label>
+    <label class="switch"><input type="checkbox" id="review"> Needs review</label>
+    <label class="switch"><input type="checkbox" id="unverified"> Include unverified DOI</label>
+    <button class="btn ghost" type="button" id="export">Export CSV</button>
+    <a class="btn ghost" id="download" href="/download/debris_latest.csv">Full CSV</a>
+  </div>
+  <div id="papers-table"></div>
+</section>
+
+{% include "_drawer.html" %}
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='vendor/tabulator.min.js') }}?v={{ asset_version('vendor/tabulator.min.js') }}"></script>
+<script src="{{ url_for('static', filename='js/papers.js') }}?v={{ asset_version('js/papers.js') }}"></script>
+{% endblock %}

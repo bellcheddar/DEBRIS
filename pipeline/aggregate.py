@@ -1,0 +1,362 @@
+"""Aggregate every chart's data to app/static/data/*.json (spec 6.1).
+
+The app does no request-time compute: this script is the only thing that reads the
+whole corpus. It is safe to run on an untagged corpus (phase 1), when it writes the
+counts the Papers tab needs and leaves the tagged views empty.
+
+  pixi run aggregate
+"""
+from __future__ import annotations
+
+import argparse
+import collections
+import datetime as dt
+
+from pipeline import common as c
+
+V = c.vocab()
+MAIN_SETS = [("PET", ["PET"]), ("PS", ["PS"]), ("PE+PP", ["PE", "PP"])]
+SECONDARY_SETS = [("PVC", ["PVC"]),
+                  ("Other", [p for p in V["polymers"] if p not in ("PET", "PS", "PE", "PP", "PVC")])]
+
+# Body map node geometry: an inline SVG silhouette on a 360 x 720 viewBox (spec 6.2).
+BODY_NODES = [
+    ("brain", "Brain", ["neurological", "sleep"], 180, 54),
+    ("lung", "Lung", ["respiratory"], 134, 212),
+    ("heart", "Heart", ["cardiovascular"], 196, 220),
+    ("blood", "Blood", ["hematologic"], 292, 286),
+    ("liver", "Liver", ["hepatic"], 148, 300),
+    ("kidney", "Kidney", ["renal"], 214, 322),
+    ("colon", "Gut", ["gastrointestinal"], 180, 362),
+    ("placenta", "Placenta", ["reproductive_placental"], 180, 420),
+    ("skin", "Skin", ["dermal"], 96, 470),
+]
+
+
+def latest_run(conn) -> str | None:
+    row = conn.execute("""SELECT run_id FROM ingest_runs WHERE harvested > 0
+                          ORDER BY started_at DESC LIMIT 1""").fetchone()
+    return row[0] if row else None
+
+
+def verified_pmids(conn, pet_only: bool = False, organs: list[str] | None = None) -> set[str]:
+    sql = ["SELECT p.pmid FROM papers p LEFT JOIN tags t USING (pmid)",
+           "WHERE p.doi_status = 'verified' AND (t.relevant IS NULL OR t.relevant = 1)"]
+    params: list = []
+    if pet_only:
+        sql.append("AND t.pet_specific = 1")
+    if organs:
+        marks = ",".join("?" * len(organs))
+        sql.append(f"AND p.pmid IN (SELECT pmid FROM tag_organs WHERE organ_system IN ({marks}))")
+        params.extend(organs)
+    return {r[0] for r in conn.execute(" ".join(sql), params)}
+
+
+def polymer_map(conn) -> dict[str, set[str]]:
+    out: dict[str, set[str]] = collections.defaultdict(set)
+    for pmid, polymer in conn.execute("SELECT pmid, polymer FROM tag_polymers"):
+        out[pmid].add(polymer)
+    return out
+
+
+def venn_counts(pmids: set[str], polymers: dict[str, set[str]],
+                sets: list[tuple[str, list[str]]]) -> dict[str, int]:
+    """Membership-code counts: '101' is in set 1 and set 3 and not set 2.
+
+    A paper lands in exactly one region, so the regions sum to the number of
+    papers carrying at least one of the polymers in question (no double counting).
+    """
+    counts: collections.Counter = collections.Counter()
+    for pmid in pmids:
+        tagged = polymers.get(pmid, set())
+        code = "".join("1" if tagged & set(members) else "0" for _, members in sets)
+        if "1" in code:
+            counts[code] += 1
+    return dict(counts)
+
+
+def ladder_rows(conn, pet_only: bool) -> list[dict]:
+    """Papers per disease category by rung, in vocabulary order, rung 6 always present."""
+    pet_clause = "AND t.pet_specific = 1" if pet_only else ""
+    rows = conn.execute(f"""
+        SELECT d.disease_category AS cat, r.rung AS rung, COUNT(DISTINCT p.pmid) AS n
+        FROM papers p
+        JOIN tags t USING (pmid)
+        JOIN tag_diseases d ON d.pmid = p.pmid
+        JOIN tag_rungs r ON r.pmid = p.pmid
+        WHERE p.doi_status = 'verified' AND t.relevant = 1 {pet_clause}
+        GROUP BY d.disease_category, r.rung""").fetchall()
+    grid: dict[str, list[int]] = {}
+    for row in rows:
+        grid.setdefault(row["cat"], [0] * 6)[row["rung"] - 1] = row["n"]
+    out = []
+    for cat in V["disease_categories"]:
+        if cat == "none":
+            continue
+        rungs = grid.get(cat, [0] * 6)
+        if sum(rungs) == 0 and cat not in grid:
+            continue
+        out.append({"key": cat, "label": V["disease_labels"].get(cat, cat), "rungs": rungs,
+                    "total": sum(rungs)})
+    out.sort(key=lambda d: -d["total"])
+    return out
+
+
+def atlas_bundle(conn) -> dict:
+    polymers = polymer_map(conn)
+    chips = V["organ_chips"]
+    cells: dict[str, dict] = {}
+    for chip in chips:
+        organs = chip["organs"]
+        cells[chip["key"]] = {}
+        for variant, pet_only in (("all", False), ("pet", True)):
+            pmids = verified_pmids(conn, pet_only=pet_only, organs=organs or None)
+            organ_count = conn.execute("""SELECT COUNT(DISTINCT organ_system) FROM tag_organs
+                                          WHERE pmid IN (SELECT pmid FROM papers
+                                          WHERE doi_status='verified')""").fetchone()[0]
+            cells[chip["key"]][variant] = {
+                "verified": len(pmids),
+                "pet": len(pmids & verified_pmids(conn, pet_only=True, organs=organs or None)),
+                "organs": organ_count,
+                "venn_main": venn_counts(pmids, polymers, MAIN_SETS),
+                "venn_secondary": venn_counts(pmids, polymers, SECONDARY_SETS),
+            }
+    years = conn.execute("""
+        SELECT p.year AS year, COUNT(*) AS n,
+               SUM(CASE WHEN t.pet_specific = 1 THEN 1 ELSE 0 END) AS pet_n
+        FROM papers p LEFT JOIN tags t USING (pmid)
+        WHERE p.doi_status = 'verified' AND p.year IS NOT NULL
+          AND (t.relevant IS NULL OR t.relevant = 1)
+        GROUP BY p.year ORDER BY p.year""").fetchall()
+    return {
+        "cells": cells,
+        "organ_map": {chip["key"]: chip["organs"] for chip in chips},
+        "venn_main_sets": [name for name, _ in MAIN_SETS],
+        "venn_main_keys": [members for _, members in MAIN_SETS],
+        "venn_secondary_sets": [name for name, _ in SECONDARY_SETS],
+        "venn_secondary_keys": [members for _, members in SECONDARY_SETS],
+        "ladder": {"all": ladder_rows(conn, False), "pet": ladder_rows(conn, True)},
+        "rung_labels": {str(r["rung"]): r["label"] for r in V["rungs"]},
+        "years": [{"year": r["year"], "n": r["n"], "pet_n": r["pet_n"] or 0} for r in years],
+    }
+
+
+def body_bundle(conn) -> dict:
+    run = latest_run(conn)
+    nodes = []
+    for key, label, organs, x, y in BODY_NODES:
+        marks = ",".join("?" * len(organs))
+        pmids = [r[0] for r in conn.execute(
+            f"""SELECT DISTINCT p.pmid FROM papers p JOIN tags t USING (pmid)
+                JOIN tag_organs o ON o.pmid = p.pmid
+                WHERE p.doi_status='verified' AND t.relevant=1
+                  AND o.organ_system IN ({marks})""", organs)]
+        if not pmids:
+            nodes.append({"key": key, "label": label, "organs": organs, "x": x, "y": y,
+                          "count": 0, "pet_count": 0, "polymers": [], "pathways": [],
+                          "novel": False, "papers": []})
+            continue
+        pm = ",".join("?" * len(pmids))
+        pet_count = conn.execute(
+            f"SELECT COUNT(*) FROM tags WHERE pet_specific=1 AND pmid IN ({pm})", pmids).fetchone()[0]
+        polys = conn.execute(
+            f"""SELECT polymer, COUNT(*) n FROM tag_polymers WHERE pmid IN ({pm})
+                GROUP BY polymer ORDER BY n DESC""", pmids).fetchall()
+        paths = conn.execute(
+            f"""SELECT pathway, COUNT(*) n FROM tag_pathways WHERE pmid IN ({pm})
+                GROUP BY pathway ORDER BY n DESC LIMIT 6""", pmids).fetchall()
+        novel = bool(run) and conn.execute(
+            f"""SELECT COUNT(*) FROM novelty_events WHERE ingest_run = ? AND pmid IN ({pm})""",
+            [run] + pmids).fetchone()[0] > 0
+        top = conn.execute(
+            f"""SELECT p.pmid, p.title, p.journal, p.year, p.doi, t.summary,
+                       (SELECT MAX(rung) FROM tag_rungs WHERE pmid=p.pmid) AS max_rung
+                FROM papers p JOIN tags t USING (pmid) WHERE p.pmid IN ({pm})
+                ORDER BY max_rung DESC NULLS LAST, p.year DESC LIMIT 5""", pmids).fetchall()
+        nodes.append({
+            "key": key, "label": label, "organs": organs, "x": x, "y": y,
+            "count": len(pmids), "pet_count": pet_count,
+            "polymers": [{"key": r["polymer"], "n": r["n"]} for r in polys],
+            "pathways": [{"key": r["pathway"], "label": V["pathway_labels"].get(r["pathway"], r["pathway"]),
+                          "n": r["n"]} for r in paths],
+            "novel": novel,
+            "papers": [dict(r) for r in top],
+        })
+    return {"nodes": nodes,
+            "polymer_labels": V["polymer_labels"],
+            "max_count": max([n["count"] for n in nodes] or [0])}
+
+
+def pathways_bundle(conn) -> dict:
+    """Sankey polymers to pathways to disease categories, plus the per-category radar."""
+    poly_path = conn.execute("""
+        SELECT pl.polymer AS a, pa.pathway AS b, COUNT(DISTINCT p.pmid) AS n
+        FROM papers p JOIN tags t USING (pmid)
+        JOIN tag_polymers pl ON pl.pmid = p.pmid
+        JOIN tag_pathways pa ON pa.pmid = p.pmid
+        WHERE p.doi_status='verified' AND t.relevant=1
+        GROUP BY pl.polymer, pa.pathway HAVING n > 0""").fetchall()
+    path_dis = conn.execute("""
+        SELECT pa.pathway AS a, d.disease_category AS b, COUNT(DISTINCT p.pmid) AS n
+        FROM papers p JOIN tags t USING (pmid)
+        JOIN tag_pathways pa ON pa.pmid = p.pmid
+        JOIN tag_diseases d ON d.pmid = p.pmid
+        WHERE p.doi_status='verified' AND t.relevant=1 AND d.disease_category <> 'none'
+        GROUP BY pa.pathway, d.disease_category HAVING n > 0""").fetchall()
+
+    labels: list[str] = []
+    index: dict[str, int] = {}
+    colours: list[str] = []
+    kinds: list[str] = []
+    keys: list[str] = []
+
+    def node(key: str, label: str, kind: str, colour: str) -> int:
+        token = f"{kind}:{key}"
+        if token not in index:
+            index[token] = len(labels)
+            labels.append(label)
+            colours.append(colour)
+            kinds.append(kind)
+            keys.append(key)
+        return index[token]
+
+    PET_COLOUR = "#C8872B"
+    links = []
+    for row in poly_path:
+        src = node(row["a"], V["polymer_labels"].get(row["a"], row["a"]), "polymer",
+                   PET_COLOUR if row["a"] == "PET" else "#385098")
+        dst = node(row["b"], V["pathway_labels"].get(row["b"], row["b"]), "pathway", "#2A3C78")
+        links.append({"source": src, "target": dst, "value": row["n"],
+                      "pet": row["a"] == "PET"})
+    for row in path_dis:
+        src = node(row["a"], V["pathway_labels"].get(row["a"], row["a"]), "pathway", "#2A3C78")
+        dst = node(row["b"], V["disease_labels"].get(row["b"], row["b"]), "disease", "#5A6180")
+        links.append({"source": src, "target": dst, "value": row["n"], "pet": False})
+
+    radar: dict[str, dict] = {}
+    axes = V["pathways"]
+    for cat in V["disease_categories"]:
+        if cat == "none":
+            continue
+        all_counts, pet_counts = [], []
+        for pathway in axes:
+            all_counts.append(conn.execute("""
+                SELECT COUNT(DISTINCT p.pmid) FROM papers p JOIN tags t USING (pmid)
+                JOIN tag_diseases d ON d.pmid=p.pmid JOIN tag_pathways pa ON pa.pmid=p.pmid
+                WHERE p.doi_status='verified' AND t.relevant=1 AND d.disease_category=?
+                  AND pa.pathway=?""", (cat, pathway)).fetchone()[0])
+            pet_counts.append(conn.execute("""
+                SELECT COUNT(DISTINCT p.pmid) FROM papers p JOIN tags t USING (pmid)
+                JOIN tag_diseases d ON d.pmid=p.pmid JOIN tag_pathways pa ON pa.pmid=p.pmid
+                WHERE p.doi_status='verified' AND t.relevant=1 AND t.pet_specific=1
+                  AND d.disease_category=? AND pa.pathway=?""", (cat, pathway)).fetchone()[0])
+        if sum(all_counts) == 0:
+            continue
+        radar[cat] = {"label": V["disease_labels"].get(cat, cat), "all": all_counts,
+                      "pet": pet_counts}
+
+    run = latest_run(conn)
+    new_edges = []
+    if run:
+        for row in conn.execute("""
+                SELECT n.key, n.kind, n.pmid, p.title, p.journal, p.year
+                FROM novelty_events n JOIN papers p USING (pmid)
+                WHERE n.ingest_run = ? AND n.kind = 'triple' LIMIT 40""", (run,)):
+            new_edges.append(dict(row))
+    return {"sankey": {"labels": labels, "keys": keys, "colours": colours,
+                       "kinds": kinds, "links": links},
+            "radar": radar, "axis_labels": [V["pathway_labels"].get(a, a) for a in axes],
+            "axes": axes, "new_edges": new_edges}
+
+
+def feed_bundle(conn) -> dict:
+    run = latest_run(conn)
+    rows = []
+    if run:
+        rows = conn.execute("""
+            SELECT p.pmid, p.title, p.journal, p.year, p.doi, p.retracted, t.summary,
+                   (SELECT GROUP_CONCAT(polymer) FROM tag_polymers WHERE pmid=p.pmid) AS polymers,
+                   (SELECT GROUP_CONCAT(rung) FROM tag_rungs WHERE pmid=p.pmid) AS rungs,
+                   (SELECT COUNT(*) FROM novelty_events WHERE pmid=p.pmid AND ingest_run=?) AS novel
+            FROM papers p LEFT JOIN tags t USING (pmid)
+            WHERE p.ingest_run = ? AND p.doi_status='verified'
+              AND (t.relevant IS NULL OR t.relevant=1)
+            ORDER BY novel DESC, p.year DESC LIMIT 36""", (run, run)).fetchall()
+    feed = []
+    for r in rows:
+        feed.append({"pmid": r["pmid"], "title": r["title"], "journal": r["journal"],
+                     "year": r["year"], "doi": r["doi"], "retracted": r["retracted"],
+                     "summary": r["summary"] or "",
+                     "polymers": sorted(set((r["polymers"] or "").split(","))) if r["polymers"] else [],
+                     "rungs": sorted({int(x) for x in (r["rungs"] or "").split(",") if x}),
+                     "novel": bool(r["novel"])})
+    return {"new_this_week": feed, "ingest_run": run,
+            "polymer_class": {"PET": "pet", "PS": "ps", "PE": "pepp", "PP": "pepp", "PVC": "pvc"}}
+
+
+def meta_bundle(conn) -> dict:
+    run = latest_run(conn)
+    verified = conn.execute("SELECT COUNT(*) FROM papers WHERE doi_status='verified'").fetchone()[0]
+    tagged = conn.execute("""SELECT COUNT(*) FROM tags t JOIN papers p USING (pmid)
+                             WHERE p.doi_status='verified'""").fetchone()[0]
+    relevant = conn.execute("""SELECT COUNT(*) FROM tags t JOIN papers p USING (pmid)
+                               WHERE p.doi_status='verified' AND t.relevant=1""").fetchone()[0]
+    pet = conn.execute("""SELECT COUNT(*) FROM tags t JOIN papers p USING (pmid)
+                          WHERE p.doi_status='verified' AND t.relevant=1
+                            AND t.pet_specific=1""").fetchone()[0]
+    organs = conn.execute("""SELECT COUNT(DISTINCT organ_system) FROM tag_organs
+                             WHERE pmid IN (SELECT pmid FROM papers
+                             WHERE doi_status='verified')""").fetchone()[0]
+    new_this_week = conn.execute("""SELECT COUNT(*) FROM papers WHERE ingest_run=?
+                                    AND doi_status='verified'""", (run,)).fetchone()[0] if run else 0
+    novel = conn.execute("SELECT COUNT(DISTINCT pmid) FROM novelty_events WHERE ingest_run=?",
+                         (run,)).fetchone()[0] if run else 0
+    queued = conn.execute("SELECT COUNT(*) FROM review_queue WHERE resolved_at IS NULL").fetchone()[0]
+    first_year = conn.execute("""SELECT MIN(year) FROM papers WHERE doi_status='verified'
+                                 AND year IS NOT NULL""").fetchone()[0]
+    row = conn.execute("""SELECT model_version, inference_path, finished_at, started_at
+                          FROM ingest_runs WHERE run_id=?""", (run,)).fetchone() if run else None
+    drift = conn.execute("""SELECT f1 FROM drift_log WHERE field='relevant'
+                            ORDER BY rowid DESC LIMIT 1""").fetchone()
+    model_version = conn.execute("""SELECT model_version FROM tags WHERE model_version IS NOT NULL
+                                    ORDER BY tagged_at DESC LIMIT 1""").fetchone()
+    stamp = (row["finished_at"] or row["started_at"]) if row else None
+    return {
+        "generated_at": c.now(),
+        "last_ingest": stamp,
+        "last_ingest_date": (stamp or "")[:10] or dt.date.today().isoformat(),
+        "verified_papers": verified, "tagged_papers": tagged, "relevant_papers": relevant,
+        "pet_papers": pet, "organ_systems_covered": organs, "new_this_week": new_this_week,
+        "novel_this_week": novel, "review_queue": queued, "first_year": first_year,
+        "model_version": (model_version[0] if model_version else None),
+        "inference_path": row["inference_path"] if row else None,
+        "drift_f1": drift[0] if drift else None,
+        "provisional_tags": bool((c.ROOT / "PROVISIONAL_TAGS").exists()),
+    }
+
+
+def main() -> None:
+    ap = argparse.ArgumentParser(description="Write the app's static aggregates")
+    ap.add_argument("--quiet", action="store_true")
+    args = ap.parse_args()
+    conn = c.connect(readonly=False)
+    bundles = {
+        "meta": meta_bundle(conn),
+        "atlas": atlas_bundle(conn),
+        "body": body_bundle(conn),
+        "pathways": pathways_bundle(conn),
+        "feed": feed_bundle(conn),
+    }
+    total = 0
+    for name, payload in bundles.items():
+        path = c.STATIC_DATA / f"{name}.json"
+        c.write_json(path, payload)
+        total += path.stat().st_size
+    if not args.quiet:
+        c.log(f"aggregate: wrote {len(bundles)} bundles, {total / 1024:.0f} kB total; "
+              f"verified {bundles['meta']['verified_papers']}, "
+              f"tagged {bundles['meta']['tagged_papers']}")
+
+
+if __name__ == "__main__":
+    main()

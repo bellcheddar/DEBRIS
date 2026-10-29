@@ -1,0 +1,49 @@
+[workspace]
+name = "debris"
+version = "1.0.0"
+description = "DEBRIS: Disease Evidence from Bioaccumulated plastic Residues: Indexed Studies"
+authors = ["Marc C. Deller"]
+channels = ["conda-forge"]
+platforms = ["osx-arm64"]
+
+[dependencies]
+python = "3.12.*"
+requests = "*"
+tenacity = "*"
+pandas = "*"
+pyarrow = "*"
+python-duckdb = "*"
+pydantic = "*"
+rapidfuzz = "*"
+tqdm = "*"
+tomli-w = "*"
+pytest = "*"
+lxml = "*"
+
+[pypi-dependencies]
+mlx-lm = "*"
+# Flask is also in requirements.txt for the droplet venv; it is here so one
+# `pixi run test` covers the pipeline and the app in a single suite.
+flask = "*"
+wandb = "*"
+huggingface-hub = "*"
+gradio-client = "*"
+
+[tasks]
+probe = "python tools/hwprobe.py"
+harvest = "python pipeline/harvest.py"
+verify = "python pipeline/verify_doi.py"
+bootstrap = "python pipeline/bootstrap_labels.py"
+train = "python pipeline/train.py"
+tag = "python pipeline/tag.py"
+validate = "python pipeline/validate.py"
+novelty = "python pipeline/novelty.py"
+aggregate = "python pipeline/aggregate.py"
+weekly = "python pipeline/weekly.py"
+drift = "python pipeline/drift.py"
+smoke = "python tools/smoke_test.py"
+test = "pytest tests -q"
+
+[activation.env]
+TOKENIZERS_PARALLELISM = "false"
+PYTHONPATH = "$PIXI_PROJECT_ROOT"

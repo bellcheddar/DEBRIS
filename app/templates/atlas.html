@@ -1,0 +1,75 @@
+{% extends "base.html" %}
+{% block title %}01 Atlas{% endblock %}
+
+{% block content %}
+<div class="kpis">
+  <div class="kpi"><div class="label">Verified</div>
+    <div class="value" id="kpi-verified">{{ '{:,}'.format(meta.verified_papers or 0) }}</div>
+    <div class="foot">DOI resolved at Crossref with a matching title</div></div>
+  <div class="kpi pet"><div class="label">Name PET</div>
+    <div class="value" id="kpi-pet">{{ '{:,}'.format(meta.pet_papers or 0) }}</div>
+    <div class="foot">PET specifically studied or detected</div></div>
+  <div class="kpi"><div class="label">Organ systems</div>
+    <div class="value" id="kpi-organs">{{ meta.organ_systems_covered or 0 }}</div>
+    <div class="foot">of {{ vocab.organ_systems|length }} in the vocabulary</div></div>
+  <div class="kpi"><div class="label">New this week</div>
+    <div class="value" id="kpi-new">{{ '{:,}'.format(meta.new_this_week or 0) }}</div>
+    <div class="foot">admitted by the latest ingest run</div></div>
+</div>
+
+<section class="card">
+  <h2>Polymer field</h2>
+  <p class="sub">Verified papers by polymer. Click any region for those papers. Counts are papers, so a paper naming two polymers appears in their overlap, never twice.</p>
+  <div class="chiprow" role="group" aria-label="Organ system filter">
+    {% for chip in vocab.organ_chips %}
+    <button class="chip organ-chip" type="button" data-value="{{ chip.key }}"
+            aria-pressed="{{ 'true' if chip.key == 'all' else 'false' }}">{{ chip.label }}</button>
+    {% endfor %}
+    <label class="switch"><input type="checkbox" id="pet-only"> PET-specific only</label>
+  </div>
+  <div class="grid two">
+    <figure>
+      <svg id="venn-main" class="bodymap" viewBox="0 0 440 360" role="img"
+           aria-label="Three-set Venn of PET, PS and PE plus PP papers"></svg>
+      <figcaption>PET, PS and PE+PP. Region counts are verified papers.</figcaption>
+    </figure>
+    <figure>
+      <svg id="venn-secondary" class="bodymap" viewBox="0 0 440 360" role="img"
+           aria-label="Two-set Venn of PVC and other polymers"></svg>
+      <figcaption>PVC and every other polymer in the vocabulary, including mixed or unspecified.</figcaption>
+    </figure>
+  </div>
+  <div class="legend">
+    <span><i style="background:var(--pet)"></i>PET</span>
+    <span><i style="background:var(--ps)"></i>PS</span>
+    <span><i style="background:var(--pe-pp)"></i>PE and PP</span>
+    <span><i style="background:var(--pvc)"></i>PVC</span>
+    <span><i style="background:var(--other)"></i>Other polymers</span>
+  </div>
+</section>
+
+<section class="card">
+  <h2>Evidence ladder</h2>
+  <p class="sub">Papers per disease category by evidence rung. Rung 6 is drawn whether or not it is occupied: it is the rung an enzyme therapeutic can test.</p>
+  <div class="chiprow" role="group" aria-label="Ladder scope">
+    <button class="chip ladder-chip" type="button" data-value="all" aria-pressed="true">All polymers</button>
+    <button class="chip ladder-chip" type="button" data-value="pet" aria-pressed="false">PET only</button>
+  </div>
+  <div id="ladder" class="plot" style="min-height:520px"></div>
+  <div class="legend" id="ladder-legend"></div>
+</section>
+
+<section class="card">
+  <h2>Corpus by year</h2>
+  <p class="sub">Verified papers by publication year, {{ meta.first_year or 2004 }} to now, with the PET-specific share.</p>
+  <div id="years" class="plot" style="min-height:220px"></div>
+</section>
+
+{% include "_drawer.html" %}
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='vendor/d3.v7.min.js') }}?v={{ asset_version('vendor/d3.v7.min.js') }}"></script>
+<script>window.ATLAS = {{ bundle|tojson }};</script>
+<script src="{{ url_for('static', filename='js/atlas.js') }}?v={{ asset_version('js/atlas.js') }}"></script>
+{% endblock %}

@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block title %}03 Pathways{% endblock %}
+
+{% block content %}
+<section class="card">
+  <h2>Polymers, pathways and disease categories</h2>
+  <p class="sub">Ribbon width is the number of verified papers co-tagging the two terms. PET ribbons are drawn in the PET colour. Click a ribbon for those papers.</p>
+  <div id="sankey" class="plot" style="min-height:620px"></div>
+</section>
+
+<section class="card">
+  <h2>Pathway profile by disease category</h2>
+  <p class="sub">Papers per pathway for one disease category, with the PET-specific subset drawn over it. Pick a second category to overlay.</p>
+  <div class="chiprow">
+    <select id="cat-a" aria-label="First disease category"></select>
+    <select id="cat-b" aria-label="Second disease category to overlay">
+      <option value="">No overlay</option>
+    </select>
+    <label class="switch"><input type="checkbox" id="pet-trace" checked> Show the PET-specific trace</label>
+  </div>
+  <div id="radar" class="plot" style="min-height:480px"></div>
+</section>
+
+<section class="card">
+  <h2>New combinations this week</h2>
+  <p class="sub">Polymer, organ and pathway triples the corpus had not seen before the latest ingest run, with the paper that created each.</p>
+  <div id="new-edges"></div>
+</section>
+
+{% include "_drawer.html" %}
+{% endblock %}
+
+{% block scripts %}
+<script>window.PATHWAYS = {{ bundle|tojson }};</script>
+<script src="{{ url_for('static', filename='js/pathways.js') }}?v={{ asset_version('js/pathways.js') }}"></script>
+{% endblock %}

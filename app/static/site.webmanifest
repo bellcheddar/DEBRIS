@@ -1,0 +1,12 @@
+{
+  "name": "DEBRIS: Disease Evidence from Bioaccumulated plastic Residues",
+  "short_name": "DEBRIS",
+  "icons": [
+    { "src": "/static/icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "/static/icon-512.png", "sizes": "512x512", "type": "image/png" }
+  ],
+  "theme_color": "#385098",
+  "background_color": "#F8F8F8",
+  "display": "standalone",
+  "start_url": "/"
+}

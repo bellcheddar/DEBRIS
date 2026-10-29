@@ -1,0 +1,7 @@
+# Only needed if the AlphaFraud deploy config cannot be found. deploy.toml is gitignored.
+host = "debris.mdeller.com"
+user = "<droplet user>"
+app_dir = "/srv/debris"
+service = "debris-gunicorn"
+ssh_key = "~/.ssh/<key>"
+port = 8011

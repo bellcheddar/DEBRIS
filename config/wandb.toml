@@ -1,0 +1,4 @@
+project = "debris"
+# entity left blank = Marc's default wandb entity
+entity = ""
+dataset_artifact = "debris-train"

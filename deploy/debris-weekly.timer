@@ -1,0 +1,13 @@
+# Fire the weekly refresh every Sunday 02:15 UTC: PubMed's EDAT watermark has
+# settled by then and the droplet is quiet. Persistent=true catches up a missed run.
+[Unit]
+Description=Weekly DEBRIS refresh schedule (Sun 02:15 UTC)
+
+[Timer]
+OnCalendar=Sun *-*-* 02:15:00 UTC
+Persistent=true
+RandomizedDelaySec=300
+Unit=debris-weekly.service
+
+[Install]
+WantedBy=timers.target

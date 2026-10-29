@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{% block title %}DEBRIS{% endblock %} | DEBRIS</title>
+<meta name="description" content="DEBRIS indexes every DOI-verified PubMed article implicating micro and nanoplastics in human disease, tagged by polymer, organ system, pathway and evidence rung.">
+<link rel="icon" href="{{ url_for('static', filename='favicon.ico') }}" sizes="any">
+<link rel="icon" type="image/svg+xml" href="{{ url_for('static', filename='favicon.svg') }}">
+<link rel="apple-touch-icon" href="{{ url_for('static', filename='apple-touch-icon.png') }}">
+<link rel="manifest" href="{{ url_for('static', filename='site.webmanifest') }}">
+<meta name="theme-color" content="#385098">
+<link rel="stylesheet" href="{{ url_for('static', filename='fonts/fonts.css') }}?v={{ asset_version('fonts/fonts.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/theme.css') }}?v={{ asset_version('css/theme.css') }}">
+{% block head %}{% endblock %}
+</head>
+<body>
+<a class="sr-only" href="#main">Skip to content</a>
+
+<header class="site">
+  <div class="wrap brandrow">
+    <a class="elora" href="https://eloratherapeutics.com">Elora<span class="eyebrow">Therapeutics</span></a>
+    <div class="titleblock">
+      <h1>Debris</h1>
+      <span class="expand">Disease Evidence from Bioaccumulated plastic Residues: Indexed Studies</span>
+    </div>
+    <div class="stamp">
+      Last updated <b>{{ meta.last_ingest_date or 'pending first ingest' }}</b><br>
+      <b>{{ '{:,}'.format(meta.verified_papers or 0) }}</b> verified papers<br>
+      <b>{{ '{:,}'.format(meta.pet_papers or 0) }}</b> name PET
+    </div>
+  </div>
+  <div class="workshop">
+    <div class="wrap">
+      <span>Micro and nanoplastics in human disease: a DOI-verified, machine-tagged corpus refreshed weekly.</span>
+      <span class="mono">NHLBI/NIEHS workshop 2026-12-07/08</span>
+    </div>
+  </div>
+</header>
+
+<nav class="tabs" aria-label="Sections">
+  <div class="wrap">
+    {% for num, label, href in tabs %}
+    <a href="{{ href }}" {% if active == href %}aria-current="page"{% endif %}><span class="num">{{ num }}</span>{{ label }}</a>
+    {% endfor %}
+  </div>
+</nav>
+
+<main id="main">
+  <div class="wrap">
+    {% if not meta.tagged_papers %}
+    <p class="banner"><b>Ingest in progress.</b> The corpus is harvested and DOI-verified; tagging by the DEBRIS tagger is still running, so the polymer, organ, pathway and evidence views populate as it completes.</p>
+    {% elif meta.provisional_tags %}
+    <p class="banner"><b>Provisional tags.</b> The tagger has not yet met its full acceptance floor on every field; counts may shift on the next run.</p>
+    {% endif %}
+    {% block content %}{% endblock %}
+  </div>
+</main>
+
+<footer class="site">
+  <div class="wrap">
+    <div>
+      Built by <b>Marc C. Deller, D.Phil.</b>, Elora Therapeutics ·
+      <a href="https://marcdeller.com">marcdeller.com</a> ·
+      <a href="https://eloratherapeutics.com">eloratherapeutics.com</a>
+    </div>
+    <div class="mono">
+      {{ '{:,}'.format(meta.verified_papers or 0) }} verified ·
+      {{ '{:,}'.format(meta.tagged_papers or 0) }} tagged ·
+      tagger {{ meta.model_version or 'pending' }} ·
+      {% if meta.drift_f1 is not none and meta.drift_f1 %}drift F1 {{ '%.2f'|format(meta.drift_f1) }}{% else %}drift pending{% endif %}
+      {% if meta.inference_path %} · {{ meta.inference_path }}{% endif %}
+    </div>
+  </div>
+</footer>
+
+<script src="{{ url_for('static', filename='vendor/plotly-2.35.2.min.js') }}?v={{ asset_version('vendor/plotly-2.35.2.min.js') }}"></script>
+<script src="{{ url_for('static', filename='js/common.js') }}?v={{ asset_version('js/common.js') }}"></script>
+{% block scripts %}{% endblock %}
+</body>
+</html>

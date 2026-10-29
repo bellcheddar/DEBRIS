@@ -1,0 +1,10 @@
+config/deploy.toml
+config/hardware.toml
+data/raw/
+data/adapters/
+data/snapshots/
+*.sqlite
+.pixi/
+.venv/
+__pycache__/
+tests/qc_screenshots/

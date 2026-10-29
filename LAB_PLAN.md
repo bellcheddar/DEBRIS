@@ -15,9 +15,13 @@ idea cannot drift towards whatever the results turn out to say.
 - Training does not mask the prompt. About 88 % of each example's tokens are prompt (a
   388-token system prompt identical on all 1,277 rows, plus the paper) and the loss is spent
   mostly on reproducing them. It is also why validation loss is a poor checkpoint signal (D24).
-- The labeller saw PubMed publication types (`TYPES:`) and the full MeSH list; the tagger sees
-  neither types nor MeSH beyond 600 characters. 74 of the 79 papers labelled review or
-  meta-analysis carry "Review" in PubMed's own types.
+- The labeller saw PubMed publication types (`TYPES:`); the tagger never does. 74 of the 79
+  papers labelled review or meta-analysis carry "Review" in PubMed's own types. (Corrected
+  after the plan was first committed: the labeller saw MeSH cut at 400 characters and the
+  abstract at 2,400, not in full. Only 13 papers have MeSH past 400 characters and 42
+  abstracts, 2.9 %, run past 2,400, by a median of 224 characters, so neither is a material
+  source of label noise. Switch B's MeSH half therefore touches few papers; its publication
+  types are what matter.)
 - The training set mirrors the corpus rather than the question: of 693 relevant papers, 439
   are animal studies, 18 human tissue, 17 human cohort, and 28 name PET. 52 % carry
   `oxidative_stress`. Several classes have under ten examples.
@@ -105,7 +109,7 @@ the other four, so it rests on twelve trainings a side rather than one.
 | factor | change | target metric |
 |---|---|---|
 | A | mask the prompt in the loss (`--mask-prompt`) | all floor metrics |
-| B | add `TYPES:` and the full MeSH list to the prompt, at training and at scoring | model type |
+| B | add `TYPES:` to the prompt and stop cutting MeSH at 600 characters, at training and at scoring | model type |
 | C | answer order: `relevant`, `model_type`, `evidence_rungs` first, `summary` last | rungs within one |
 | D | drop `confidence` from the answer (the labeller's number, not a fact about the paper) | guardrails only |
 

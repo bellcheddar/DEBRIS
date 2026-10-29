@@ -222,3 +222,6 @@
 - 2026-10-29 18:11 lab smoke f0 s42 @ 20: relevant_f1 0.0, polymers_f1 0.0, organ_systems_f1 0.0, pathways_f1 0.0, rungs_exact 0.7917, rungs_within_one 0.7917, model_type_accuracy 0.0, valid_json 0.9583, 0.64 s/paper
 - 2026-10-29 18:11 lab smoke: done
 - 2026-10-29 18:11 lab report: 0 experiments written to LAB_REPORT.md
+- 2026-10-29 18:12 lab phase0-baseline f0 s42: training 800 iterations
+- 2026-10-29 18:12 train: mlx_lm.lora --model Qwen/Qwen2.5-1.5B-Instruct --train --data /Users/dellboy/Documents/Vibe_Coding/debris/data/lab/phase0-baseline/f0-s42/data ...
+- 2026-10-29 18:14 ceiling: sampled 150 papers

@@ -102,8 +102,8 @@ def assign_folds(records: list[dict], force: bool = False) -> dict[str, int]:
 # --------------------------------------------------------------------------- variants
 
 def user_prompt(paper: dict, switches: dict) -> str:
-    """The paper as the tagger sees it. Switch B adds what the labeller saw: PubMed
-    publication types and the whole MeSH list rather than its first 600 characters."""
+    """The paper as the tagger sees it. Switch B adds the PubMed publication types, which
+    the labeller saw and the tagger never has, and stops cutting MeSH at 600 characters."""
     if not switches.get("types"):
         return schema.user_prompt(paper)
     mesh = paper.get("mesh") or ""

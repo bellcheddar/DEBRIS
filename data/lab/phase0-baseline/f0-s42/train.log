@@ -1,0 +1,30 @@
+Loading pretrained model
+
+Fetching 7 files:   0%|          | 0/7 [00:00<?, ?it/s]
+Fetching 7 files: 100%|██████████| 7/7 [00:00<00:00, 2436.53it/s]
+Loading datasets
+Training
+Trainable parameters: 0.342% (5.276M/1543.714M)
+Starting training..., iters: 800
+
+Calculating loss...:   0%|          | 0/16 [00:00<?, ?it/s]
+Calculating loss...:   6%|▋         | 1/16 [00:01<00:18,  1.23s/it]
+Calculating loss...:  12%|█▎        | 2/16 [00:02<00:16,  1.17s/it]
+Calculating loss...:  19%|█▉        | 3/16 [00:03<00:15,  1.18s/it]
+Calculating loss...:  25%|██▌       | 4/16 [00:04<00:13,  1.10s/it]
+Calculating loss...:  31%|███▏      | 5/16 [00:05<00:12,  1.18s/it]
+Calculating loss...:  38%|███▊      | 6/16 [00:06<00:11,  1.14s/it]
+Calculating loss...:  44%|████▍     | 7/16 [00:07<00:09,  1.07s/it]
+Calculating loss...:  50%|█████     | 8/16 [00:08<00:08,  1.09s/it]
+Calculating loss...:  56%|█████▋    | 9/16 [00:09<00:07,  1.04s/it]
+Calculating loss...:  62%|██████▎   | 10/16 [00:11<00:07,  1.19s/it]
+Calculating loss...:  69%|██████▉   | 11/16 [00:12<00:06,  1.24s/it]
+Calculating loss...:  75%|███████▌  | 12/16 [00:14<00:04,  1.24s/it]
+Calculating loss...:  81%|████████▏ | 13/16 [00:15<00:03,  1.21s/it]
+Calculating loss...:  88%|████████▊ | 14/16 [00:16<00:02,  1.20s/it]
+Calculating loss...:  94%|█████████▍| 15/16 [00:17<00:01,  1.23s/it]
+Calculating loss...: 100%|██████████| 16/16 [00:18<00:00,  1.21s/it]
+Calculating loss...: 100%|██████████| 16/16 [00:18<00:00,  1.17s/it]
+Iter 1: Val loss 2.376, Val took 18.795s
+Iter 20: Train loss 1.404, Learning Rate 1.000e-05, It/sec 0.390, Tokens/sec 1501.066, Trained Tokens 77065, Peak mem 25.186 GB
+Iter 40: Train loss 0.881, Learning Rate 1.000e-05, It/sec 0.385, Tokens/sec 1489.657, Trained Tokens 154413, Peak mem 25.186 GB

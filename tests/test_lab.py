@@ -129,3 +129,29 @@ def test_phase1_configuration_one_reuses_the_baseline(tmp_path, monkeypatch):
     first = (tmp_path / "phase1-c1.toml").read_text()
     assert 'reuse = "phase0-baseline"' in first
     assert len(list(tmp_path.glob("phase1-c*.toml"))) == 8
+
+
+def test_ceiling_sample_is_exact_proportional_and_fixed(tmp_path, monkeypatch):
+    from pipeline import ceiling
+    monkeypatch.setattr(ceiling, "HOME", tmp_path)
+    monkeypatch.setattr(ceiling, "SAMPLE", tmp_path / "sample.json")
+    monkeypatch.setattr(ceiling, "N", 30)
+    records = ([record(f"a{i}") for i in range(60)]
+               + [record(f"c{i}", model_type="cell_line") for i in range(20)]
+               + [record(f"n{i}", relevant=False, model_type="not_applicable") for i in range(40)])
+    first = ceiling.draw_sample(records)
+    assert len(first) == 30 and len(set(first)) == 30
+    shares = collections.Counter(p[0] for p in first)
+    assert shares == {"a": 15, "c": 5, "n": 10}, "each stratum in proportion to the corpus"
+    assert ceiling.draw_sample(records) == first, "read back, not redrawn"
+
+
+def test_the_second_labeller_sees_exactly_what_the_first_did():
+    from pipeline import ceiling
+    paper = record("1", pub_types="Journal Article; " * 20, mesh="Term; " * 200)["paper"]
+    paper["abstract"] = "word " * 1000
+    view = ceiling.labeller_view(paper)
+    assert f"TYPES: {paper['pub_types'][:120]}\n" in view
+    assert f"MESH: {paper['mesh'][:400]}\n" in view
+    assert view.endswith(paper["abstract"][:2400])
+    assert ceiling.label_prompt(paper).startswith("Tag the article against the DEBRIS schema.")

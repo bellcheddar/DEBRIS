@@ -406,3 +406,36 @@ scored every 400 iterations rather than every 200 to keep the selection pass nea
 If organs and `rungs_within_one` clear there, the two label-limited metrics go to G2 with
 this evidence rather than to the pathway collapse, which would fold eight of the fourteen
 pathway terms into `other` and cost the Pathways tab most of its content.
+
+## D26 - the weekly timer belongs on the droplet, so path A is the serving route
+
+Asked for directly: the timer is wanted on the droplet rather than the Studio. That is
+path A in spec 5.6, and it is the better arrangement for the reason that matters, which is
+that the droplet is always on and the Mac Studio is not. A launchd job on a desktop that
+happens to be asleep, or busy, or rebooted, refreshes nothing.
+
+The droplet timer was disabled earlier today under the previous G1, for a reason that
+still holds: it was enabled by an old provision, pointed at path A, and had no token, so
+every Sunday it would have harvested and published untagged papers. Turning it back on is
+the right end state, but only once the Space it tags through actually exists.
+
+Three consequences worth writing down.
+
+**The first full tagging stays local.** `config/hf.toml` budgets the Space at twenty
+minutes a week, which fits a weekly delta of roughly fifty papers. All 9,685 verified
+papers need ten to twenty hours of inference depending on which model wins the ladder, and
+putting that through ZeroGPU would exhaust the quota and take days. So the corpus is tagged
+once on the Studio, and the droplet handles every week after that. Path A is the steady
+state, not the bootstrap.
+
+**Only one timer runs at a time.** When the Space is proven, `debris-weekly.timer` is
+enabled on the droplet and `com.mdeller.debris.weekly` is disabled on the Studio in the
+same step, not before and not after.
+
+**An expiring credential is not a credential.** The only Hugging Face token on this machine
+is an OAuth one in the CLI cache that expires 2026-11-03, with the sibling projects holding
+an empty `HF_TOKEN=` line and two `hf_xxxx` placeholders. Pushing with the OAuth token
+would work today and fail silently next week, and because the weekly runner logs a failed
+stage and carries on, the symptom would be a site quietly serving untagged papers. That is
+precisely the failure the earlier gate existed to prevent, so path A waits for a token with
+write scope that does not expire. Raised as the new G1.

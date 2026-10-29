@@ -174,6 +174,23 @@ def api_key(name: str) -> str | None:
     return None
 
 
+def wandb_api_key() -> str | None:
+    """wandb's credential, from the environment or from `wandb login`.
+
+    `wandb login` writes to ~/.netrc and wandb reads it natively, so an unset
+    WANDB_API_KEY does not mean there is no credential. Treating it as one is what put
+    five training runs offline when the account was reachable all along (D28).
+    """
+    key = api_key("WANDB_API_KEY")
+    if key:
+        return key
+    try:
+        import wandb
+        return wandb.api.api_key or None
+    except Exception:
+        return None
+
+
 def token_expiry(token: str) -> str | None:
     """When a Hugging Face credential stops working, or None if it does not.
 

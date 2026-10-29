@@ -459,3 +459,34 @@ not the sensitive part, the quota is.
 The timer stays disabled until the Space answers a real abstract correctly. Enabling it
 before then would recreate the failure the first G1 was raised over, only with a token
 present to make it look configured.
+
+## D28 - the training runs were offline because I checked for the wrong things, twice
+
+Asked why the runs were not on wandb. Two separate faults, both mine, and both the same
+mistake: deciding a capability was absent by looking for one particular spelling of it.
+
+**The credential was there all along.** `pipeline/train.py` forced `WANDB_MODE=offline`
+whenever the `WANDB_API_KEY` environment variable was unset. But `wandb login` writes to
+`~/.netrc`, which wandb reads natively, and that entry has been present throughout:
+`wandb.api.api_key` resolves it and the account is `dellboy`, entity `dellboy-none`. So
+seven runs were written to `wandb/offline-run-*` while the server was reachable. There is
+now `c.wandb_api_key()`, which asks wandb rather than guessing from the environment, and
+the seven runs have been synced to `dellboy-none/debris`.
+
+**mlx-lm's own reporting was never switched on.** `lora_supports_wandb()` searched the
+`mlx_lm.lora` help text for `--wandb`. Version 0.29.1 spells it `--report-to wandb` with a
+separate `--project-name`, so the check returned false every time and the fine-tune
+streamed nothing live. The only curve that reached wandb was the one replayed from the log
+after the run finished, which is why nothing appeared while training was in progress.
+`lora_report_args()` now handles both spellings and passes whichever exists.
+
+**A third thing, found while checking the first two.** The acceptance metrics were logged
+only inside a `wandb.Table`, and a table cannot be sorted or charted across runs, which is
+the entire reason for tracking a ladder. Each metric now also goes into the run summary as
+a scalar, with `floor_gap/<field>` and a `floors_met` count. The already-synced runs were
+backfilled from the tables they carry, so nothing was inferred from a file name: the ladder
+now reads 2/8 and 3/8 and 2/8 for the three 16-layer runs against 4/8 for the 32-layer one.
+
+The 7B run in flight was launched before this fix and holds the old module in memory, so it
+will write offline and needs one `wandb sync` when it finishes. Restarting it to gain live
+logging would cost the hours already spent, which is not a trade worth making for a chart.

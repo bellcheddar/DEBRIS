@@ -372,7 +372,7 @@ def log_wandb() -> None:
     import wandb
 
     cfg = c.load_toml("wandb.toml")
-    if not c.api_key("WANDB_API_KEY"):
+    if not c.wandb_api_key():
         os.environ["WANDB_MODE"] = "offline"
         c.log("bootstrap wandb: no WANDB_API_KEY; WANDB_MODE=offline")
     run = wandb.init(project=cfg.get("project", "debris"),

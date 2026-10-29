@@ -47,12 +47,25 @@ def run(cmd: list[str], log_path: Path | None = None) -> str:
     return output
 
 
-def lora_supports_wandb() -> bool:
+def lora_report_args(project: str) -> list[str]:
+    """mlx-lm's own live reporting, in whichever spelling this version offers.
+
+    0.29.1 calls it `--report-to wandb` with a separate `--project-name`. Checking for a
+    `--wandb` flag that does not exist meant the fine-tune streamed nothing and only the
+    curve replayed afterwards reached wandb at all (D28).
+    """
     try:
         helptext = subprocess.run(["mlx_lm.lora", "--help"], capture_output=True, text=True).stdout
     except FileNotFoundError:
-        return False
-    return "--wandb" in helptext
+        return []
+    if "--report-to" in helptext:
+        args = ["--report-to", "wandb"]
+        if "--project-name" in helptext:
+            args += ["--project-name", project]
+        return args
+    if "--wandb" in helptext:
+        return ["--wandb", project]
+    return []
 
 
 def model_depth(model_id: str) -> int | None:
@@ -87,8 +100,8 @@ def train(iters: int, num_layers: int, model_id: str, batch_size: int) -> Path:
            "--learning-rate", "1e-5", "--adapter-path", str(ADAPTER), "--seed", "42",
            "--steps-per-eval", "100", "--steps-per-report", "20"]
     cfg = c.load_toml("wandb.toml")
-    if lora_supports_wandb():
-        cmd += ["--wandb", cfg.get("project", "debris")]
+    if c.wandb_api_key():
+        cmd += lora_report_args(cfg.get("project", "debris"))
     run(cmd, log_path)
     return log_path
 
@@ -455,14 +468,29 @@ def log_to_wandb(metrics: dict, q4_metrics: dict | None, config: dict,
     except ImportError:
         return None
     cfg = c.load_toml("wandb.toml")
-    if not c.api_key("WANDB_API_KEY"):
+    if not c.wandb_api_key():
         os.environ["WANDB_MODE"] = "offline"
     run_ = wandb.init(project=cfg.get("project", "debris"), entity=cfg.get("entity") or None,
                       job_type="train", name="debris_v1", dir=str(c.ROOT), config=config)
-    # mlx_lm.lora logs its own curve when --wandb is supported; otherwise the log is
-    # parsed and replayed here so the run always carries loss against iteration.
+    # mlx_lm.lora streams its own curve when the version supports it; the log is replayed
+    # here as well so this run carries loss against iteration whether it did or not.
     for point in parse_training_log(log_path) if log_path.exists() else []:
         run_.log(point, step=point["iter"])
+    # Every acceptance metric as a scalar in the run summary, not only inside the table
+    # below: a table cannot be sorted or charted across runs, and comparing one ladder
+    # rung with the next is the whole reason for tracking them (D28).
+    for field, value in metrics.items():
+        if isinstance(value, (int, float)):
+            run_.summary[f"test/{field}"] = value
+            floor = FLOOR.get(field)
+            if floor is not None:
+                run_.summary[f"floor_gap/{field}"] = round(value - floor, 4)
+    run_.summary["floors_met"] = sum(1 for f, fl in FLOOR.items() if metrics.get(f, 0) >= fl)
+    run_.summary["floors_total"] = len(FLOOR)
+    if q4_metrics:
+        for field, value in q4_metrics.items():
+            if isinstance(value, (int, float)):
+                run_.summary[f"q4/{field}"] = value
     # wandb fixes a Table column's type from the first row, and these rows mix numbers
     # with the model path, so every cell goes in as text.
     table = wandb.Table(columns=["field", "value", "floor", "meets"])

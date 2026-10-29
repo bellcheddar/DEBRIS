@@ -124,7 +124,13 @@ class RemoteTagger:
     def __init__(self, space: str, token: str | None, batch_size: int = 16):
         from gradio_client import Client
 
-        self.client = Client(space, hf_token=token)
+        # gradio_client renamed this argument from hf_token to token; accept whichever
+        # the installed version takes, since the Space is reached with a token either
+        # way and a private Space is unreachable without one.
+        try:
+            self.client = Client(space, token=token)
+        except TypeError:
+            self.client = Client(space, hf_token=token)
         self.batch_size = batch_size
         self.name = f"space:{space}"
 

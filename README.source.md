@@ -1,12 +1,42 @@
 # DEBRIS
 
-DEBRIS is a web app and a pipeline. The pipeline harvests every PubMed record that puts a
-micro or nanoplastic particle inside a human disease, verifies each DOI at Crossref, and
-has one fine-tuned 3B model read the abstract and record what the paper reports. The app
-presents the result four ways: a polymer Venn with an evidence ladder, a clickable body
-map, a pathway hub, and a live feed of the papers themselves.
+Plastic particles small enough to cross from the gut or the lung into the bloodstream have
+now been found in human blood, lung tissue, placenta, atheromatous plaque and brain, and
+what that means for health is being worked out in thousands of separate papers that nobody
+has read in full. DEBRIS reads them: it harvests every PubMed record putting a micro or
+nanoplastic particle inside a human disease, checks each one is a real published paper, and
+has a small language model read the abstract and write down what that paper actually
+reports, which plastic, which organ, which biological mechanism, what kind of study, and
+how close the finding sits to an effect in a living person. The result is a map of the
+evidence rather than another reading list.
 
 Live at [debris.mdeller.com](https://debris.mdeller.com).
+
+## Why read the literature by machine
+
+There are around ten thousand papers in scope and the number grows every week. No
+clinician, regulator or journalist can keep up with that, and the findings are scattered
+across toxicology, cardiology, obstetrics, gastroenterology and environmental science
+journals that rarely cite one another. So the obvious question, what do we actually know
+about plastic particles and human disease, has no single answer anywhere: it is distributed
+across a literature too large to hold in one head.
+
+Reading all of it the same way, with the same questions asked of every abstract, makes the
+shape of that evidence visible. Three things fall out that no individual paper shows.
+
+**What has been shown in people, and what has only been shown in cells.** A finding in a
+human cohort and a finding in a dish are both real results and they are not the same
+claim. DEBRIS records which it is for every paper, so the distinction survives.
+
+**Which combinations nobody has studied.** Fourteen mechanisms, thirteen polymers and
+sixteen organ systems make a grid with a great many empty squares. An empty square is an
+open research question, and it is invisible unless the whole corpus is tagged the same way.
+
+**Absence of evidence, stated as such.** An empty region is an absence of published work,
+not a finding of safety. Saying so plainly is more useful than leaving a gap unmentioned.
+
+This is a literature mining project, not a toxicology study. DEBRIS records what papers
+report and nothing in it asserts that plastics cause disease in people.
 
 ## What a tag records
 
@@ -68,17 +98,51 @@ struck through and never deleted.
 5. **Aggregate** (`pipeline/aggregate.py`). Static JSON bundles under
    `app/static/data/`. The app does no computation at request time.
 
-## The tagger
+## The language model
 
-`debris_v1` is a single LoRA fine-tune of `Qwen/Qwen2.5-3B-Instruct`, 16 layers, 800
-iterations, trained on 1,600 hand-labelled abstracts split 1,277 / 161 / 162. It is
-trained on the task and the schema, not on facts, and the weekly refresh never retrains
-it. Metrics on the held-out split, and the acceptance floor each must clear, are in
-[MODEL_CARD.md](MODEL_CARD.md); the corpus-wide numbers are in [FINDINGS.md](FINDINGS.md).
+Reading ten thousand abstracts against a fixed schema is the one part of this that cannot
+be done with rules. Abstracts say the same thing a dozen different ways, and the
+distinction that matters most here, whether an effect was observed in a person or in a cell
+line, is carried by phrasing rather than by any keyword.
 
-Inference runs one of two ways. Path A is a Hugging Face ZeroGPU Space, used when an
-`HF_TOKEN` is present. Path B is the quantised model on the Studio, driven by a launchd
-timer. Both write the same tables.
+So DEBRIS uses a small model trained for exactly this task, not a large general one behind
+an API. That is a deliberate choice: a 3B model fine-tuned on the schema runs the whole
+corpus overnight on one desktop machine, costs nothing per paper, and gives the same answer
+for the same abstract next year, which an API that silently changes underneath you does
+not. Reproducibility is the point.
+
+### Training
+
+| | |
+|---|---|
+| Base model | [`Qwen/Qwen2.5-3B-Instruct`](https://huggingface.co/Qwen/Qwen2.5-3B-Instruct) |
+| Method | LoRA adapter, 32 layers, 1,600 iterations, learning rate 1e-5, fixed seed |
+| Training data | 1,600 labelled abstracts, split 1,277 train / 161 validation / 162 test, stratified on relevance and study design |
+| Trained | Once. The weekly refresh never retrains it |
+| Tracked | Every run in Weights & Biases, with the loss curve, the config and the held-out metrics |
+
+The model is trained on the task and the schema, not on facts about plastics. It learns to
+read an abstract and fill in a form; it does not learn what the answers should be. That
+matters, because it means the model cannot invent a finding the paper does not contain, and
+a wrong tag is a misreading rather than a fabrication.
+
+The split is frozen, so the test set holds the same 162 papers across every training run
+and the numbers are comparable. Performance per field, the acceptance threshold each must
+clear, and an honest account of which fields the labels themselves limit, are all in
+[MODEL_CARD.md](MODEL_CARD.md).
+
+### The models
+
+| Resource | Where |
+|---|---|
+| Fine-tuned tagger | [`Dellboy/debris-tagger-v1`](https://huggingface.co/Dellboy/debris-tagger-v1) |
+| Inference Space (ZeroGPU) | [`Dellboy/debris-tagger`](https://huggingface.co/spaces/Dellboy/debris-tagger) |
+| Base model | [`Qwen/Qwen2.5-3B-Instruct`](https://huggingface.co/Qwen/Qwen2.5-3B-Instruct) |
+
+Inference runs one of two ways, and both write the same tables. Path A is the Hugging Face
+ZeroGPU Space, which is what the weekly refresh on the server uses. Path B is a quantised
+copy of the model on the local machine, driven by a timer, which is what the first full
+pass over the corpus uses because it is far larger than a weekly batch.
 
 ## Running it
 
@@ -164,7 +228,4 @@ more than its abstract is tagged on the abstract.
 | `DEBRIS_BUILD_SPEC.md` | The specification this was built from |
 | `MODEL_CARD.md` | The tagger, its training and its metrics |
 | `FINDINGS.md` | The corpus, the funnel, the gaps; generated |
-| `DECISIONS.md` | Every decision taken during the build, and why |
-| `REUSE.md` | What was lifted from which sibling project |
-| `BUILD_LOG.md` | A line per pipeline stage, with timings |
-| `PROGRESS.md` | Phase by phase |
+| `config/vocab.toml` | The controlled vocabulary: every polymer, organ, mechanism and label |

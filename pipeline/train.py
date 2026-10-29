@@ -55,6 +55,25 @@ def lora_supports_wandb() -> bool:
     return "--wandb" in helptext
 
 
+def model_depth(model_id: str) -> int | None:
+    """How many transformer layers the base model has, from its own config.
+
+    Depth does not follow parameter count: Qwen2.5-3B has 36 layers and the 7B has 28,
+    so a layer count that suits one model is rejected outright by the other.
+    """
+    try:
+        from huggingface_hub import hf_hub_download
+        cfg = json.loads(Path(hf_hub_download(model_id, "config.json")).read_text())
+    except Exception as exc:  # no network and nothing cached, or a local path
+        local = Path(model_id) / "config.json"
+        if local.exists():
+            cfg = json.loads(local.read_text())
+        else:
+            c.log(f"train: could not read the layer count for {model_id} ({exc})")
+            return None
+    return cfg.get("num_hidden_layers")
+
+
 def train(iters: int, num_layers: int, model_id: str, batch_size: int) -> Path:
     log_path = c.ROOT / "data" / "train" / "lora_train.log"
     # Checkpoints from a previous, longer run would still be here, and the validation
@@ -368,6 +387,11 @@ def main() -> None:
 
     tuning = c.tuning()
     model_id = args.model or tuning.get("model_id", "Qwen/Qwen2.5-3B-Instruct")
+    depth = model_depth(model_id)
+    if depth and args.num_layers > depth:
+        c.log(f"train: {model_id} has {depth} layers, so adapting all {depth} "
+              f"rather than the {args.num_layers} requested")
+        args.num_layers = depth
     config = {"model_id": model_id, "iters": args.iters, "num_layers": args.num_layers,
               "batch_size": args.batch_size,
               "label_source": "build session (no ANTHROPIC_API_KEY)" if not c.api_key("ANTHROPIC_API_KEY")

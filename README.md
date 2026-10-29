@@ -8,7 +8,7 @@
 <tr>
 <td>🌐 <b>Website</b></td><td><a href="https://marcdeller.com" target="_blank" rel="noopener noreferrer">marcdeller.com</a></td>
 <td>✉️ <b>Contact</b></td><td><a href="mailto:marc@marcdeller.com">marc@marcdeller.com</a></td>
-<td>🐙 <b>GitHub</b></td><td><a href="https://github.com/bellcheddar/debris" target="_blank" rel="noopener noreferrer">bellcheddar/debris</a></td>
+<td>🐙 <b>GitHub</b></td><td><a href="https://github.com/bellcheddar/DEBRIS" target="_blank" rel="noopener noreferrer">bellcheddar/DEBRIS</a></td>
 </tr>
 </table>
 
@@ -257,6 +257,6 @@ Structural biologist & drug discovery scientist
 <tr>
 <td>🌐</td><td><a href="https://marcdeller.com" target="_blank" rel="noopener noreferrer">marcdeller.com</a></td>
 <td>✉️</td><td><a href="mailto:marc@marcdeller.com">marc@marcdeller.com</a></td>
-<td>🐙</td><td><a href="https://github.com/bellcheddar/debris" target="_blank" rel="noopener noreferrer">github.com/bellcheddar/debris</a></td>
+<td>🐙</td><td><a href="https://github.com/bellcheddar/DEBRIS" target="_blank" rel="noopener noreferrer">github.com/bellcheddar/DEBRIS</a></td>
 </tr>
 </table>

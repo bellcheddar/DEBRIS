@@ -18,7 +18,7 @@ Rewritten after every phase and at least every 30 minutes during compute.
 - [x] Bootstrap labels (1,600: 868 relevant, 732 not) and the wandb dataset artifact (offline)
 - [x] Phase 1 deploy to debris.mdeller.com (live over HTTPS, ingest banner shown)
 
-## Phase 2 Tagger (75 %)
+## Phase 2 Tagger (80 %)
 
 - [x] `pipeline/tag.py` (local mlx and remote Space paths, priority tiers, review queue)
 - [x] `pipeline/train.py` (LoRA, fuse, q4, field-by-field scoring, model card, wandb)
@@ -39,8 +39,13 @@ Rewritten after every phase and at least every 30 minutes during compute.
       0.8580 and model_type 0.8523 still short
 - [x] Checkpoint choice measured on the validation split, not on validation loss (D24):
       the lowest-loss checkpoint was worse on every field
-- [ ] The 5.5 acceptance floor: five of eight still short; 32-layer rung running with
-      checkpoint selection (ladder beyond that: 7B, then collapse pathways)
+- [x] 32-layer rung (D25): four of eight floors now clear, polymers 0.8701 and relevant
+      0.9711 among them; archived as data/adapters/debris_v1_32layer1600
+- [x] The two stubborn metrics measured rather than guessed (D25): model_type is limited by
+      a cell_line / human_in_vitro boundary the labels do not hold to, and pathways is
+      over-prediction on oxidative_stress as much as missed barrier_disruption signal
+- [ ] The 5.5 acceptance floor: organs 0.804, pathways 0.633, rungs within one 0.864 and
+      model_type 0.852 short; Qwen2.5-7B rung running (then G2 for what is label-limited)
 - [ ] Full corpus tagged
 
 ## Phase 3 App polish (85 %)

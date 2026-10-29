@@ -9,7 +9,7 @@ and the schema, not on facts: the weekly pipeline never retrains it.
 | | |
 |---|---|
 | Base model | `Qwen/Qwen2.5-3B-Instruct` |
-| Method | LoRA, 16 layers, batch size 4, 1600 iterations, learning rate 1e-5, seed 42 |
+| Method | LoRA, 32 layers, batch size 4, 1600 iterations, learning rate 1e-5, seed 42 |
 | Data | `debris-train:v1` (1277 train, 161 valid, 162 test), stratified on relevance and model type |
 | Vocabulary | `config/vocab.toml` schema version 1.0 |
 | Labels | build session (no ANTHROPIC_API_KEY) |
@@ -22,17 +22,17 @@ and the schema, not on facts: the weekly pipeline never retrains it.
 | Field | Value | Acceptance floor |
 |---|---|---|
 | n | 162 |  |
-| relevant_f1 | 0.9492 | 0.95 |
-| polymers_f1 | 0.8021 | 0.85 |
-| organ_systems_f1 | 0.7327 | 0.85 |
-| pathways_f1 | 0.6031 | 0.75 |
-| disease_categories_f1 | 0.8492 |  |
-| rungs_exact | 0.8148 | 0.7 |
-| rungs_within_one | 0.8457 | 0.9 |
+| relevant_f1 | 0.9711 | 0.95 |
+| polymers_f1 | 0.8701 | 0.85 |
+| organ_systems_f1 | 0.8043 | 0.85 |
+| pathways_f1 | 0.6332 | 0.75 |
+| disease_categories_f1 | 0.908 |  |
+| rungs_exact | 0.8457 | 0.7 |
+| rungs_within_one | 0.8642 | 0.9 |
 | model_type_accuracy | 0.8523 | 0.9 |
 | model_type_n | 88 |  |
-| valid_json | 0.9938 | 0.98 |
-| seconds_per_paper | 1.8 |  |
+| valid_json | 1.0 | 0.98 |
+| seconds_per_paper | 1.81 |  |
 | model | /Users/dellboy/Documents/Vibe_Coding/debris/data/adapters/debris_v1_fused |  |
 
 ## Quantised (q4) comparison
@@ -40,22 +40,22 @@ and the schema, not on facts: the weekly pipeline never retrains it.
 | Field | Value |
 |---|---|
 | n | 162 |
-| relevant_f1 | 0.87 |
-| polymers_f1 | 0.6758 |
-| organ_systems_f1 | 0.6398 |
-| pathways_f1 | 0.3885 |
-| disease_categories_f1 | 0.8098 |
-| rungs_exact | 0.5741 |
-| rungs_within_one | 0.7222 |
-| model_type_accuracy | 0.7727 |
+| relevant_f1 | 0.948 |
+| polymers_f1 | 0.8111 |
+| organ_systems_f1 | 0.6704 |
+| pathways_f1 | 0.5363 |
+| disease_categories_f1 | 0.8607 |
+| rungs_exact | 0.7346 |
+| rungs_within_one | 0.7469 |
+| model_type_accuracy | 0.7841 |
 | model_type_n | 88 |
-| valid_json | 1.0 |
-| seconds_per_paper | 1.33 |
+| valid_json | 0.9877 |
+| seconds_per_paper | 1.45 |
 | model | /Users/dellboy/Documents/Vibe_Coding/debris/data/adapters/debris_v1_q4 |
 
 ## Acceptance
 
-Below floor: relevant_f1 0.949 < 0.95; polymers_f1 0.802 < 0.85; organ_systems_f1 0.733 < 0.85; pathways_f1 0.603 < 0.75; rungs_within_one 0.846 < 0.9; model_type_accuracy 0.852 < 0.9
+Below floor: organ_systems_f1 0.804 < 0.85; pathways_f1 0.633 < 0.75; rungs_within_one 0.864 < 0.9; model_type_accuracy 0.852 < 0.9
 
 ## Intended use and limits
 

@@ -352,3 +352,57 @@ over the 161 validation papers.
 The iteration count in the spec's ladder is therefore a budget rather than a target, which
 is the right reading of it, but which checkpoint inside that budget is best has to be
 measured and cannot be inferred from the loss curve.
+
+## D25 Adapter capacity was the binding constraint, and two fields are label-limited
+
+The spec's second ladder rung (`--num-layers 32`, 1,600 iterations) moved the tagger from
+three of the eight 5.5 floors to four, on the frozen 162-paper test split:
+
+| metric | floor | 16 layers | 32 layers |
+|---|---|---|---|
+| relevant_f1 | 0.95 | 0.9600 | 0.9711 |
+| polymers_f1 | 0.85 | 0.8152 | **0.8701** |
+| organ_systems_f1 | 0.85 | 0.7591 | 0.8043 |
+| pathways_f1 | 0.75 | 0.6644 | 0.6332 |
+| rungs_exact | 0.70 | 0.8148 | 0.8457 |
+| rungs_within_one | 0.90 | 0.8580 | 0.8642 |
+| model_type_accuracy | 0.90 | 0.8523 | 0.8523 |
+| valid_json | 0.98 | 1.0 | 1.0 |
+
+The fine-tune took 133.9 minutes against 107, and the 4-bit copy is now close enough to
+the fused weights to be a real option (relevance gap +0.023 against +0.148), though it
+still loses 13 points of organ F1, so `USE_FUSED` stays.
+
+Doubling the adapted layers bought polymers and organs, which says capacity was binding
+rather than the labels. Two of the four remaining shortfalls are not capacity, though, and
+the measurements say so:
+
+**`model_type` cannot reach 0.90 on these labels.** Seven of the thirteen errors sit on the
+`cell_line` / `human_in_vitro` boundary, and that boundary is not a rule the prompt could
+state: gold `cell_line` names an immortalised line (Caco-2, HepG2, A549 and the rest) in
+60 % of 88 papers, and gold `human_in_vitro` names one in 25 % of 55, while mentioning
+primary or ex vivo material in only 16 %. The two classes overlap on the single cue that
+would separate them, so writing a definition into the prompt would document a convention
+the labels do not follow. Clarifying the prompt was the obvious cheap fix and the
+measurement ruled it out.
+
+**`pathways` is two different defects.** Precision is now the worse side (0.598 against
+recall 0.673). Checking each predicted pathway against cue vocabulary in its own abstract:
+true-positive `oxidative_stress` has a cue in 91 % of 34 cases but the 23 false positives
+in only 60 %, and `leachate_chemical_toxicity` carries a cue in just 50 % of its true
+positives, so that label is weakly grounded in both directions. Against that,
+`barrier_disruption` false negatives carry the cue in 72 % of 11 cases while its false
+positives carry it in none, which is a recall failure on a clear signal. So part of the
+pathway gap is a model that volunteers plausible mechanisms and part is genuine missed
+signal, and only the second part can be expected to yield to capacity.
+
+**Rung 5 is thin.** The label repair left 82 instances across 693 relevant training rows,
+and the dominant rung error is now `[3,5] -> [3]` nine times. `rungs_within_one` needs
+every gold rung matched within one, and 3 is two away from 5, so those nine failures are
+most of that metric's 0.036 shortfall.
+
+Next is therefore the spec's third rung, Qwen2.5-7B-Instruct at 32 layers, with checkpoints
+scored every 400 iterations rather than every 200 to keep the selection pass near an hour.
+If organs and `rungs_within_one` clear there, the two label-limited metrics go to G2 with
+this evidence rather than to the pathway collapse, which would fold eight of the fourteen
+pathway terms into `other` and cost the Pathways tab most of its content.

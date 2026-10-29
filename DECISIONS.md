@@ -439,3 +439,23 @@ would work today and fail silently next week, and because the weekly runner logs
 stage and carries on, the symptom would be a site quietly serving untagged papers. That is
 precisely the failure the earlier gate existed to prevent, so path A waits for a token with
 write scope that does not expire. Raised as the new G1.
+
+## D27 - the Space is private, and the token is fine-grained
+
+The `debris` token is in place: fine-grained, no expiry, scoped to the `Dellboy`
+namespace with `repo.write`, `repo.content.read`, `repo.contribute.write` and the
+inference permissions. Verified by creating the private model repo
+`Dellboy/debris-tagger-v1`, and written to `/opt/debris/.env` on the droplet over stdin
+rather than on a command line, with the file tightened from 644 to 600 since it now holds
+a secret. G1 is closed.
+
+`hf/push_model.py` created the Space with no `private` argument, which on the Hub means
+public. That is now `private_space = true` in `config/hf.toml`. The weekly run is the only
+caller, `gradio_client` reaches a private Space with the same token, and ZeroGPU quota is
+finite: a public Space would let anyone spend the quota the droplet's timer depends on,
+which would show up as a weekly refresh that silently tagged nothing. The Space code is
+not the sensitive part, the quota is.
+
+The timer stays disabled until the Space answers a real abstract correctly. Enabling it
+before then would recreate the failure the first G1 was raised over, only with a token
+present to make it look configured.

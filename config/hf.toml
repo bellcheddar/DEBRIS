@@ -5,3 +5,4 @@ space_hardware = "zero-a10g"
 private_model = true
 batch_size = 16
 weekly_budget_minutes = 20
+private_space = true

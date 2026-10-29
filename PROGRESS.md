@@ -63,11 +63,13 @@ Rewritten after every phase and at least every 30 minutes during compute.
 - [x] Studio launchd timer installed and enabled, next firing Sunday 2026-11-01 02:00;
       it covers this Sunday and is retired the moment path A is proven
 - [x] Droplet timer disabled and verified (D23): disabled, inactive, off the timer list
-- [ ] Path A is the wanted route (D26): the timer belongs on the droplet, which needs the
-      model and Space pushed and a non-expiring HF write token; G1 open for the token
+- [x] Path A chosen (D26) and its credential in place (D27): fine-grained `debris` token
+      with no expiry, private model repo created, token on the droplet at mode 600
+- [ ] Path A switchover, once the ladder picks a model: push the fused model and the
+      private Space, verify it tags a real abstract, enable debris-weekly.timer and
+      disable the Studio launchd job in the same step, then a dry weekly run
 - [ ] Dry weekly run
 - [x] `tools/findings.py` and `tools/readme.py`, both generated from the database and the forge
 - [ ] Final README and FINDINGS.md regenerated against the tagged corpus
 
-Open gates: G1, path A needs a Hugging Face write token that does not expire this week
-(GATE_OPEN.md). The build is not blocked by it.
+Open gates: none.

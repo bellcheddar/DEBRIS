@@ -78,11 +78,17 @@ def main() -> int:
         (SPACE_DIR / "schema.py").write_text(text)
         # Hardware is requested at creation; an existing Space keeps whatever it has,
         # so the log below says where to check it.
+        # Private, because the weekly run is the only caller and the ZeroGPU quota is
+        # finite: a public Space would let anyone spend the quota the timer depends on.
+        # gradio_client reaches a private Space with the same token.
+        private_space = bool(cfg.get("private_space", True))
         try:
             api.create_repo(space_repo, repo_type="space", exist_ok=True, space_sdk="gradio",
+                            private=private_space,
                             space_hardware=cfg.get("space_hardware", "zero-a10g"))
         except TypeError:
-            api.create_repo(space_repo, repo_type="space", exist_ok=True, space_sdk="gradio")
+            api.create_repo(space_repo, repo_type="space", exist_ok=True, space_sdk="gradio",
+                            private=private_space)
         api.upload_folder(folder_path=str(SPACE_DIR), repo_id=space_repo, repo_type="space",
                           commit_message="DEBRIS tagger Space (ZeroGPU)")
         api.add_space_secret(repo_id=space_repo, key="HF_TOKEN", value=token)

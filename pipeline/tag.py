@@ -29,6 +29,13 @@ from pipeline import schema
 MODEL_VERSION = "debris_v1"
 SAMPLED_TEMPERATURE = 0.7
 SAMPLED_SEED = 42
+# One pass over the corpus runs for ten hours or more, so the thing to defend against is
+# not a crash (the run resumes from the manifest and from the tags already written) but the
+# tagger dying quietly part way through. Without a breaker the loop would mark every
+# remaining paper failed, finish with an exit code of zero, and leave a review queue the
+# size of the corpus looking like a tagging problem rather than an outage.
+RETRY_PAUSE = 20
+CONSECUTIVE_FAILURE_LIMIT = 25
 
 TIER_PATTERNS = (
     (2, r"patient|cohort|human tissue|human blood|post-?mortem|biopsy|autops|carotid|placenta"),
@@ -263,6 +270,16 @@ def store(conn, pmid: str, tag: dict, sampled: dict | None, problems: list[str],
     return reason
 
 
+def tag_once(tagger, paper: dict, *, remote: bool) -> tuple:
+    """One tagging attempt, greedy plus sampled, whichever path is in use."""
+    if remote:
+        results = tagger.tag_batch([paper])
+        return (results[0].get("tag") if results else None,
+                results[0].get("sampled") if results else None)
+    raw, sampled, _ = tagger.tag(paper)
+    return raw, sampled
+
+
 def mark_failed(conn, pmid: str, reason: str) -> None:
     with conn:
         conn.execute("UPDATE papers SET status=? WHERE pmid=?", (f"failed:{reason}", pmid))
@@ -271,7 +288,7 @@ def mark_failed(conn, pmid: str, reason: str) -> None:
                      (pmid, reason, c.now()))
 
 
-def main() -> None:
+def main() -> int:
     ap = argparse.ArgumentParser(description="Tag the DEBRIS corpus")
     ap.add_argument("--local", action="store_true", help="use the mlx model on this machine")
     ap.add_argument("--remote", action="store_true", help="use the Hugging Face ZeroGPU Space")
@@ -288,7 +305,7 @@ def main() -> None:
     rows = pending(conn, args.limit, args.tier, args.retag)
     if not rows:
         c.log("tag: nothing to tag")
-        return
+        return 0
 
     if args.remote:
         hf = c.load_toml("hf.toml")
@@ -305,21 +322,34 @@ def main() -> None:
     started = time.monotonic()
     tagged = queued = failed = 0
 
+    consecutive = 0
     for i, row in enumerate(rows, 1):
         if row["pmid"] in done:
             continue
         paper = dict(row)
         try:
-            if args.remote:
-                results = tagger.tag_batch([paper])
-                raw = results[0].get("tag") if results else None
-                sampled = results[0].get("sampled") if results else None
-            else:
-                raw, sampled, _ = tagger.tag(paper)
+            raw, sampled = tag_once(tagger, paper, remote=args.remote)
         except Exception as exc:
-            mark_failed(conn, paper["pmid"], f"tagger error {type(exc).__name__}")
-            failed += 1
-            continue
+            # A cold Space, a dropped connection or a transient Metal failure costs the
+            # paper nothing if we simply ask again. A second failure is recorded, and the
+            # paper keeps no manifest line, so a later run picks it up again.
+            c.log(f"tag: {paper['pmid']} failed ({type(exc).__name__}), retrying once")
+            time.sleep(RETRY_PAUSE)
+            try:
+                raw, sampled = tag_once(tagger, paper, remote=args.remote)
+            except Exception as retry_exc:
+                mark_failed(conn, paper["pmid"], f"tagger error {type(retry_exc).__name__}")
+                failed += 1
+                consecutive += 1
+                if consecutive >= CONSECUTIVE_FAILURE_LIMIT:
+                    c.log(f"tag: {consecutive} papers in a row failed, the last with "
+                          f"{type(retry_exc).__name__}. Stopping rather than marking the rest "
+                          f"of the corpus failed: this is an outage, not a tagging result. "
+                          f"{tagged} tagged this run, resume with the same command.")
+                    conn.close()
+                    return 1
+                continue
+        consecutive = 0
         tag, problems, candidates = schema.validate(raw)
         sampled_tag, _, _ = schema.validate(sampled) if sampled else (None, [], [])
         if tag is None:
@@ -347,7 +377,8 @@ def main() -> None:
     elapsed = (time.monotonic() - started) / 60
     c.log(f"tag: done {tagged} tagged, {queued} queued for review, {failed} failed, "
           f"{elapsed:.1f} min, path {path}")
+    return 0
 
 
 if __name__ == "__main__":
-    main()
+    raise SystemExit(main())

@@ -701,3 +701,33 @@ worth reading. The precision question is now measured rather than argued about.
 **Reversing it.** Drop the clause from `corpus_clause`, or widen `CORPUS_STRATEGY`, and the
 controls return to the corpus. The tiers are ordering only, so removing tiers 6 and 7
 changes the sequence of a tagging run and nothing about its output.
+
+## D33 The tagging pass needed a circuit breaker, and the tests were writing to the real manifests
+
+One pass over the corpus runs for ten hours or more, so the failure worth defending against
+is not a crash. A crash already resumes: `pending()` excludes papers that have tags, the
+manifest records what is done, and `store()` writes each paper in one transaction, so a kill
+between two papers costs nothing and a kill inside one leaves no half-written tag.
+
+The failure that was not handled is the tagger dying part way through and staying dead. A
+single exception marked a paper `failed:` and moved on, so an outage at hour two, a Space
+that stops answering or a model file that goes missing, would have marked all nine thousand
+remaining papers failed, put every one of them in the review queue, logged `done 0 tagged,
+9,000 failed` and exited zero. That reads as a tagging problem rather than an outage, and
+the review queue would have been the whole corpus.
+
+Two changes. Each paper now gets one retry after a twenty-second pause, because a cold Space
+or a dropped connection costs the paper nothing if we simply ask again, and a paper that
+fails twice keeps no manifest line so a later run picks it up. And twenty-five consecutive
+failures stop the run with a non-zero exit and a message saying it is an outage, how many
+papers were tagged, and that the same command resumes. Both are tested, including that the
+breaker leaves the rest of the corpus for the next run rather than consuming it.
+
+Writing those tests turned up something worse. The autouse fixture redirects `BUILD_LOG.md`
+but not `data/manifests/`, so a test that tags anything appended to the project's real
+`tag.jsonl`. It had already written one line by the time I noticed, and the second run of
+the same test then skipped that paper because the manifest said it was done. A manifest is
+how every stage decides what to skip, so a test that writes one tells the next real run that
+work it has never done is already finished: on a full corpus pass that is silently missing
+papers. `c.MANIFESTS` is now redirected to a temporary directory for every test, and the
+stray line is removed. Nothing else had been affected, because no stage had run since.

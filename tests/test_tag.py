@@ -4,6 +4,7 @@ from __future__ import annotations
 from pipeline import common as c
 from pipeline import schema
 from pipeline import tag
+from tests.conftest import insert_paper as conftest_insert
 
 
 def paper(title="", abstract="", pub_types="", pmid="1", year=2024,
@@ -186,3 +187,67 @@ def test_a_deliberate_control_is_tagged_last():
     assert tag.tier_of(paper(title="Microplastics in carotid plaque",
                              abstract="A patient cohort.",
                              hit_strategy="textword,negative"), set()) == 2
+
+
+def test_a_broken_tagger_stops_the_run_instead_of_failing_the_corpus(corpus, monkeypatch,
+                                                                     capsys):
+    """One pass takes ten hours, so a tagger that dies at hour two must not mark the rest
+    of the corpus failed and then exit zero. That would read as a tagging result rather
+    than an outage, and it would put the whole corpus in the review queue."""
+    import sqlite3
+
+    conn = sqlite3.connect(corpus)
+    with conn:  # enough untagged papers to run past the breaker
+        for n in range(2000, 2040):
+            conftest_insert(conn, str(n), relevant=None)
+    conn.close()
+
+    class BrokenTagger:
+        name = "broken"
+
+        def tag(self, paper):
+            raise RuntimeError("Metal command buffer execution failed")
+
+    monkeypatch.setattr(tag, "RETRY_PAUSE", 0)
+    monkeypatch.setattr(tag, "local_model_choice", lambda *a, **k: ("model", None))
+    monkeypatch.setattr(tag, "LocalTagger", lambda *a, **k: BrokenTagger())
+    monkeypatch.setattr("sys.argv", ["tag", "--local"])
+
+    assert tag.main() == 1, "an outage has to be a non-zero exit"
+
+    conn = c.connect(corpus)
+    attempted = conn.execute(
+        "SELECT COUNT(*) FROM papers WHERE status LIKE 'failed:%'").fetchone()[0]
+    assert attempted == tag.CONSECUTIVE_FAILURE_LIMIT, "it stopped at the breaker"
+    assert tag.pending(conn, None, None), "the rest is left for the next run to pick up"
+    conn.close()
+
+
+def test_a_blip_costs_the_paper_nothing(corpus, monkeypatch):
+    """A cold Space or a dropped connection should be asked a second time, not written off."""
+    calls = {"n": 0}
+
+    class FlakyTagger:
+        name = "flaky"
+
+        def tag(self, paper):
+            calls["n"] += 1
+            if calls["n"] == 1:
+                raise ConnectionError("space is waking up")
+            return ({"relevant": False, "polymers": [], "size_class": "unknown",
+                     "organ_systems": [], "disease_categories": ["none"],
+                     "disease_terms": [], "pathways": [], "model_type": "not_applicable",
+                     "evidence_rungs": [], "pet_specific": False,
+                     "summary": "Not relevant.", "confidence": 0.9}, None, 0.0)
+
+    monkeypatch.setattr(tag, "RETRY_PAUSE", 0)
+    monkeypatch.setattr(tag, "local_model_choice", lambda *a, **k: ("model", None))
+    monkeypatch.setattr(tag, "LocalTagger", lambda *a, **k: FlakyTagger())
+    monkeypatch.setattr("sys.argv", ["tag", "--local", "--limit", "1"])
+
+    assert tag.main() == 0
+    assert calls["n"] == 2, "asked twice, and the second answer was kept"
+    conn = c.connect(corpus)
+    assert conn.execute(
+        "SELECT COUNT(*) FROM papers WHERE status LIKE 'failed:%'").fetchone()[0] == 0
+    conn.close()

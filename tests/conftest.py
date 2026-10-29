@@ -48,8 +48,15 @@ def insert_paper(conn, pmid, *, title="A title", doi_status="verified", year=202
 
 @pytest.fixture(autouse=True)
 def quiet_build_log(tmp_path, monkeypatch):
-    """Keep test runs out of the real BUILD_LOG.md."""
+    """Keep test runs out of the real BUILD_LOG.md and out of data/manifests/.
+
+    A manifest is how every stage resumes, so a test that writes one into the project
+    tells the next real run that work it has never done is already finished.
+    """
     monkeypatch.setenv("DEBRIS_LOG", str(tmp_path / "BUILD_LOG.md"))
+    manifests = tmp_path / "manifests"
+    manifests.mkdir()
+    monkeypatch.setattr(c, "MANIFESTS", manifests)
 
 
 @pytest.fixture

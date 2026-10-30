@@ -425,3 +425,9 @@
 - 2026-10-30 10:20 lab phase2-base f1 s42: training 600 iterations
 - 2026-10-30 10:20 train: /Users/dellboy/Documents/Vibe_Coding/debris/.pixi/envs/default/bin/python /Users/dellboy/Documents/Vibe_Coding/debris/pipeline/mlx_capped.py mlx_lm.lora --model Qwen/Qwen2.5-1.5B-Instruct --train ...
 - 2026-10-30 10:25 ceiling analysis: tissue ceiling 0.834 once bare other: names are recovered; pathway misses are the 32B under-labelling; v2.2 cues written, 32B v2.2 ceiling queued after tag_verify (D47)
+- 2026-10-30 10:43 lab phase2-base f1 s42: trained in 22.4 min
+- 2026-10-30 10:46 lab phase2-base f1 s42 @ 600: relevant_f1 0.8852, polymers_f1 0.728, organ_systems_f1 0.6703, pathways_f1 0.3916, rungs_exact 0.7119, rungs_within_one 0.7996, model_type_accuracy 0.7154, valid_json 1.0, 0.45 s/paper
+- 2026-10-30 10:46 lab phase2-base f2 s42: training 600 iterations
+- 2026-10-30 10:46 train: /Users/dellboy/Documents/Vibe_Coding/debris/.pixi/envs/default/bin/python /Users/dellboy/Documents/Vibe_Coding/debris/pipeline/mlx_capped.py mlx_lm.lora --model Qwen/Qwen2.5-1.5B-Instruct --train ...
+- 2026-10-30 11:09 lab phase2-base f2 s42: trained in 22.4 min
+- 2026-10-30 11:11 v2.3 rulings for model type and polymers written; 32B v2.2 and v2.3 ceilings queued after tag_verify (D48)

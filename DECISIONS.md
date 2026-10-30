@@ -1094,3 +1094,21 @@ A smoke test on the CPU ran the new path end to end. Its output is unusable, but
 1. v2.2 cues in the labelling instructions, and in the tagger's system prompt as a Phase 4 switch.
 2. How to score the `other:` pathway tail: as one `other` class, left out, or kept as is.
 3. Whether the gold's 12 to 18 cue-less labels per pathway are read again.
+
+## D48 v2.3: the model-type and polymer boundaries
+
+**Ceiling disagreements, v2.1** (81 papers). On model type, 9 papers disagree. Six fall on two boundaries:
+- cell_line against human_in_vitro (3): THLE-2, an immortalised line; unnamed "human alveolar cells"; sheep primary placental cells.
+- human_cohort against human_tissue (2): tumour against para-tumour prostate; coronary-blood particles against disease severity.
+
+The other four are 32B errors, or the order rule applied correctly by the gold. On polymers, 2 disagree: a missed minor polymer in a detection study, and `mixed_unspecified` given to a study with no particles.
+
+**Gold audit, all 868.** I read the 18 papers a cue screen flagged.
+- The "in vivo" mentions in in-vitro papers are background.
+- Comparison words in human-tissue papers are mostly background.
+- Mixed line-and-primary studies follow the order rule.
+- Animal primary cells are `cell_line`, and commercial HUVEC are `cell_line` (5 of 5), both as the rule says.
+- Two papers have no written rule behind their label: a controlled human PVC challenge and a randomised trial, both labelled `human_cohort`.
+- Polymers: fewer than 10 labelled polymers are absent from the abstract, and 2 of 123 `mixed_unspecified` labels sit beside a named polymer.
+
+**v2.3** writes these boundaries down as the gold already applies them, on top of the v2.2 cues: the comparison rule for cohort against tissue; human exposure experiments and trials as `human_cohort`; human_in_vitro as primary human cells only, with named lines; the study's own strongest design; cell_free against in_silico; and every detected polymer, with no `mixed_unspecified` when there are no particles. The text sits in `ceiling.V2_3_RULINGS` until Phase 2 releases `labels_v2.py`. Tonight the 32B relabels the ceiling sample under v2.2 and then v2.3, so each step's effect is measured separately. Adopting either is the owner's decision (rule 5). No gold label changes, because the rulings describe what the gold already does.

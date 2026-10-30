@@ -81,3 +81,11 @@ def test_ceiling_reads_bare_open_values_as_other_and_recovers_old_rows():
     row = {"pred": {"tissues": ["liver"], "pathways": []}, "problems": ["tissues 'gills'"]}
     assert C.recovered(row)["pred"]["tissues"] == ["liver", "other:gill"]
     assert "lipid_metabolism: triglycerides" in C.cue_block()
+
+
+def test_v2_3_instructions_stack_on_v2_2():
+    from pipeline import ceiling as C
+
+    assert "v2.2 assay cues" in C.instructions("v2.3") and "v2.3 rulings" in C.instructions("v2.3")
+    assert "v2.3 rulings" not in C.instructions("v2.2")
+    assert "v2.2 assay cues" not in C.instructions("v2.1")

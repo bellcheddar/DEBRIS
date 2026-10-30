@@ -983,3 +983,19 @@ Agreement on the 30 papers read twice, after the rulings: model type 0.967, path
 on pathways and 0.57 on organ systems. The comparison flatters v2, because both readings
 come from the same model family under the same rules. The 32B ceiling under v2.1, run after
 Phase 1, is the like-for-like figure.
+
+## D41 Phase 2 is wired as a module, ready to switch on when Phase 1 finishes
+
+`pipeline/lab_v2.py` holds the four Phase 2 switches (`model_type_v2`, `pathways_v2`,
+`polymers_v2`, `tissues`). It covers the v2 gold, a system prompt listing the switched
+values, validation that keeps `cell_free`, PA66 and the tissue keys, and the extra metrics:
+tissues, the parent level for tissues and polymers, the three organ-system policies, and
+per-tissue recall for Liu et al.'s 18. Six tests. `lab.py` is not touched while Phase 1 runs,
+because each Phase 1 configuration starts a fresh `lab.py` process. The wiring is a script
+already dry-run on a copy, applied once the queue is idle. A Phase 2 config sets
+`gold = "v2"` so both arms are scored against the same v2 yardstick.
+
+The yardstick moves as expected. The Phase 0 baseline at 600 (trained on v1), scored against
+v2 gold instead of v1, gives pathways 0.435 (from 0.556), polymers 0.724 (from 0.769), model
+type 0.731 (from 0.727), and organ systems unchanged at 0.671 because they keep their v1 gold.
+Those are the figures each Phase 2 switch is compared against, alongside the v2 ceiling.

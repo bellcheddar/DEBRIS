@@ -284,7 +284,8 @@ CREATE TABLE IF NOT EXISTS papers (pmid TEXT PRIMARY KEY, doi TEXT, doi_status T
   ingested_at TEXT, ingest_run TEXT, status TEXT);
 CREATE TABLE IF NOT EXISTS tags (pmid TEXT PRIMARY KEY REFERENCES papers(pmid), relevant INTEGER,
   size_class TEXT, model_type TEXT, pet_specific INTEGER, summary TEXT, confidence REAL,
-  self_consistency REAL, tag_source TEXT, tag_json TEXT, tagged_at TEXT, model_version TEXT);
+  self_consistency REAL, tag_source TEXT, tag_json TEXT, tagged_at TEXT, model_version TEXT,
+  token_prob REAL);
 CREATE TABLE IF NOT EXISTS tag_polymers (pmid TEXT, polymer TEXT, PRIMARY KEY (pmid, polymer));
 CREATE TABLE IF NOT EXISTS tag_organs   (pmid TEXT, organ_system TEXT, PRIMARY KEY (pmid, organ_system));
 CREATE TABLE IF NOT EXISTS tag_diseases (pmid TEXT, disease_category TEXT, disease_term TEXT);
@@ -334,10 +335,22 @@ def connect(path: Path | str | None = None, readonly: bool = False) -> sqlite3.C
     return conn
 
 
+# Columns added after a database was first built: (table, column, type).
+ADDED_COLUMNS = (("tags", "token_prob", "REAL"),)   # hybrid confidence (D45)
+
+
+def migrate(conn: sqlite3.Connection) -> None:
+    for table, column, kind in ADDED_COLUMNS:
+        have = {r[1] for r in conn.execute(f"PRAGMA table_info({table})")}
+        if have and column not in have:
+            conn.execute(f"ALTER TABLE {table} ADD COLUMN {column} {kind}")
+
+
 def init_db(path: Path | str | None = None) -> None:
     conn = connect(path)
     with conn:
         conn.executescript(SCHEMA)
+        migrate(conn)
     conn.close()
 
 

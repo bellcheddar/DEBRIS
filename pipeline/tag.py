@@ -20,6 +20,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import math
 import re
 import time
 
@@ -29,6 +30,8 @@ from pipeline import schema
 MODEL_VERSION = "debris_v1"
 SAMPLED_TEMPERATURE = 0.7
 SAMPLED_SEED = 42
+MAX_TOKENS = 480
+CHUNK = 256      # papers per batched call: an interruption costs at most one chunk
 # One pass over the corpus runs for ten hours or more, so the thing to defend against is
 # not a crash (the run resumes from the manifest and from the tags already written) but the
 # tagger dying quietly part way through. Without a breaker the loop would mark every
@@ -148,7 +151,7 @@ class LocalTagger:
                     {"role": "user", "content": prompt}]
         text = self.tokenizer.apply_chat_template(messages, add_generation_prompt=True,
                                                   tokenize=False)
-        return generate(self.model, self.tokenizer, prompt=text, max_tokens=480,
+        return generate(self.model, self.tokenizer, prompt=text, max_tokens=MAX_TOKENS,
                         sampler=make_sampler(temp=temperature), verbose=False)
 
     def tag(self, paper: dict) -> tuple[dict | None, dict | None, str]:
@@ -161,6 +164,98 @@ class LocalTagger:
                 prompt + "\n\nReturn only the JSON object, no prose.", 0.0))
         sampled = schema.extract_json(self.generate(prompt, SAMPLED_TEMPERATURE, SAMPLED_SEED))
         return greedy, sampled, greedy_raw
+
+
+def generate_many(model, tokenizer, prompts: list[str], batch: int, *, prefix: bool = True,
+                  temperature: float = 0.0, seed: int | None = None) -> list[tuple[str, float]]:
+    """Answers for many papers in one continuous batch, each with the mean probability of
+    the tokens it chose (D45).
+
+    Reading the prompt is most of the cost on the 7B (tag_bench, D45), and the system
+    prompt is the same for every paper, so it is read once and shared: the batch
+    generator merges the caches it is given into new arrays and never writes to them.
+    """
+    import math
+
+    import mlx.core as mx
+    from mlx_lm.generate import BatchGenerator
+    from mlx_lm.models import cache as kv
+    from mlx_lm.sample_utils import make_sampler
+
+    tokens = [tokenizer.apply_chat_template(
+        [{"role": "system", "content": schema.SYSTEM_PROMPT},
+         {"role": "user", "content": p}], add_generation_prompt=True) for p in prompts]
+    caches = None
+    if prefix:
+        head = tokenizer.apply_chat_template(
+            [{"role": "system", "content": schema.SYSTEM_PROMPT}], add_generation_prompt=False)
+        if all(len(head) < len(t) and t[:len(head)] == head for t in tokens):
+            shared = kv.make_prompt_cache(model)
+            model(mx.array(head)[None], cache=shared)
+            mx.eval([s.state for s in shared])
+            caches = [shared] * len(tokens)
+            tokens = [t[len(head):] for t in tokens]
+    if seed is not None:
+        mx.random.seed(seed)
+    gen = BatchGenerator(model, stop_tokens=tokenizer.eos_token_ids,
+                         sampler=make_sampler(temp=temperature),
+                         completion_batch_size=batch, prefill_batch_size=min(batch, 16))
+    try:
+        uids = gen.insert(tokens, MAX_TOKENS, caches=caches)
+        out = {u: [] for u in uids}
+        logp = {u: [] for u in uids}
+        while responses := gen.next():
+            for r in responses:
+                if r.finish_reason != "stop":
+                    out[r.uid].append(r.token)
+                    logp[r.uid].append(r.logprobs[r.token].item())
+    finally:
+        gen.close()
+    return [(tokenizer.decode(out[u]),
+             round(math.exp(sum(logp[u]) / len(logp[u])), 4) if logp[u] else 0.0) for u in uids]
+
+
+def least_confident(probs: list[float], fraction: float) -> set[int]:
+    """Indices of the papers that get the sampled pass: the given share with the lowest
+    token probability, rounded up, so a fraction above zero always samples someone."""
+    if fraction <= 0 or not probs:
+        return set()
+    k = min(len(probs), math.ceil(len(probs) * fraction))
+    return set(sorted(range(len(probs)), key=lambda i: (probs[i], i))[:k])
+
+
+class BatchedTagger(LocalTagger):
+    """The local tagger for a whole corpus: batched, with hybrid confidence (D45)."""
+
+    def __init__(self, model_path: str, adapter_path: str | None, tag_cfg: dict):
+        super().__init__(model_path, adapter_path)
+        self.batch = int(tag_cfg.get("batch_size", 8))
+        self.prefix = bool(tag_cfg.get("prefix_cache", True))
+        self.fraction = float(tag_cfg.get("sampled_fraction", 0.33))
+
+    def tag_many(self, papers: list[dict]) -> list[dict]:
+        """For each paper: the greedy JSON (re-prompted once if unparsable), its token
+        probability, and the sampled JSON for the least confident share, else None."""
+        prompts = [schema.user_prompt(p) for p in papers]
+        greedy = generate_many(self.model, self.tokenizer, prompts, self.batch, prefix=self.prefix)
+        parsed = [schema.extract_json(text) for text, _ in greedy]
+        retry = [i for i, g in enumerate(parsed) if g is None]
+        if retry:
+            again = generate_many(self.model, self.tokenizer,
+                                  [prompts[i] + "\n\nReturn only the JSON object, no prose." for i in retry],
+                                  self.batch, prefix=self.prefix)
+            for i, (text, _) in zip(retry, again):
+                parsed[i] = schema.extract_json(text)
+        probs = [p for _, p in greedy]
+        chosen = sorted(least_confident(probs, self.fraction))
+        sampled: dict[int, dict | None] = {}
+        if chosen:
+            texts = generate_many(self.model, self.tokenizer, [prompts[i] for i in chosen],
+                                  self.batch, prefix=self.prefix,
+                                  temperature=SAMPLED_TEMPERATURE, seed=SAMPLED_SEED)
+            sampled = {i: schema.extract_json(t) for i, (t, _) in zip(chosen, texts)}
+        return [{"raw": parsed[i], "sampled": sampled.get(i), "sampled_run": i in sampled,
+                 "token_prob": probs[i]} for i in range(len(papers))]
 
 
 # ----------------------------------------------------------------- remote (Space)
@@ -204,9 +299,14 @@ def candidates_of(tag: dict) -> set[tuple[str, str]]:
 
 
 def store(conn, pmid: str, tag: dict, sampled: dict | None, problems: list[str],
-          candidates: list[tuple[str, str]], source: str, model_version: str) -> str:
-    """Write one tag and its fan-out tables. Returns the review reason, or ''."""
-    consistency = schema.self_consistency(tag, sampled)
+          candidates: list[tuple[str, str]], source: str, model_version: str,
+          token_prob: float | None = None, sampled_run: bool = True) -> str:
+    """Write one tag and its fan-out tables. Returns the review reason, or ''.
+
+    Under hybrid confidence (D45) a paper the tagger was sure of skips the sampled pass:
+    its self-consistency is NULL rather than a score it never earned, and its token
+    probability says why."""
+    consistency = schema.self_consistency(tag, sampled) if sampled_run else None
     # vocab_candidates counts papers, so a re-tag moves the paper between values
     # rather than counting it twice.
     row = conn.execute("SELECT tag_json FROM tags WHERE pmid=?", (pmid,)).fetchone()
@@ -215,7 +315,7 @@ def store(conn, pmid: str, tag: dict, sampled: dict | None, problems: list[str],
     reason = ""
     if tag["confidence"] < 0.6:
         reason = "low confidence"
-    elif consistency < 0.7:
+    elif consistency is not None and consistency < 0.7:
         reason = "passes disagree"
     elif any(v.startswith("other:") for v in tag["polymers"] + tag["pathways"]):
         reason = "out-of-vocabulary value"
@@ -224,17 +324,19 @@ def store(conn, pmid: str, tag: dict, sampled: dict | None, problems: list[str],
 
     with conn:
         conn.execute("""INSERT INTO tags (pmid,relevant,size_class,model_type,pet_specific,summary,
-                          confidence,self_consistency,tag_source,tag_json,tagged_at,model_version)
-                        VALUES (?,?,?,?,?,?,?,?,?,?,?,?)
+                          confidence,self_consistency,token_prob,tag_source,tag_json,tagged_at,
+                          model_version)
+                        VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)
                         ON CONFLICT(pmid) DO UPDATE SET relevant=excluded.relevant,
                           size_class=excluded.size_class, model_type=excluded.model_type,
                           pet_specific=excluded.pet_specific, summary=excluded.summary,
                           confidence=excluded.confidence, self_consistency=excluded.self_consistency,
+                          token_prob=excluded.token_prob,
                           tag_source=excluded.tag_source, tag_json=excluded.tag_json,
                           tagged_at=excluded.tagged_at, model_version=excluded.model_version""",
                      (pmid, int(tag["relevant"]), tag["size_class"], tag["model_type"],
                       int(tag["pet_specific"]), tag["summary"], tag["confidence"], consistency,
-                      source, json.dumps(tag, separators=(",", ":")), c.now(), model_version))
+                      token_prob, source, json.dumps(tag, separators=(",", ":")), c.now(), model_version))
         for table, column, values in (
                 ("tag_polymers", "polymer", tag["polymers"]),
                 ("tag_organs", "organ_system", tag["organ_systems"]),
@@ -314,60 +416,104 @@ def main() -> int:
         path = "zerogpu_space"
     else:
         model_path, adapter = local_model_choice(args.model, args.adapter, tuning)
-        tagger = LocalTagger(model_path, adapter)
+        tagger = BatchedTagger(model_path, adapter, tuning.get("tag", {}))
         path = "studio_mlx"
 
     c.log(f"tag: {len(rows)} papers, {tagger.name}, path {path}")
+    c.migrate(conn)
     done = c.manifest_done("tag", key="pmid") if not args.retag else set()
+    todo = [dict(r) for r in rows if r["pmid"] not in done]
+    source = "debris_v1" if not args.remote else "debris_v1_space"
     started = time.monotonic()
-    tagged = queued = failed = 0
+    counts = {"tagged": 0, "queued": 0, "failed": 0}
 
-    consecutive = 0
-    for i, row in enumerate(rows, 1):
-        if row["pmid"] in done:
-            continue
-        paper = dict(row)
-        try:
-            raw, sampled = tag_once(tagger, paper, remote=args.remote)
-        except Exception as exc:
-            # A cold Space, a dropped connection or a transient Metal failure costs the
-            # paper nothing if we simply ask again. A second failure is recorded, and the
-            # paper keeps no manifest line, so a later run picks it up again.
-            c.log(f"tag: {paper['pmid']} failed ({type(exc).__name__}), retrying once")
-            time.sleep(RETRY_PAUSE)
-            try:
-                raw, sampled = tag_once(tagger, paper, remote=args.remote)
-            except Exception as retry_exc:
-                mark_failed(conn, paper["pmid"], f"tagger error {type(retry_exc).__name__}")
-                failed += 1
-                consecutive += 1
-                if consecutive >= CONSECUTIVE_FAILURE_LIMIT:
-                    c.log(f"tag: {consecutive} papers in a row failed, the last with "
-                          f"{type(retry_exc).__name__}. Stopping rather than marking the rest "
-                          f"of the corpus failed: this is an outage, not a tagging result. "
-                          f"{tagged} tagged this run, resume with the same command.")
-                    conn.close()
-                    return 1
-                continue
-        consecutive = 0
+    def record(paper: dict, raw, sampled, token_prob=None, sampled_run=True) -> None:
         tag, problems, candidates = schema.validate(raw)
         sampled_tag, _, _ = schema.validate(sampled) if sampled else (None, [], [])
         if tag is None:
             mark_failed(conn, paper["pmid"], "invalid JSON after one re-prompt")
-            failed += 1
+            counts["failed"] += 1
             c.manifest_write("tag", {"pmid": paper["pmid"], "status": "failed", "at": c.now()})
-            continue
-        reason = store(conn, paper["pmid"], tag, sampled_tag, problems, candidates,
-                       "debris_v1" if not args.remote else "debris_v1_space", MODEL_VERSION)
-        tagged += 1
-        queued += 1 if reason else 0
+            return
+        reason = store(conn, paper["pmid"], tag, sampled_tag, problems, candidates, source,
+                       MODEL_VERSION, token_prob=token_prob, sampled_run=sampled_run)
+        counts["tagged"] += 1
+        counts["queued"] += 1 if reason else 0
         c.manifest_write("tag", {"pmid": paper["pmid"], "status": "tagged",
                                  "review": reason, "at": c.now()})
-        if i % 25 == 0:
-            rate = i / max(time.monotonic() - started, 1e-6)
-            left = (len(rows) - i) / max(rate, 1e-9) / 60
-            print(f"  tagged {i}/{len(rows)} ({rate * 60:.0f}/min, ~{left:.0f} min left, "
-                  f"{queued} queued for review)", flush=True)
+
+    def progress(n: int) -> None:
+        rate = n / max(time.monotonic() - started, 1e-6)
+        left = (len(todo) - n) / max(rate, 1e-9) / 60
+        print(f"  tagged {n}/{len(todo)} ({rate * 60:.0f}/min, ~{left:.0f} min left, "
+              f"{counts['queued']} queued for review)", flush=True)
+
+    def outage(n_failed: int, exc: Exception) -> int:
+        c.log(f"tag: {n_failed} papers in a row failed, the last with "
+              f"{type(exc).__name__}. Stopping rather than marking the rest "
+              f"of the corpus failed: this is an outage, not a tagging result. "
+              f"{counts['tagged']} tagged this run, resume with the same command.")
+        conn.close()
+        return 1
+
+    consecutive = 0
+    if not args.remote:
+        # A chunk at a time, so the batch stays full and an interruption costs one chunk.
+        for start in range(0, len(todo), CHUNK):
+            chunk = todo[start:start + CHUNK]
+            try:
+                results = tagger.tag_many(chunk)
+            except Exception as exc:
+                c.log(f"tag: a chunk of {len(chunk)} failed ({type(exc).__name__}), retrying once")
+                time.sleep(RETRY_PAUSE)
+                try:
+                    results = tagger.tag_many(chunk)
+                except Exception:
+                    # One paper the batch cannot take, or the GPU gone: one at a time tells
+                    # the two apart, and the breaker counts papers, not chunks.
+                    c.log(f"tag: the chunk failed again, tagging its {len(chunk)} papers one at a time")
+                    for paper in chunk:
+                        try:
+                            raw, sampled, _ = tagger.tag(paper)
+                        except Exception as one_exc:
+                            mark_failed(conn, paper["pmid"], f"tagger error {type(one_exc).__name__}")
+                            counts["failed"] += 1
+                            consecutive += 1
+                            if consecutive >= CONSECUTIVE_FAILURE_LIMIT:
+                                return outage(consecutive, one_exc)
+                            continue
+                        consecutive = 0
+                        record(paper, raw, sampled)
+                    progress(start + len(chunk))
+                    continue
+            consecutive = 0
+            for paper, r in zip(chunk, results):
+                record(paper, r["raw"], r["sampled"], r["token_prob"], r["sampled_run"])
+            progress(start + len(chunk))
+    else:
+        for i, paper in enumerate(todo, 1):
+            try:
+                raw, sampled = tag_once(tagger, paper, remote=True)
+            except Exception as exc:
+                # A cold Space or a dropped connection costs the paper nothing if we simply
+                # ask again. A second failure is recorded, and the paper keeps no manifest
+                # line, so a later run picks it up again.
+                c.log(f"tag: {paper['pmid']} failed ({type(exc).__name__}), retrying once")
+                time.sleep(RETRY_PAUSE)
+                try:
+                    raw, sampled = tag_once(tagger, paper, remote=True)
+                except Exception as retry_exc:
+                    mark_failed(conn, paper["pmid"], f"tagger error {type(retry_exc).__name__}")
+                    counts["failed"] += 1
+                    consecutive += 1
+                    if consecutive >= CONSECUTIVE_FAILURE_LIMIT:
+                        return outage(consecutive, retry_exc)
+                    continue
+            consecutive = 0
+            record(paper, raw, sampled)
+            if i % 25 == 0:
+                progress(i)
+    tagged, queued, failed = counts["tagged"], counts["queued"], counts["failed"]
 
     if args.run_id:
         with conn:

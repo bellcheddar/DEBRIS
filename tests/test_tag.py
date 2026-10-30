@@ -205,12 +205,15 @@ def test_a_broken_tagger_stops_the_run_instead_of_failing_the_corpus(corpus, mon
     class BrokenTagger:
         name = "broken"
 
+        def tag_many(self, papers):
+            raise RuntimeError("Metal command buffer execution failed")
+
         def tag(self, paper):
             raise RuntimeError("Metal command buffer execution failed")
 
     monkeypatch.setattr(tag, "RETRY_PAUSE", 0)
     monkeypatch.setattr(tag, "local_model_choice", lambda *a, **k: ("model", None))
-    monkeypatch.setattr(tag, "LocalTagger", lambda *a, **k: BrokenTagger())
+    monkeypatch.setattr(tag, "BatchedTagger", lambda *a, **k: BrokenTagger())
     monkeypatch.setattr("sys.argv", ["tag", "--local"])
 
     assert tag.main() == 1, "an outage has to be a non-zero exit"
@@ -230,19 +233,20 @@ def test_a_blip_costs_the_paper_nothing(corpus, monkeypatch):
     class FlakyTagger:
         name = "flaky"
 
-        def tag(self, paper):
+        def tag_many(self, papers):
             calls["n"] += 1
             if calls["n"] == 1:
-                raise ConnectionError("space is waking up")
-            return ({"relevant": False, "polymers": [], "size_class": "unknown",
-                     "organ_systems": [], "disease_categories": ["none"],
-                     "disease_terms": [], "pathways": [], "model_type": "not_applicable",
-                     "evidence_rungs": [], "pet_specific": False,
-                     "summary": "Not relevant.", "confidence": 0.9}, None, 0.0)
+                raise ConnectionError("Metal command buffer timed out")
+            return [{"raw": {"relevant": False, "polymers": [], "size_class": "unknown",
+                             "organ_systems": [], "disease_categories": ["none"],
+                             "disease_terms": [], "pathways": [], "model_type": "not_applicable",
+                             "evidence_rungs": [], "pet_specific": False,
+                             "summary": "Not relevant.", "confidence": 0.9},
+                     "sampled": None, "sampled_run": False, "token_prob": 0.97} for _ in papers]
 
     monkeypatch.setattr(tag, "RETRY_PAUSE", 0)
     monkeypatch.setattr(tag, "local_model_choice", lambda *a, **k: ("model", None))
-    monkeypatch.setattr(tag, "LocalTagger", lambda *a, **k: FlakyTagger())
+    monkeypatch.setattr(tag, "BatchedTagger", lambda *a, **k: FlakyTagger())
     monkeypatch.setattr("sys.argv", ["tag", "--local", "--limit", "1"])
 
     assert tag.main() == 0
@@ -250,4 +254,27 @@ def test_a_blip_costs_the_paper_nothing(corpus, monkeypatch):
     conn = c.connect(corpus)
     assert conn.execute(
         "SELECT COUNT(*) FROM papers WHERE status LIKE 'failed:%'").fetchone()[0] == 0
+    row = conn.execute("SELECT self_consistency, token_prob FROM tags "
+                       "WHERE token_prob IS NOT NULL").fetchone()
+    assert row[0] is None and row[1] == 0.97, "a confident paper skips the sampled pass"
+    conn.close()
+
+
+def test_the_least_confident_share_gets_the_sampled_pass():
+    assert tag.least_confident([0.9, 0.2, 0.5, 0.95, 0.4, 0.8], 0.33) == {1, 4}
+    assert tag.least_confident([0.9, 0.2], 0.0) == set()
+    assert tag.least_confident([0.9], 0.01) == {0}
+
+
+def test_an_old_database_gains_the_token_prob_column(tmp_path):
+    import sqlite3
+
+    path = tmp_path / "old.sqlite"
+    conn = sqlite3.connect(path)   # the schema as it was before D45
+    conn.executescript(c.SCHEMA.replace(",\n  token_prob REAL", ""))
+    assert "token_prob" not in {r[1] for r in conn.execute("PRAGMA table_info(tags)")}
+    conn.close()
+    c.init_db(path)
+    conn = sqlite3.connect(path)
+    assert "token_prob" in {r[1] for r in conn.execute("PRAGMA table_info(tags)")}
     conn.close()

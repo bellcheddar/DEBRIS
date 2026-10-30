@@ -387,3 +387,36 @@
 - 2026-10-30 07:21 tag bench: batched-8 {"s_per_paper": 1.764, "output_tokens": 103.0, "generation_tps": 171.1, "prompt_tps": 759.8, "peak_gb": 6.7, "agreement": 0.75}
 - 2026-10-30 07:22 tag bench: 128 papers, /Users/dellboy/Documents/Vibe_Coding/debris/data/adapters/debris_v1_q4
 - 2026-10-30 07:22 Phase 1 done: A adopted (+0.034), D rejected (D43); Phase 2 wired, transfer and Phase 2 configs written, chain started behind the tag bench (D44)
+- 2026-10-30 07:22 tag bench: sequential {"s_per_paper": 2.246, "agreement": 1.0, "by_field": {"disease_categories": 1.0, "evidence_rungs": 1.0, "model_type": 1.0, "organ_systems": 1.0, "pathways": 1.0, "pet_specific": 1.0, "polymers": 1.0, "relevant": 1.0, "size_class": 1.0}}
+- 2026-10-30 07:26 tag bench: batched-8 {"s_per_paper": 1.763, "output_tokens": 103.0, "generation_tps": 171.1, "prompt_tps": 759.9, "peak_gb": 6.7, "agreement": 0.938, "by_field": {"disease_categories": 1.0, "evidence_rungs": 0.938, "model_type": 1.0, "organ_systems": 1.0, "pathways": 1.0, "pet_specific": 1.0, "polymers": 1.0, "relevant": 1.0, "size_class": 1.0}}
+- 2026-10-30 07:30 tag bench: batched-16 {"s_per_paper": 1.685, "output_tokens": 103.4, "generation_tps": 205.4, "prompt_tps": 747.0, "peak_gb": 8.6, "agreement": 0.875, "by_field": {"disease_categories": 1.0, "evidence_rungs": 0.938, "model_type": 1.0, "organ_systems": 1.0, "pathways": 0.938, "pet_specific": 1.0, "polymers": 1.0, "relevant": 1.0, "size_class": 1.0}}
+- 2026-10-30 07:33 tag bench: batched-32 {"s_per_paper": 1.529, "output_tokens": 103.2, "generation_tps": 307.1, "prompt_tps": 744.3, "peak_gb": 9.8, "agreement": 0.875, "by_field": {"disease_categories": 1.0, "evidence_rungs": 0.938, "model_type": 1.0, "organ_systems": 1.0, "pathways": 0.938, "pet_specific": 1.0, "polymers": 1.0, "relevant": 1.0, "size_class": 1.0}}
+- 2026-10-30 07:37 tag bench: batched-64 {"s_per_paper": 2.069, "output_tokens": 102.8, "generation_tps": 387.7, "prompt_tps": 742.8, "peak_gb": 13.8, "agreement": 0.875, "by_field": {"disease_categories": 1.0, "evidence_rungs": 0.938, "model_type": 1.0, "organ_systems": 1.0, "pathways": 0.938, "pet_specific": 1.0, "polymers": 1.0, "relevant": 1.0, "size_class": 1.0}}
+- 2026-10-30 07:40 tag bench: prefix-8 {"s_per_paper": 1.219, "output_tokens": 102.6, "generation_tps": 171.2, "prompt_tps": 732.6, "peak_gb": 13.8, "agreement": 0.938, "by_field": {"disease_categories": 1.0, "evidence_rungs": 0.938, "model_type": 1.0, "organ_systems": 1.0, "pathways": 1.0, "pet_specific": 1.0, "polymers": 1.0, "relevant": 1.0, "size_class": 1.0}}
+- 2026-10-30 07:47 tag bench: sampled {"s_per_paper": 1.764, "output_tokens": 103.6, "generation_tps": 171.0, "prompt_tps": 761.2, "peak_gb": 13.8}
+- 2026-10-30 07:47 tag bench: logprob {"s_per_paper_with_probs": 1.763, "sampled_disagrees": 0.453, "auc_mean_prob": 0.813, "auc_min_prob": 0.652}
+- 2026-10-30 07:48 tag bench: speculative {"s_per_paper": 3.169, "agreement": 0.938, "by_field": {"disease_categories": 1.0, "evidence_rungs": 1.0, "model_type": 1.0, "organ_systems": 1.0, "pathways": 0.938, "pet_specific": 1.0, "polymers": 1.0, "relevant": 1.0, "size_class": 1.0}}
+- 2026-10-30 07:49 tag bench: small-1.5b {"s_per_paper": 0.423, "output_tokens": 95.4, "generation_tps": 431.8, "prompt_tps": 4601.0, "peak_gb": 13.8}
+- 2026-10-30 07:49 tag bench: batch 8, prefix cache False; a full pass 11.7 h now, 9.2 h with both passes, 4.6 h greedy only
+- 2026-10-30 07:50 lab queue: 2 experiments, 1 at a time, 96.8 GB each (24.2 GB cache)
+- 2026-10-30 07:50 lab queue: started transfer-base
+- 2026-10-30 07:50 lab transfer-base f0 s42: training 600 iterations
+- 2026-10-30 07:50 train: /Users/dellboy/Documents/Vibe_Coding/debris/.pixi/envs/default/bin/python /Users/dellboy/Documents/Vibe_Coding/debris/pipeline/mlx_capped.py mlx_lm.lora --model Qwen/Qwen2.5-3B-Instruct --train ...
+- 2026-10-30 08:28 lab transfer-base f0 s42: trained in 38.5 min
+- 2026-10-30 08:34 lab transfer-base f0 s42 @ 600: relevant_f1 0.9427, polymers_f1 0.8229, organ_systems_f1 0.6985, pathways_f1 0.6068, rungs_exact 0.8063, rungs_within_one 0.8562, model_type_accuracy 0.85, valid_json 1.0, 0.80 s/paper
+- 2026-10-30 08:34 lab transfer-base: done
+- 2026-10-30 08:35 lab queue: transfer-base done
+- 2026-10-30 08:35 lab queue: started transfer-a
+- 2026-10-30 08:35 lab transfer-a f0 s42: training 600 iterations
+- 2026-10-30 08:35 train: /Users/dellboy/Documents/Vibe_Coding/debris/.pixi/envs/default/bin/python /Users/dellboy/Documents/Vibe_Coding/debris/pipeline/mlx_capped.py mlx_lm.lora --model Qwen/Qwen2.5-3B-Instruct --train ...
+- 2026-10-30 09:13 lab transfer-a f0 s42: trained in 38.5 min
+- 2026-10-30 09:20 lab transfer-a f0 s42 @ 600: relevant_f1 0.947, polymers_f1 0.8158, organ_systems_f1 0.7387, pathways_f1 0.6506, rungs_exact 0.8146, rungs_within_one 0.8625, model_type_accuracy 0.8654, valid_json 1.0, 0.80 s/paper
+- 2026-10-30 09:20 lab transfer-a: done
+- 2026-10-30 09:20 lab queue: transfer-a done
+- 2026-10-30 09:20 ceiling v2: labelling 81 papers with mlx-community/Qwen2.5-32B-Instruct-4bit
+- 2026-10-30 09:53 ceiling v2: 81 second labels in 33.1 min
+- 2026-10-30 09:54 lab queue: 5 experiments, 1 at a time, 96.8 GB each (24.2 GB cache)
+- 2026-10-30 09:54 lab queue: started phase2-base
+- 2026-10-30 09:54 lab phase2-base f0 s42: training 600 iterations
+- 2026-10-30 09:54 train: /Users/dellboy/Documents/Vibe_Coding/debris/.pixi/envs/default/bin/python /Users/dellboy/Documents/Vibe_Coding/debris/pipeline/mlx_capped.py mlx_lm.lora --model Qwen/Qwen2.5-1.5B-Instruct --train ...
+- 2026-10-30 10:16 tag.py batched with hybrid confidence and token_prob column; tools/tag_verify.py queued after Phase 2 (D46); supervisor watching Phase 2

@@ -25,7 +25,8 @@ from pipeline import common as c
 
 QC = c.ROOT / "qc"
 VIEWPORTS = {"desktop": (1440, 900), "mobile": (390, 844)}
-PAGES = [("atlas", "/"), ("body", "/body"), ("pathways", "/pathways"), ("papers", "/papers")]
+PAGES = [("atlas", "/"), ("body", "/body"), ("pathways", "/pathways"), ("papers", "/papers"),
+         ("about", "/about")]
 AXE_CDN = "https://cdnjs.cloudflare.com/ajax/libs/axe-core/4.10.2/axe.min.js"
 IGNORED_CONSOLE = ("favicon",)
 

@@ -340,3 +340,39 @@ footer.site .mono{font-size:11px}
   .pin.pulse .halo{animation:el-pin 2.6s ease-in-out infinite}
   @keyframes el-pin{0%,100%{opacity:0.75}50%{opacity:0.3}}
 }
+
+/* ------------------------------------------------------------------- about */
+.about-intro p{max-width:72ch;margin:0 0 10px;font-size:14px;line-height:1.6}
+.arch{overflow-x:auto}
+.arch svg{display:block;width:100%;min-width:760px;height:auto;background:var(--el-bg)}
+.arch .b{fill:var(--el-card);stroke:var(--el-line);stroke-width:1.5}
+.arch .t{fill:var(--el-fg);font:600 13px Inter,Helvetica,Arial,sans-serif}
+.arch .s{fill:var(--el-muted);font:10px var(--mono)}
+.arch .n{fill:var(--el-fg);font:11px var(--mono)}
+.arch .a{stroke:#B9BFD0;stroke-width:1.5;fill:none}
+.arch .h{fill:var(--el-muted);font:600 10px Inter,Helvetica,Arial,sans-serif;letter-spacing:.06em}
+.arch .lb{fill:none;stroke:var(--el-line);stroke-width:1.5;stroke-dasharray:3 3}
+.arch .l{fill:var(--el-muted);font:11px Inter,Helvetica,Arial,sans-serif}
+.arch .band{fill:var(--el-soft);stroke:var(--el-blue);stroke-width:1.5}
+.arch .hd{fill:var(--el-card);stroke:var(--el-blue);stroke-width:1.5}
+.arch .bt{fill:var(--el-blue);font:600 11px Inter,Helvetica,Arial,sans-serif;letter-spacing:.06em}
+.arch .ht{fill:var(--el-fg);font:600 12px Inter,Helvetica,Arial,sans-serif}
+.arch .hs{fill:var(--el-muted);font:10px Inter,Helvetica,Arial,sans-serif}
+.arch .la{stroke:var(--el-blue);stroke-width:1.5;fill:none}
+.arch .nm,.arch .lk{fill:var(--el-blue);font:10px var(--mono)}
+.arch .lk{text-decoration:underline}
+.arch .node{cursor:pointer;outline:none}
+.arch .node:hover rect,.arch .node:focus rect,.arch .node.on rect{stroke:var(--el-blue);fill:var(--el-tint)}
+.arch .node:focus-visible rect{stroke-width:2.5}
+.arch a:hover .lk,.arch a:focus .lk,.arch a:hover .nm{fill:var(--el-ink)}
+.card{position:relative}
+.arch-tip{position:absolute;z-index:30;background:var(--el-ink);color:#fff;font-size:12.5px;
+  line-height:1.5;padding:10px 12px;box-shadow:0 6px 18px rgba(28,34,56,.18);pointer-events:none}
+.tablewrap{overflow-x:auto}
+.reftable{width:100%;border-collapse:collapse;font-size:13px}
+.reftable th{text-align:left;font-size:11px;letter-spacing:.08em;text-transform:uppercase;
+  color:var(--el-muted);border-bottom:1px solid var(--el-line);padding:8px 10px}
+.reftable td{border-bottom:1px solid var(--el-line);padding:9px 10px;vertical-align:top}
+.reftable tr:hover td{background:var(--el-tint)}
+.reftable .mono{font-family:var(--mono);font-size:12px;word-break:break-all}
+.reftable .muted{color:var(--el-muted)}

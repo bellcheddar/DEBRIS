@@ -1,0 +1,141 @@
+# The About tab's two tables. Every DOI here was resolved at Crossref or DataCite on
+# 2026-10-30 and its title checked against the entry (D53). Software without a DOI links
+# to its project page and says so.
+
+[[software]]
+name = "Qwen2.5"
+role = "Base language models (1.5B, 3B, 7B, 32B)"
+cite = "Qwen Team (2024) Qwen2.5 Technical Report. arXiv"
+doi = "10.48550/arXiv.2412.15115"
+
+[[software]]
+name = "LoRA"
+role = "Small trained add-on that teaches the tagger the form"
+cite = "Hu E J et al. (2021) LoRA: Low-Rank Adaptation of Large Language Models. arXiv"
+doi = "10.48550/arXiv.2106.09685"
+
+[[software]]
+name = "MLX and mlx-lm"
+role = "Training and running the models on Apple silicon"
+cite = "Apple machine learning research"
+url = "https://github.com/ml-explore/mlx-lm"
+
+[[software]]
+name = "Transformers"
+role = "Running the published tagger on the Hugging Face Space"
+cite = "Wolf T et al. (2020) Transformers: State-of-the-Art Natural Language Processing. EMNLP System Demonstrations"
+doi = "10.18653/v1/2020.emnlp-demos.6"
+
+[[software]]
+name = "PyTorch"
+role = "Inference backend on the Space"
+cite = "Paszke A et al. (2019) PyTorch: An Imperative Style, High-Performance Deep Learning Library. arXiv"
+doi = "10.48550/arXiv.1912.01703"
+
+[[software]]
+name = "NCBI E-utilities"
+role = "Harvesting PubMed records"
+cite = "Sayers E W et al. (2022) Database resources of the National Center for Biotechnology Information. Nucleic Acids Res"
+doi = "10.1093/nar/gkab1112"
+
+[[software]]
+name = "Crossref REST API"
+role = "Checking every DOI and finding retractions"
+cite = "Crossref"
+url = "https://www.crossref.org/documentation/retrieve-metadata/rest-api/"
+
+[[software]]
+name = "RapidFuzz"
+role = "Matching PubMed and Crossref titles"
+cite = "Bachmann M. RapidFuzz. Zenodo"
+doi = "10.5281/zenodo.5228985"
+
+[[software]]
+name = "pandas"
+role = "Data handling in the pipeline"
+cite = "McKinney W (2010) Data Structures for Statistical Computing in Python. Proc. SciPy"
+doi = "10.25080/Majora-92bf1922-00a"
+
+[[software]]
+name = "D3"
+role = "Body map and diagrams"
+cite = "Bostock M, Ogievetsky V, Heer J (2011) D3: Data-Driven Documents. IEEE TVCG"
+doi = "10.1109/TVCG.2011.185"
+
+[[software]]
+name = "Plotly.js and Tabulator"
+role = "Charts and the papers table"
+cite = "Plotly; Tabulator"
+url = "https://plotly.com/javascript/"
+
+[[software]]
+name = "Weights & Biases"
+role = "Tracking every training run"
+cite = "Weights & Biases"
+url = "https://wandb.ai/site"
+
+[[software]]
+name = "Flask"
+role = "Serving this site"
+cite = "Pallets"
+url = "https://flask.palletsprojects.com/"
+
+[[reference]]
+topic = "Plastics across 18 human tissues"
+cite = "Liu Z et al. (2026) Tissue-specific microplastic burdens in humans: an intra-individual mapping of 18 tissue types. J Hazard Mater 518:144001"
+doi = "10.1016/j.jhazmat.2026.144001"
+note = "Source of DEBRIS's tissue list and polymer roster"
+
+[[reference]]
+topic = "Plastics in artery plaque"
+cite = "Marfella R et al. (2024) Microplastics and Nanoplastics in Atheromas and Cardiovascular Events. N Engl J Med"
+doi = "10.1056/NEJMoa2309822"
+note = "Particles in carotid plaque associated with later cardiovascular events"
+
+[[reference]]
+topic = "Plastics in human blood"
+cite = "Leslie H A et al. (2022) Discovery and quantification of plastic particle pollution in human blood. Environ Int"
+doi = "10.1016/j.envint.2022.107199"
+note = "First quantification of plastic particles in human blood"
+
+[[reference]]
+topic = "Plastics in placenta"
+cite = "Ragusa A et al. (2021) Plasticenta: First evidence of microplastics in human placenta. Environ Int"
+doi = "10.1016/j.envint.2020.106274"
+note = "First detection in human placenta"
+
+[[reference]]
+topic = "Plastics in lung tissue"
+cite = "Jenner L C et al. (2022) Detection of microplastics in human lung tissue using μFTIR spectroscopy. Sci Total Environ"
+doi = "10.1016/j.scitotenv.2022.154907"
+note = "Particles detected in surgically resected lung"
+
+[[reference]]
+topic = "Plastics in the brain"
+cite = "Nihart A J et al. (2025) Bioaccumulation of microplastics in decedent human brains. Nat Med"
+doi = "10.1038/s41591-024-03453-1"
+note = "Higher concentrations reported in brain than in liver or kidney"
+
+[[reference]]
+topic = "PETase discovered"
+cite = "Yoshida S et al. (2016) A bacterium that degrades and assimilates poly(ethylene terephthalate). Science"
+doi = "10.1126/science.aad6359"
+note = "Ideonella sakaiensis and its PET-digesting enzyme, PETase"
+
+[[reference]]
+topic = "PETase structure and engineering"
+cite = "Austin H P et al. (2018) Characterization and engineering of a plastic-degrading aromatic polyesterase. PNAS"
+doi = "10.1073/pnas.1718804115"
+note = "Crystal structure of PETase and a faster engineered variant"
+
+[[reference]]
+topic = "Engineered PET recycling enzyme"
+cite = "Tournier V et al. (2020) An engineered PET depolymerase to break down and recycle plastic bottles. Nature"
+doi = "10.1038/s41586-020-2149-4"
+note = "Engineered leaf-branch compost cutinase depolymerises 90 % of bottle PET in 10 hours"
+
+[[reference]]
+topic = "FAST-PETase"
+cite = "Lu H et al. (2022) Machine learning-aided engineering of hydrolases for PET depolymerization. Nature"
+doi = "10.1038/s41586-022-04599-z"
+note = "Machine-learning-designed PETase that breaks down post-consumer PET within a week at 50 °C"

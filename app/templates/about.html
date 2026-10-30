@@ -1,0 +1,131 @@
+{% extends "base.html" %}
+{% block title %}05 About{% endblock %}
+
+{% block content %}
+<section class="card about-intro">
+  <h2>Why this matters</h2>
+  <p>Plastic particles have now been detected in human blood, lung, placenta, artery plaque and
+  brain. What that means for health is spread across thousands of papers in journals that rarely
+  cite one another, so no one can say in one place what is actually known.</p>
+  <p>DEBRIS asks every abstract the same questions (which plastic, which organ, which mechanism,
+  what kind of study, how close to an effect in people) and maps the answers, showing what has
+  been seen in people, what only in cells, and where nobody has looked. An empty region means no
+  published work, not safety, and nothing here claims plastics cause disease in people.</p>
+</section>
+
+<section class="card">
+  <h2>How it works</h2>
+  <p class="sub">Four stages from PubMed to this site, with the language models beneath. Hover or
+  focus any box for more detail; boxes with an arrow mark open the model or source.</p>
+  <figure class="arch">
+  <svg viewBox="0 0 1194 430" role="group" aria-labelledby="arch-title arch-desc" preserveAspectRatio="xMidYMid meet">
+    <title id="arch-title">DEBRIS architecture</title>
+    <desc id="arch-desc">Harvest, verify, tag and map, then the four tabs. Beneath: one model teaches and checks the labels, one tags every paper, one tests ideas.</desc>
+    <defs>
+      <marker id="ar-tip" markerWidth="7" markerHeight="7" refX="6" refY="3.5" orient="auto"><path d="M0,0 L7,3.5 L0,7Z" fill="#B9BFD0"/></marker>
+      <marker id="ar-tip2" markerWidth="7" markerHeight="7" refX="6" refY="3.5" orient="auto"><path d="M0,0 L7,3.5 L0,7Z" fill="#385098"/></marker>
+    </defs>
+    <text class="h" x="12" y="50">INPUTS</text>
+    <a class="node" href="https://pubmed.ncbi.nlm.nih.gov/" target="_blank" rel="noopener"
+       data-tip="PubMed, the US National Library of Medicine's index of biomedical papers. DEBRIS reads titles, abstracts, MeSH terms and publication types through the NCBI E-utilities.">
+      <rect class="b" x="12" y="74" width="108" height="68" rx="2"/><text class="t" x="22" y="98">PubMed ↗</text><text class="s" x="22" y="116">titles and</text><text class="s" x="22" y="130">abstracts</text></a>
+    <a class="node" href="https://www.crossref.org/" target="_blank" rel="noopener"
+       data-tip="Crossref, the registry behind most journal DOIs. Every paper's DOI is looked up here, and retraction notices are picked up from it.">
+      <rect class="b" x="12" y="154" width="108" height="68" rx="2"/><text class="t" x="22" y="178">Crossref ↗</text><text class="s" x="22" y="196">DOIs and</text><text class="s" x="22" y="210">retractions</text></a>
+    <path class="a" d="M120,108 L122,138" marker-end="url(#ar-tip)"/><path class="a" d="M120,188 L122,158" marker-end="url(#ar-tip)"/>
+
+    <g class="node" tabindex="0" role="img" data-tip="Two PubMed searches, one on indexed subject headings and one on title and abstract words, so new papers are found before indexing catches up. 'PET' is never searched on its own, because it also means positron emission tomography. Runs weekly for the last seven days.">
+      <rect class="b" x="128" y="74" width="196" height="148" rx="2"/><text class="t" x="140" y="98">1 · Harvest</text><text class="s" x="140" y="114">two PubMed searches</text>
+      <text class="n" x="140" y="138">10,000+ records</text><text class="n" x="140" y="154">2004 to now</text><text class="n" x="140" y="170">new papers weekly</text></g>
+    <rect class="lb" x="128" y="234" width="196" height="46" rx="2"/><text class="l" x="140" y="253">Find every paper putting a</text><text class="l" x="140" y="268">plastic particle in a disease.</text>
+    <path class="a" d="M324,148 L352,148" marker-end="url(#ar-tip)"/>
+
+    <g class="node" tabindex="0" role="img" data-tip="A paper is kept only when its DOI resolves at Crossref and the two titles match closely (a fuzzy match of at least 90 of 100). Retracted papers are struck through, never deleted.">
+      <rect class="b" x="358" y="74" width="196" height="148" rx="2"/><text class="t" x="370" y="98">2 · Verify</text><text class="s" x="370" y="114">DOI and title match</text>
+      <text class="n" x="370" y="138">{{ '{:,}'.format(meta.verified_papers or 0) }} verified</text><text class="n" x="370" y="154">retractions flagged</text></g>
+    <rect class="lb" x="358" y="234" width="196" height="46" rx="2"/><text class="l" x="370" y="253">Keep only real, published</text><text class="l" x="370" y="268">papers.</text>
+    <path class="a" d="M554,148 L582,148" marker-end="url(#ar-tip)"/>
+
+    <g class="node" tabindex="0" role="img" data-tip="The tagger reads each abstract and fills in the same form. It reads 32 abstracts at a time, gives every answer a confidence from its own word-by-word certainty, and re-reads the third it is least sure of. Anything uncertain is shown as needing review rather than published.">
+      <rect class="b" x="588" y="74" width="196" height="148" rx="2"/><text class="t" x="600" y="98">3 · Tag</text><text class="s" x="600" y="114">fine-tuned Qwen2.5</text>
+      <text class="n" x="600" y="138">plastic, organ, tissue</text><text class="n" x="600" y="154">mechanism, study type</text><text class="n" x="600" y="170">evidence rung</text><text class="n" x="600" y="186">confidence</text></g>
+    <rect class="lb" x="588" y="234" width="196" height="46" rx="2"/><text class="l" x="600" y="253">Read each abstract and fill</text><text class="l" x="600" y="268">in the same form.</text>
+    <path class="a" d="M784,148 L812,148" marker-end="url(#ar-tip)"/>
+
+    <g class="node" tabindex="0" role="img" data-tip="Tags are counted into small data files the site reads directly, so nothing is computed when you load a page. Firsts (the first paper to link a plastic to an organ) are marked as novel.">
+      <rect class="b" x="818" y="74" width="196" height="148" rx="2"/><text class="t" x="830" y="98">4 · Map</text><text class="s" x="830" y="114">static data, Flask</text>
+      <text class="n" x="830" y="138">gaps and firsts</text><text class="n" x="830" y="154">low confidence held</text><text class="n" x="830" y="170">for review</text></g>
+    <rect class="lb" x="818" y="234" width="196" height="46" rx="2"/><text class="l" x="830" y="253">Turn the tags into a map of</text><text class="l" x="830" y="268">the evidence.</text>
+
+    <text class="h" x="1058" y="50">THE SITE</text>
+    <a class="node" href="/" data-tip="Atlas: which plastics have been studied together, and the evidence ladder by disease and year."><rect class="b" x="1058" y="74" width="124" height="28" rx="2"/><text class="n" x="1068" y="92">Atlas</text></a>
+    <a class="node" href="/body" data-tip="Body: click an organ for the plastics found in it, the mechanisms and the papers."><rect class="b" x="1058" y="114" width="124" height="28" rx="2"/><text class="n" x="1068" y="132">Body</text></a>
+    <a class="node" href="/pathways" data-tip="Pathways: how each plastic links to mechanisms and diseases."><rect class="b" x="1058" y="154" width="124" height="28" rx="2"/><text class="n" x="1068" y="172">Pathways</text></a>
+    <a class="node" href="/papers" data-tip="Papers: the whole verified corpus, searchable, with every filter the charts link into."><rect class="b" x="1058" y="194" width="124" height="28" rx="2"/><text class="n" x="1068" y="212">Papers</text></a>
+    <path class="a" d="M1014,148 L1052,148" marker-end="url(#ar-tip)"/>
+
+    <rect class="band" x="128" y="300" width="886" height="114" rx="3"/>
+    <text class="bt" x="142" y="318">THE LANGUAGE MODELS · ALL RUN ON ONE DESKTOP, NO PAID API</text>
+    <a href="https://wandb.ai/" target="_blank" rel="noopener" data-tip="Every training run is tracked in Weights &amp; Biases: settings, loss curve and held-out scores."><text class="nm" x="1000" y="318" text-anchor="end">tracked in W&amp;B ↗</text></a>
+
+    <a class="node" href="https://huggingface.co/mlx-community/Qwen2.5-32B-Instruct-4bit" target="_blank" rel="noopener"
+       data-tip="1,600 abstracts were labelled by careful reading to make the training set. Qwen2.5-32B, a model over four times the tagger's size, then re-reads a sample on its own. Where two careful readers disagree no model trained on those labels can do better, so this sets an honest ceiling for every field.">
+      <rect class="hd" x="142" y="328" width="276" height="74" rx="2"/><text class="ht" x="152" y="347">A · Teach and check ↗</text>
+      <text class="hs" x="152" y="362">1,600 abstracts labelled by careful</text><text class="hs" x="152" y="375">reading; Qwen2.5-32B re-reads a sample</text><text class="hs" x="152" y="388">to show how far the labels can be trusted</text></a>
+    <path class="la" d="M418,365 L428,365" marker-end="url(#ar-tip2)"/>
+
+    <g class="node" tabindex="0" role="img" data-tip="Qwen2.5-7B with a LoRA adapter, a small set of trained weights that teach it the form without changing what it knows. It learns the task, not facts about plastics, so a wrong tag is a misreading rather than an invented finding, and the same abstract gets the same answer next year.">
+      <rect class="hd" x="432" y="328" width="276" height="74" rx="2"/><text class="ht" x="442" y="347">B · Tag</text>
+      <text class="hs" x="442" y="362">Qwen2.5-7B with a LoRA adapter reads</text><text class="hs" x="442" y="375">every abstract and scores its confidence</text></g>
+    <a href="https://huggingface.co/Qwen/Qwen2.5-7B-Instruct" target="_blank" rel="noopener" data-tip="The base model, Qwen2.5-7B-Instruct, on Hugging Face."><text class="lk" x="442" y="392">7B base ↗</text></a>
+    <a href="https://huggingface.co/Dellboy/debris-tagger-v1" target="_blank" rel="noopener" data-tip="The published DEBRIS tagger (3B), free to download."><text class="lk" x="516" y="392">3B tagger ↗</text></a>
+    <a href="https://huggingface.co/spaces/Dellboy/debris-tagger" target="_blank" rel="noopener" data-tip="Try the tagger on any abstract in the Hugging Face Space."><text class="lk" x="604" y="392">try it ↗</text></a>
+    <path class="la" d="M722,365 L712,365" marker-end="url(#ar-tip2)"/>
+
+    <a class="node" href="https://huggingface.co/Qwen/Qwen2.5-1.5B-Instruct" target="_blank" rel="noopener"
+       data-tip="Qwen2.5-1.5B trains in minutes, so each proposed change to the labels or the training is tried on it first, across three rotations of the data, and kept only when the gain is clearly larger than chance. Clearer rules for mechanisms and plastics each added 11 to 15 points this way.">
+      <rect class="hd" x="722" y="328" width="276" height="74" rx="2"/><text class="ht" x="732" y="347">C · Test ideas ↗</text>
+      <text class="hs" x="732" y="362">Qwen2.5-1.5B trains in minutes, so each</text><text class="hs" x="732" y="375">change to the labels or the training is</text><text class="hs" x="732" y="388">measured before the tagger adopts it</text></a>
+    <path class="la" d="M686,328 L686,286" marker-end="url(#ar-tip2)"/>
+  </svg>
+  </figure>
+  <div class="arch-tip" role="tooltip" hidden></div>
+</section>
+
+<section class="card">
+  <h2>Software</h2>
+  <p class="sub">Every DOI was resolved at Crossref or DataCite and its title checked. Tools without a DOI link to their project page.</p>
+  <div class="tablewrap">
+  <table class="reftable">
+    <thead><tr><th>Software</th><th>Used for</th><th>Citation</th></tr></thead>
+    <tbody>
+    {% for s in software %}
+      <tr><td><b>{{ s.name }}</b></td><td>{{ s.role }}</td>
+        <td>{{ s.cite }}{% if s.doi %} · <a href="https://doi.org/{{ s.doi }}" rel="noopener" class="mono">doi:{{ s.doi }}</a>{% else %} · <a href="{{ s.url }}" rel="noopener">project page</a> <span class="muted">(no DOI)</span>{% endif %}</td></tr>
+    {% endfor %}
+    </tbody>
+  </table>
+  </div>
+</section>
+
+<section class="card">
+  <h2>Key scientific references</h2>
+  <p class="sub">Where plastic particles have been found in the body, and the enzymes that can break PET down. DOIs verified as above.</p>
+  <div class="tablewrap">
+  <table class="reftable">
+    <thead><tr><th>Topic</th><th>Reference</th><th>Why it matters</th></tr></thead>
+    <tbody>
+    {% for r in references %}
+      <tr><td><b>{{ r.topic }}</b></td>
+        <td>{{ r.cite }} · <a href="https://doi.org/{{ r.doi }}" rel="noopener" class="mono">doi:{{ r.doi }}</a></td>
+        <td>{{ r.note }}</td></tr>
+    {% endfor %}
+    </tbody>
+  </table>
+  </div>
+</section>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/about.js') }}?v={{ asset_version('js/about.js') }}"></script>
+{% endblock %}

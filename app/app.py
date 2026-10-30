@@ -31,7 +31,7 @@ app = Flask(__name__)
 app.config["JSON_SORT_KEYS"] = False
 
 TABS = [("01", "Atlas", "/"), ("02", "Body", "/body"),
-        ("03", "Pathways", "/pathways"), ("04", "Papers", "/papers")]
+        ("03", "Pathways", "/pathways"), ("04", "Papers", "/papers"), ("05", "About", "/about")]
 
 
 # ----------------------------------------------------------------------- plumbing
@@ -145,6 +145,14 @@ def pathways():
 @app.route("/papers")
 def papers():
     return render_template("papers.html", active="/papers", bundle=load_bundle("feed"))
+
+
+@app.route("/about")
+def about():
+    path = ROOT / "config" / "about.toml"
+    refs = tomllib.loads(path.read_text()) if path.exists() else {}
+    return render_template("about.html", active="/about", software=refs.get("software", []),
+                           references=refs.get("reference", []))
 
 
 # ---------------------------------------------------------------------------- api

@@ -524,3 +524,11 @@
 - 2026-10-30 19:09 enrich: exported 314 papers in 13 batches; {'spleen': 20, 'adipose': 30, 'brain_region': 30, 'pancreas': 30, 'human': 40, 'pet': 25, 'rare_pathway': 20, 'thyroid': 30, 'stomach': 25, 'small_intestine': 30, 'uterus': 20, 'adrenal': 14}
 - 2026-10-30 19:14 enrich: merged 314 of 314 (203 relevant), 53 with problems
 - 2026-10-30 19:15 enrich: 314 Phase 3a papers labelled and merged (203 relevant); D52.
+- 2026-10-30 19:25 lab phase2-all f1 s42: trained in 24.7 min
+- 2026-10-30 19:29 lab phase2-all f1 s42 @ 600: relevant_f1 0.8889, polymers_f1 0.8486, organ_systems_f1 0.6806, pathways_f1 0.7263, rungs_exact 0.6576, rungs_within_one 0.7537, model_type_accuracy 0.7538, valid_json 1.0, 0.48 s/paper
+- 2026-10-30 19:29 lab phase2-all f2 s42: training 600 iterations
+- 2026-10-30 19:29 train: /Users/dellboy/Documents/Vibe_Coding/debris/.pixi/envs/default/bin/python /Users/dellboy/Documents/Vibe_Coding/debris/pipeline/mlx_capped.py mlx_lm.lora --model Qwen/Qwen2.5-1.5B-Instruct --train ...
+- 2026-10-30 19:30 qc ui: fail, 10 page renders, 2 serious or critical axe violations, 0 console errors, 0 failed requests
+- 2026-10-30 19:30 qc ui: pass, 10 page renders, 0 serious or critical axe violations, 0 console errors, 0 failed requests
+- 2026-10-30 19:31 qc ui: pass, 10 page renders, 0 serious or critical axe violations, 0 console errors, 0 failed requests
+- 2026-10-30 19:31 About tab (D53): diagram with links and tooltips, software and reference tables, DOIs verified; QC pass.

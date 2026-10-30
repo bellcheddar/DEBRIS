@@ -5,7 +5,7 @@ import json
 
 
 def test_all_pages_200(client):
-    for route in ("/", "/body", "/pathways", "/papers"):
+    for route in ("/", "/body", "/pathways", "/papers", "/about"):
         assert client.get(route).status_code == 200, route
 
 
@@ -92,12 +92,21 @@ def test_pages_name_the_elora_design_system(client):
 def test_no_causal_claim_in_the_copy(client):
     """Spec 0.1: app copy never claims human causation."""
     banned = ("causes", "caused by", "proves", "proven to cause", "leads to disease")
-    for route in ("/", "/body", "/pathways", "/papers"):
+    for route in ("/", "/body", "/pathways", "/papers", "/about"):
         text = client.get(route).get_data(as_text=True).lower()
         for phrase in banned:
             assert phrase not in text, f"{phrase!r} appears on {route}"
 
 
 def test_no_em_dashes_in_the_copy(client):
-    for route in ("/", "/body", "/pathways", "/papers"):
+    for route in ("/", "/body", "/pathways", "/papers", "/about"):
         assert "—" not in client.get(route).get_data(as_text=True), route
+
+
+def test_about_lists_verified_references_and_links_the_models(client):
+    html = client.get("/about").get_data(as_text=True)
+    assert "https://doi.org/10.1016/j.jhazmat.2026.144001" in html      # Liu et al., the tissues
+    assert "https://doi.org/10.1038/s41586-022-04599-z" in html         # FAST-PETase
+    assert "https://doi.org/10.1126/science.aad6359" in html            # PETase
+    assert "huggingface.co/Dellboy/debris-tagger-v1" in html
+    assert 'data-tip=' in html

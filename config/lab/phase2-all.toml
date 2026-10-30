@@ -1,0 +1,13 @@
+description = "Phase 2 combined: the owner's adopted recipe (D50), all four v2 switches on mask_prompt, rare pathways as one class"
+iters = 600
+folds = [0, 1, 2]
+seeds = [42]
+gold = "v2"
+compare_to = "phase2-base"
+
+[switches]
+mask_prompt = true
+model_type_v2 = true
+pathways_v2 = true
+polymers_v2 = true
+tissues = true

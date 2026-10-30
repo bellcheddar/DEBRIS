@@ -26,6 +26,8 @@ batch_size = 8
 prefix_cache = false
 s_per_paper = 1.763
 status = "measured 2026-10-30, see data/manifests/tag_bench.json"
+sampled_fraction = 0.33
+confidence = "hybrid: mean token probability for all, sampled pass on the least confident third (owner, D45)"
 
 [tag.projected_hours]
 current = 11.7

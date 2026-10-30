@@ -32,6 +32,8 @@ BATCHES = HOME / "batches"
 OUT = HOME / "out"
 RECORDS = HOME / "records.jsonl"     # {"pmid", "paper", "tag"} as canonical_records
 LABELS = HOME / "labels_v2.jsonl"    # the v2 fields, as labels_v2.LABELS
+# Rulings that settle disagreements between batch labellers: {"pmid", "set": {...}, "why"}.
+OVERRIDES = HOME / "overrides.jsonl"
 BATCH = 25
 SEED = 53
 
@@ -122,9 +124,11 @@ def down_to_v1(v2: dict) -> dict:
 def merge() -> dict:
     papers = {p["pmid"]: p for p in c.jsonl_read(HOME / "selected.jsonl")}
     records, labels, problems = [], [], {}
+    overrides = {o["pmid"]: o["set"] for o in c.jsonl_read(OVERRIDES)} if OVERRIDES.exists() else {}
     for path in sorted(OUT.glob("e*.jsonl")):
         for raw in c.jsonl_read(path):
             pmid = str(raw.get("pmid", ""))
+            raw = {**raw, **overrides.get(pmid, {})}
             if pmid not in papers or pmid in {r["pmid"] for r in records}:
                 problems[pmid or path.name] = ["unknown or repeated pmid"]
                 continue

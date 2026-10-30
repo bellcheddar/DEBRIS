@@ -1,0 +1,20 @@
+{
+ "written": "2026-10-30T23:09:32+00:00",
+ "papers": 314,
+ "batch": 25,
+ "seed": 53,
+ "targets": {
+  "spleen": 20,
+  "adipose": 30,
+  "brain_region": 30,
+  "pancreas": 30,
+  "human": 40,
+  "pet": 25,
+  "rare_pathway": 20,
+  "thyroid": 30,
+  "stomach": 25,
+  "small_intestine": 30,
+  "uterus": 20,
+  "adrenal": 14
+ }
+}

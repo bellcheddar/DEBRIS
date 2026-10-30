@@ -517,3 +517,10 @@
 - 2026-10-30 18:31 train: /Users/dellboy/Documents/Vibe_Coding/debris/.pixi/envs/default/bin/python /Users/dellboy/Documents/Vibe_Coding/debris/pipeline/mlx_capped.py mlx_lm.lora --model Qwen/Qwen2.5-1.5B-Instruct --train ...
 - 2026-10-30 18:37 lab phase5-round04: imported 162 predictions from data/adapters/debris_v1_32layer1600/predictions_fused.jsonl
 - 2026-10-30 18:37 D51: phase2-all running; Phase 3b moot; Phase 5 (3B final on test, against round 04) queued behind it.
+- 2026-10-30 18:56 lab phase2-all f0 s42: trained in 25.0 min
+- 2026-10-30 19:00 lab phase2-all f0 s42 @ 600: relevant_f1 0.9316, polymers_f1 0.8722, organ_systems_f1 0.7318, pathways_f1 0.6749, rungs_exact 0.8146, rungs_within_one 0.8625, model_type_accuracy 0.8885, valid_json 0.9958, 0.50 s/paper
+- 2026-10-30 19:00 lab phase2-all f1 s42: training 600 iterations
+- 2026-10-30 19:00 train: /Users/dellboy/Documents/Vibe_Coding/debris/.pixi/envs/default/bin/python /Users/dellboy/Documents/Vibe_Coding/debris/pipeline/mlx_capped.py mlx_lm.lora --model Qwen/Qwen2.5-1.5B-Instruct --train ...
+- 2026-10-30 19:09 enrich: exported 314 papers in 13 batches; {'spleen': 20, 'adipose': 30, 'brain_region': 30, 'pancreas': 30, 'human': 40, 'pet': 25, 'rare_pathway': 20, 'thyroid': 30, 'stomach': 25, 'small_intestine': 30, 'uterus': 20, 'adrenal': 14}
+- 2026-10-30 19:14 enrich: merged 314 of 314 (203 relevant), 53 with problems
+- 2026-10-30 19:15 enrich: 314 Phase 3a papers labelled and merged (203 relevant); D52.

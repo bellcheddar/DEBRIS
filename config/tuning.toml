@@ -3,11 +3,11 @@ io_workers = 8
 model_backend = "mlx"
 model_id = "Qwen/Qwen2.5-3B-Instruct"
 model_instances = 1
-tag_batch_size = 8
+tag_batch_size = 32
 memory_headroom_gb = 24
 max_compute_hours = 24
 ncbi_rate_per_second = 3
-tag_batch_size_status = "measured by tools/tag_bench.py 2026-10-30"
+tag_batch_size_status = "verified against gold 2026-10-30 by tools/tag_verify.py, see data/manifests/tag_verify.json"
 
 [env]
 TOKENIZERS_PARALLELISM = "false"
@@ -22,14 +22,10 @@ parallel_jobs_status = "measured 2026-10-30: pair speedup 1.04x, training slowed
 bench = "{\"train_alone\":{\"it_per_s\":0.513,\"peak_gb\":26.374,\"failed\":false},\"train_pair\":{\"jobs\":[{\"it_per_s\":0.268,\"peak_gb\":26.374,\"failed\":false},{\"it_per_s\":0.268,\"peak_gb\":26.374,\"failed\":false}],\"it_per_s_total\":0.536,\"failed\":false},\"score_alone\":{\"s_per_paper\":0.451,\"failed\":false},\"train_with_scoring\":{\"train\":{\"it_per_s\":0.44,\"peak_gb\":26.374,\"failed\":false},\"score\":{\"s_per_paper\":1.871,\"failed\":false}}}"
 
 [tag]
-batch_size = 8
-prefix_cache = false
-s_per_paper = 1.763
-status = "measured 2026-10-30, see data/manifests/tag_bench.json"
+batch_size = 32
+prefix_cache = true
+s_per_paper = 1.343
+status = "verified against gold 2026-10-30 by tools/tag_verify.py, see data/manifests/tag_verify.json"
 sampled_fraction = 0.33
 confidence = "hybrid: mean token probability for all, sampled pass on the least confident third (owner, D45)"
-
-[tag.projected_hours]
-current = 11.7
-chosen_two_pass = 9.2
-chosen_greedy_only = 4.6
+projected_hours_hybrid = 3.5

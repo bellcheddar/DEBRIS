@@ -1,0 +1,226 @@
+{
+ "measured": "2026-10-30T20:39:35+00:00",
+ "papers": 162,
+ "corpus": 9346,
+ "weights": "/Users/dellboy/Documents/Vibe_Coding/debris/data/adapters/debris_v1_q4",
+ "old": {
+  "s_per_paper": 2.205
+ },
+ "arms": {
+  "new-8": {
+   "s_per_paper": 1.224,
+   "effects": {
+    "relevant_f1": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "polymers_f1": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "organ_systems_f1": [
+     0.0098,
+     -0.0025,
+     0.024
+    ],
+    "pathways_f1": [
+     -0.0063,
+     -0.0234,
+     0.0065
+    ],
+    "rungs_exact": [
+     -0.0062,
+     -0.0185,
+     0.0
+    ],
+    "rungs_within_one": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "model_type_accuracy": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "valid_json": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "floor_mean": [
+     -0.0003,
+     -0.0026,
+     0.0015
+    ]
+   },
+   "harmed": [],
+   "equivalent": true
+  },
+  "new-16": {
+   "s_per_paper": 1.141,
+   "effects": {
+    "relevant_f1": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "polymers_f1": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "organ_systems_f1": [
+     0.0087,
+     -0.0035,
+     0.0237
+    ],
+    "pathways_f1": [
+     -0.0002,
+     -0.0263,
+     0.0266
+    ],
+    "rungs_exact": [
+     -0.0062,
+     -0.0185,
+     0.0
+    ],
+    "rungs_within_one": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "model_type_accuracy": [
+     -0.0114,
+     -0.0385,
+     0.0
+    ],
+    "valid_json": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "floor_mean": [
+     -0.0011,
+     -0.0073,
+     0.0037
+    ]
+   },
+   "harmed": [],
+   "equivalent": true
+  },
+  "new-32": {
+   "s_per_paper": 0.99,
+   "effects": {
+    "relevant_f1": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "polymers_f1": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "organ_systems_f1": [
+     0.0044,
+     -0.0083,
+     0.018
+    ],
+    "pathways_f1": [
+     -0.0083,
+     -0.0299,
+     0.0115
+    ],
+    "rungs_exact": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "rungs_within_one": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "model_type_accuracy": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "valid_json": [
+     0.0,
+     0.0,
+     0.0
+    ],
+    "floor_mean": [
+     -0.0005,
+     -0.0036,
+     0.0023
+    ]
+   },
+   "harmed": [],
+   "equivalent": true
+  }
+ },
+ "hybrid": {
+  "batch": 32,
+  "s_per_paper": 1.343,
+  "sampled": 54,
+  "projected_hours": 3.5
+ },
+ "fused": {
+  "batch": 32,
+  "s_per_paper": 0.881,
+  "effects": {
+   "relevant_f1": [
+    0.0043,
+    -0.0191,
+    0.0282
+   ],
+   "polymers_f1": [
+    0.0235,
+    -0.0191,
+    0.0786
+   ],
+   "organ_systems_f1": [
+    0.0149,
+    -0.0225,
+    0.0509
+   ],
+   "pathways_f1": [
+    0.0542,
+    0.0059,
+    0.1035
+   ],
+   "rungs_exact": [
+    0.0,
+    -0.0309,
+    0.0309
+   ],
+   "rungs_within_one": [
+    0.0,
+    -0.0247,
+    0.0247
+   ],
+   "model_type_accuracy": [
+    -0.0227,
+    -0.0595,
+    0.0
+   ],
+   "valid_json": [
+    0.0,
+    0.0,
+    0.0
+   ],
+   "floor_mean": [
+    0.0093,
+    -0.0118,
+    0.0297
+   ]
+  },
+  "harmed": [],
+  "equivalent": true
+ }
+}

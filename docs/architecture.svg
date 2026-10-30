@@ -1,0 +1,42 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1194 430" style="background:#F8F8F8" preserveAspectRatio="xMidYMid meet" role="img" aria-labelledby="ar-title ar-desc">
+<title id="ar-title">DEBRIS architecture</title>
+<desc id="ar-desc">Four stages from PubMed to the map, with the language models beneath: a teacher and a second reader write and check the labels, a small fine-tuned tagger reads every abstract, and a smaller lab model tests changes cheaply.</desc>
+<style>.b{fill:#FFFFFF;stroke:#D6DAE6;stroke-width:1.5}.t{fill:#1C2238;font:600 13px Inter,Helvetica,Arial,sans-serif}.s{fill:#5A6180;font:10px ui-monospace,SFMono-Regular,Menlo,monospace}.n{fill:#1C2238;font:11px ui-monospace,SFMono-Regular,Menlo,monospace}.a{stroke:#B9BFD0;stroke-width:1.5;fill:none}.h{fill:#5A6180;font:600 10px Inter,Helvetica,Arial,sans-serif;letter-spacing:.06em}.lb{fill:none;stroke:#D6DAE6;stroke-width:1.5;stroke-dasharray:3 3}.l{fill:#5A6180;font:11px Inter,Helvetica,Arial,sans-serif}.band{fill:#E3E8F4;stroke:#385098;stroke-width:1.5}.hd{fill:#FFFFFF;stroke:#385098;stroke-width:1.5}.bt{fill:#385098;font:600 11px Inter,Helvetica,Arial,sans-serif;letter-spacing:.06em}.ht{fill:#1C2238;font:600 12px Inter,Helvetica,Arial,sans-serif}.hs{fill:#5A6180;font:10px Inter,Helvetica,Arial,sans-serif}.la{stroke:#385098;stroke-width:1.5;fill:none}.nm{fill:#385098;font:10px ui-monospace,SFMono-Regular,Menlo,monospace}</style>
+<marker id="tip" markerWidth="7" markerHeight="7" refX="6" refY="3.5" orient="auto"><path d="M0,0 L7,3.5 L0,7Z" fill="#B9BFD0"/></marker>
+<marker id="tip2" markerWidth="7" markerHeight="7" refX="6" refY="3.5" orient="auto"><path d="M0,0 L7,3.5 L0,7Z" fill="#385098"/></marker>
+<text class="h" x="12" y="50">INPUTS</text>
+<rect class="b" x="12" y="74" width="108" height="68" rx="2"/><text class="t" x="22" y="98">PubMed</text><text class="s" x="22" y="116">titles and</text><text class="s" x="22" y="130">abstracts</text>
+<rect class="b" x="12" y="154" width="108" height="68" rx="2"/><text class="t" x="22" y="178">Crossref</text><text class="s" x="22" y="196">DOIs and</text><text class="s" x="22" y="210">retractions</text>
+<path class="a" d="M120,108 L122,138" marker-end="url(#tip)"/><path class="a" d="M120,188 L122,158" marker-end="url(#tip)"/>
+<rect class="b" x="128" y="74" width="196" height="148" rx="2"/><text class="t" x="140" y="98">1 · Harvest</text><text class="s" x="140" y="114">two PubMed searches</text>
+<text class="n" x="140" y="138">10,133 records</text><text class="n" x="140" y="154">2004 to now</text><text class="n" x="140" y="170">new papers weekly</text>
+<rect class="lb" x="128" y="234" width="196" height="46" rx="2"/><text class="l" x="140" y="253">Find every paper putting a</text><text class="l" x="140" y="268">plastic particle in a disease.</text>
+<path class="a" d="M324,148 L352,148" marker-end="url(#tip)"/>
+<rect class="b" x="358" y="74" width="196" height="148" rx="2"/><text class="t" x="370" y="98">2 · Verify</text><text class="s" x="370" y="114">DOI and title match</text>
+<text class="n" x="370" y="138">9,685 verified</text><text class="n" x="370" y="154">9,335 with abstracts</text><text class="n" x="370" y="170">retractions flagged</text>
+<rect class="lb" x="358" y="234" width="196" height="46" rx="2"/><text class="l" x="370" y="253">Keep only real, published</text><text class="l" x="370" y="268">papers.</text>
+<path class="a" d="M554,148 L582,148" marker-end="url(#tip)"/>
+<rect class="b" x="588" y="74" width="196" height="148" rx="2"/><text class="t" x="600" y="98">3 · Tag</text><text class="s" x="600" y="114">fine-tuned Qwen2.5</text>
+<text class="n" x="600" y="138">plastic, organ, tissue</text><text class="n" x="600" y="154">mechanism, study type</text><text class="n" x="600" y="170">evidence rung</text><text class="n" x="600" y="186">confidence</text>
+<rect class="lb" x="588" y="234" width="196" height="46" rx="2"/><text class="l" x="600" y="253">Read each abstract and fill</text><text class="l" x="600" y="268">in the same form.</text>
+<path class="a" d="M784,148 L812,148" marker-end="url(#tip)"/>
+<rect class="b" x="818" y="74" width="196" height="148" rx="2"/><text class="t" x="830" y="98">4 · Map</text><text class="s" x="830" y="114">static bundles, Flask</text>
+<text class="n" x="830" y="138">gaps and firsts</text><text class="n" x="830" y="154">low confidence held</text><text class="n" x="830" y="170">for review</text>
+<rect class="lb" x="818" y="234" width="196" height="46" rx="2"/><text class="l" x="830" y="253">Turn the tags into a map of</text><text class="l" x="830" y="268">the evidence.</text>
+<text class="h" x="1058" y="50">THE APP</text>
+<rect class="b" x="1058" y="74" width="124" height="28" rx="2"/><text class="n" x="1068" y="92">Atlas</text>
+<rect class="b" x="1058" y="114" width="124" height="28" rx="2"/><text class="n" x="1068" y="132">Body</text>
+<rect class="b" x="1058" y="154" width="124" height="28" rx="2"/><text class="n" x="1068" y="172">Pathways</text>
+<rect class="b" x="1058" y="194" width="124" height="28" rx="2"/><text class="n" x="1068" y="212">Papers</text>
+<path class="a" d="M1014,148 L1052,148" marker-end="url(#tip)"/>
+<rect class="band" x="128" y="300" width="886" height="114" rx="3"/><text class="bt" x="142" y="318">THE LANGUAGE MODELS · ALL RUN ON ONE DESKTOP, NO PAID API</text><text class="nm" x="1000" y="318" text-anchor="end">debris_v1</text>
+<rect class="hd" x="142" y="328" width="276" height="74" rx="2"/><text class="ht" x="152" y="347">A · Teach and check</text>
+<text class="hs" x="152" y="362">1,600 abstracts labelled by careful</text><text class="hs" x="152" y="375">reading; Qwen2.5-32B re-reads a sample</text><text class="hs" x="152" y="388">to show how far the labels can be trusted</text>
+<rect class="hd" x="432" y="328" width="276" height="74" rx="2"/><text class="ht" x="442" y="347">B · Tag</text>
+<text class="hs" x="442" y="362">Qwen2.5-7B with a LoRA adapter reads</text><text class="hs" x="442" y="375">every abstract and scores its own</text><text class="hs" x="442" y="388">confidence; 3B copy on Hugging Face</text>
+<rect class="hd" x="722" y="328" width="276" height="74" rx="2"/><text class="ht" x="732" y="347">C · Test ideas</text>
+<text class="hs" x="732" y="362">Qwen2.5-1.5B trains in minutes, so each</text><text class="hs" x="732" y="375">change to the labels or the training is</text><text class="hs" x="732" y="388">measured before the tagger adopts it</text>
+<path class="la" d="M418,365 L428,365" marker-end="url(#tip2)"/>
+<path class="la" d="M722,365 L712,365" marker-end="url(#tip2)"/>
+<path class="la" d="M686,328 L686,286" marker-end="url(#tip2)"/>
+</svg>

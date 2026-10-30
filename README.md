@@ -2,7 +2,7 @@
 
 > **Ten thousand papers on plastic particles and human disease, read by machine and mapped.**
 
-![python](https://img.shields.io/badge/python-3.x-3776AB?logo=python&logoColor=white) ![shell](https://img.shields.io/badge/shell-bash/zsh-4EAA25?logo=gnubash&logoColor=white) ![author](https://img.shields.io/badge/author-Marc%20C.%20Deller,%20D.Phil.-1C244B)
+![python](https://img.shields.io/badge/python-3.x-3776AB?logo=python&logoColor=white) ![qwen](https://img.shields.io/badge/base-Qwen2.5--7B--Instruct-615CED?logo=alibabacloud&logoColor=white) ![lora](https://img.shields.io/badge/adapter-LoRA-615CED) ![mlx](https://img.shields.io/badge/trained%20with-MLX%20on%20Apple%20silicon-000000?logo=apple&logoColor=white) ![hf](https://img.shields.io/badge/served%20on-%F0%9F%A4%97%20Spaces%20ZeroGPU-FFD21E) ![wandb](https://img.shields.io/badge/tracked-Weights%20%26%20Biases-FFBE00?logo=weightsandbiases&logoColor=black) ![flask](https://img.shields.io/badge/server-Flask-000000?logo=flask&logoColor=white) ![papers](https://img.shields.io/badge/verified%20papers-9%2C685-2F7D62) ![author](https://img.shields.io/badge/author-Marc%20C.%20Deller,%20D.Phil.-1C244B)
 
 <table>
 <tr>
@@ -14,237 +14,158 @@
 
 ---
 
+<img src="docs/architecture.svg" alt="The DEBRIS pipeline: harvest, verify, tag and map, with the language models beneath: one teaches and checks, one tags, one tests ideas." width="100%">
+
 Plastic particles small enough to cross from the gut or the lung into the bloodstream have
-now been found in human blood, lung tissue, placenta, atheromatous plaque and brain, and
-what that means for health is being worked out in thousands of separate papers that nobody
-has read in full. DEBRIS reads them: it harvests every PubMed record putting a micro or
-nanoplastic particle inside a human disease, checks each one is a real published paper, and
-has a small language model read the abstract and write down what that paper actually
-reports, which plastic, which organ, which biological mechanism, what kind of study, and
-how close the finding sits to an effect in a living person. The result is a map of the
-evidence rather than another reading list.
+now been found in human blood, lung, placenta, artery plaque and brain. What that means for
+health is being worked out in thousands of separate papers that nobody has read in full.
+DEBRIS reads them. It collects every PubMed paper that puts a micro or nanoplastic particle
+inside a human disease, checks that each one is a real published paper, and has a small
+language model read every abstract and fill in the same short form: which plastic, which
+organ and tissue, which biological mechanism, what kind of study, and how close the finding
+sits to an effect in a living person. The result is a map of the evidence rather than
+another reading list.
 
 Why it matters: the question people actually ask, what do we know about plastic particles and human disease, has no single answer anywhere, because the evidence is spread across toxicology, cardiology, obstetrics and environmental science journals that rarely cite one another and is growing every week. Asking the same questions of every abstract turns that scattered literature into something a person can see at once, including the parts of it that are empty. It is useful for: finding the papers behind a claim, telling what has been shown in people apart from what has only been shown in cells, and seeing which plastic and organ combinations nobody has studied yet.
 
 Live at [debris.mdeller.com](https://debris.mdeller.com).
 
-## Why read the literature by machine
+## 🔧 How it works
 
-There are around ten thousand papers in scope and the number grows every week. No
-clinician, regulator or journalist can keep up with that, and the findings are scattered
-across toxicology, cardiology, obstetrics, gastroenterology and environmental science
-journals that rarely cite one another. So the obvious question, what do we actually know
-about plastic particles and human disease, has no single answer anywhere: it is distributed
-across a literature too large to hold in one head.
+The diagram at the top shows four stages, left to right, then the app that shows the result.
 
-Reading all of it the same way, with the same questions asked of every abstract, makes the
-shape of that evidence visible. Three things fall out that no individual paper shows.
+| Stage | What it does |
+|---|---|
+| **1 · Harvest** | Searches PubMed two ways, so papers are found whether or not they have been indexed yet |
+| **2 · Verify** | Keeps a paper only if its DOI resolves at Crossref and the titles match; retractions are flagged, never deleted |
+| **3 · Tag** | A fine-tuned language model reads each abstract and fills in the form, with a confidence score |
+| **4 · Map** | The tags become the charts, the body map and the searchable table |
 
-**What has been shown in people, and what has only been shown in cells.** A finding in a
-human cohort and a finding in a dish are both real results and they are not the same
-claim. DEBRIS records which it is for every paper, so the distinction survives.
+### Where the language models come in
 
-**Which combinations nobody has studied.** Fourteen mechanisms, thirteen polymers and
-sixteen organ systems make a grid with a great many empty squares. An empty square is an
-open research question, and it is invisible unless the whole corpus is tagged the same way.
+Reading ten thousand abstracts against a fixed form is the one part of this that rules
+cannot do. Abstracts say the same thing a dozen ways, and the distinction that matters most,
+whether an effect was seen in a person or in a dish of cells, is carried by phrasing rather
+than by any keyword. Three models share the work, and all of them run on one desktop
+computer with no paid service behind them.
 
-**Absence of evidence, stated as such.** An empty region is an absence of published work,
-not a finding of safety. Saying so plainly is more useful than leaving a gap unmentioned.
-
-This is a literature mining project, not a toxicology study. DEBRIS records what papers
-report and nothing in it asserts that plastics cause disease in people.
+- **A · Teach and check.** 1,600 abstracts were labelled by careful reading to make the
+  training set. A much larger model, Qwen2.5-32B, then re-reads a sample on its own. Where
+  two careful readers disagree, no model trained on those labels can do better, so this
+  sets an honest ceiling for every field.
+- **B · Tag.** The tagger is Qwen2.5-7B with a small trained add-on (a LoRA adapter). It
+  learns the form, not facts about plastics, so a wrong tag is a misreading rather than an
+  invented finding. It gives the same answer for the same abstract next year, which a
+  hosted service that changes underneath you does not. Each tag carries a confidence
+  score, and anything it is unsure about is shown as needing review rather than published.
+- **C · Test ideas.** Qwen2.5-1.5B trains in minutes, so every proposed change to the
+  labels or the training is tried on it first and kept only if it measurably helps.
 
 ## What a tag records
 
-A tag is a reading of one paper, not a verdict on the science. For each abstract the
-tagger records the polymers named, the particle size class, the organ systems involved,
-the disease categories and the authors' own disease terms, the mechanisms reported, the
-kind of study, and which rungs of the evidence ladder the paper reaches.
-
-### The evidence ladder
+A tag is a reading of one paper, not a verdict on the science. For each abstract it records
+the plastics named, the particle size, the organs and tissues involved, the disease, the
+biological mechanisms, the kind of study, and how far up the evidence ladder the paper gets.
 
 | Rung | Meaning |
 |---|---|
 | 1 | Detected in human tissue or fluid |
-| 2 | Associated with outcome in a human cohort |
-| 3 | Reproduced in vivo |
-| 4 | Mechanism in vitro or ex vivo |
-| 5 | Dose-response |
-| 6 | Reversible on particle removal or degradation |
+| 2 | Associated with an outcome in a group of people |
+| 3 | Reproduced in a living animal |
+| 4 | Mechanism shown in cells or tissue samples |
+| 5 | Effect grows with dose |
+| 6 | Effect reverses when the particles are removed |
 
-The rungs are not a ranking of journals or of authors. They record how far a given claim
-sits from a human outcome, so that a reader can see the shape of the evidence without
-taking anyone's word for it. A detection in tissue is rung 1 whether it appears in a case
-series or in the Lancet. Reviews carry no rungs.
+The rungs are not a ranking of journals or authors. They say how far a claim sits from a
+human outcome, so a reader can see the shape of the evidence without taking anyone's word
+for it. Reviews carry no rungs.
 
 ## The four tabs
 
-- **Atlas**: a Venn of PET against PS and PE/PP, with a second Venn for PVC and the rest.
-  Every region is a link into the Papers tab with that polymer combination applied. Below
-  it, the evidence ladder as disease category by rung, and the corpus by year.
-- **Body**: an SVG silhouette. Click an organ and the panel gives the polymers reported in
-  it, the pathways, the highest rung reached and the papers behind it.
-- **Pathways**: polymer to pathway to disease as a Sankey, plus a radar of mechanism
-  coverage per organ system.
-- **Papers**: the whole verified corpus in a sortable table, with the polymer, organ,
-  pathway, rung and year filters the other tabs link into, and a drawer per paper. NEW
-  marks a paper added by the last weekly run; NOVEL marks the first paper to connect a
-  polymer and an organ, or to reach a rung a disease category had not reached before.
+- **Atlas**: which plastics have been studied together, and the evidence ladder by disease and year.
+- **Body**: click an organ to see the plastics found in it, the mechanisms and the papers behind them.
+- **Pathways**: how each plastic links to mechanisms and diseases.
+- **Papers**: the whole verified corpus, searchable and filterable. NEW marks papers from the
+  latest weekly run; NOVEL marks the first paper to link a plastic to an organ.
 
-Unverified papers are hidden behind a switch that is off by default. Retracted papers are
-struck through and never deleted.
+## 🤗 The models
 
-## How a paper gets in
+| Role | Model | Where |
+|---|---|---|
+| Tagger (production) | Qwen2.5-7B-Instruct + DEBRIS LoRA adapter | base: [`Qwen/Qwen2.5-7B-Instruct`](https://huggingface.co/Qwen/Qwen2.5-7B-Instruct) |
+| Tagger (published) | Qwen2.5-3B-Instruct, fine-tuned | [`Dellboy/debris-tagger-v1`](https://huggingface.co/Dellboy/debris-tagger-v1) |
+| Online tagging | ZeroGPU Space for the weekly refresh | [`Dellboy/debris-tagger`](https://huggingface.co/spaces/Dellboy/debris-tagger) |
+| Second reader | Qwen2.5-32B-Instruct, 4-bit | [`mlx-community/Qwen2.5-32B-Instruct-4bit`](https://huggingface.co/mlx-community/Qwen2.5-32B-Instruct-4bit) |
+| Lab model | Qwen2.5-1.5B-Instruct | [`Qwen/Qwen2.5-1.5B-Instruct`](https://huggingface.co/Qwen/Qwen2.5-1.5B-Instruct) |
 
-1. **Harvest** (`pipeline/harvest.py`). Two PubMed strategies, unioned: one on MeSH terms,
-   one on title and abstract words to catch the indexing lag. Each PMID keeps the
-   strategies that found it. `PET[tiab]` is never searched on its own, because it returns
-   positron emission tomography. Papers without abstracts are stored but never tagged.
-2. **Verify** (`pipeline/verify_doi.py`). A paper is admitted when Crossref resolves its
-   DOI and `token_set_ratio` between the PubMed and Crossref titles, case-folded, is at
-   least 90. A Crossref `update-to` retraction sets a flag.
-3. **Tag** (`pipeline/tag.py`). Two passes per paper, greedy and then sampled at a fixed
-   seed. The greedy tag is stored; the pair gives a self-consistency score. Papers are
-   tagged in priority tiers, so the gold set and the human tissue and cohort work are
-   done first. Low confidence, disagreement between passes or a value outside the
-   controlled vocabulary routes the paper to the review queue and the app shows it as
-   needing review rather than publishing the tag.
-4. **Novelty** (`pipeline/novelty.py`). First polymer and organ pairings, and first time a
-   disease category reaches a rung, recorded as events.
-5. **Aggregate** (`pipeline/aggregate.py`). Static JSON bundles under
-   `app/static/data/`. The app does no computation at request time.
-
-## 🤗 The language model
-
-Reading ten thousand abstracts against a fixed schema is the one part of this that cannot
-be done with rules. Abstracts say the same thing a dozen different ways, and the
-distinction that matters most here, whether an effect was observed in a person or in a cell
-line, is carried by phrasing rather than by any keyword.
-
-So DEBRIS uses a small model trained for exactly this task, not a large general one behind
-an API. That is a deliberate choice: a 3B model fine-tuned on the schema runs the whole
-corpus overnight on one desktop machine, costs nothing per paper, and gives the same answer
-for the same abstract next year, which an API that silently changes underneath you does
-not. Reproducibility is the point.
-
-### 🎓 Training
-
-| | |
-|---|---|
-| Base model | [`Qwen/Qwen2.5-3B-Instruct`](https://huggingface.co/Qwen/Qwen2.5-3B-Instruct) |
-| Method | LoRA adapter, 32 layers, 1,600 iterations, learning rate 1e-5, fixed seed |
-| Training data | 1,600 labelled abstracts, split 1,277 train / 161 validation / 162 test, stratified on relevance and study design |
-| Trained | Once. The weekly refresh never retrains it |
-| Tracked | Every run in Weights & Biases, with the loss curve, the config and the held-out metrics |
-
-The model is trained on the task and the schema, not on facts about plastics. It learns to
-read an abstract and fill in a form; it does not learn what the answers should be. That
-matters, because it means the model cannot invent a finding the paper does not contain, and
-a wrong tag is a misreading rather than a fabrication.
-
-The split is frozen, so the test set holds the same 162 papers across every training run
-and the numbers are comparable. Performance per field, the acceptance threshold each must
-clear, and an honest account of which fields the labels themselves limit, are all in
+Every training run is tracked in Weights & Biases. The test set is 162 papers held back from
+every run, so results stay comparable. Per-field scores and the bar each must clear are in
 [MODEL_CARD.md](MODEL_CARD.md).
 
-### 🤗 The models
+## 📈 Making the tagger better
 
-| Resource | Where |
-|---|---|
-| Fine-tuned tagger | [`Dellboy/debris-tagger-v1`](https://huggingface.co/Dellboy/debris-tagger-v1) |
-| Inference Space (ZeroGPU) | [`Dellboy/debris-tagger`](https://huggingface.co/spaces/Dellboy/debris-tagger) |
-| Base model | [`Qwen/Qwen2.5-3B-Instruct`](https://huggingface.co/Qwen/Qwen2.5-3B-Instruct) |
+Each idea was tested on the lab model across three rotations of the data, and kept only when
+the gain was clearly larger than chance.
 
-Inference runs one of two ways, and both write the same tables. Path A is the Hugging Face
-ZeroGPU Space, which is what the weekly refresh on the server uses. Path B is a quantised
-copy of the model on the local machine, driven by a timer, which is what the first full
-pass over the corpus uses because it is far larger than a weekly batch.
+| Change | Field it helps | Gain |
+|---|---|---|
+| Train on the answers only, not on repeating the question | every field | +3 points on average |
+| Clearer rule for pathways: count a mechanism only if the study measured it | mechanisms | +15 points |
+| Name plastics at the finest level the paper gives (PA6, PA66) | plastics | +11 points |
+| Clearer rule for study type (cell line, human sample, cohort) | study type | +2 points |
+| New tissue field: 18 tissues, from Liu et al.'s map of plastics in the body | tissues | new, 71 % F1 |
+| Group rare mechanisms as one "other" class | mechanisms | about +10 points more |
+
+These are being combined into the next tagger, which is checked against the current one on
+the held-back test set before it replaces it. The first full tagging pass of the corpus runs
+with that tagger.
+
+Tagging is fast too. The tagger now reads 32 abstracts at once and re-checks only the third
+it is least sure of, so the whole corpus takes about **3.5 hours** on one Mac Studio instead
+of about 12, with the same answers.
 
 ## ▶️ Running it
 
-The pipeline runs in a pixi environment; the app runs in a uv virtual environment with
-only Flask and gunicorn, which is what the droplet installs.
+The pipeline runs in a pixi environment; the app needs only Flask and gunicorn.
 
 | Task | What it does |
 |---|---|
-| `pixi run probe` | Read the hardware and write `config/tuning.toml` |
 | `pixi run harvest` | Harvest PubMed |
 | `pixi run verify` | Verify DOIs at Crossref |
-| `pixi run bootstrap all` | Select, label, ingest and split the bootstrap set |
-| `pixi run train` | Fine-tune, fuse, quantise and score; resumes where it stopped |
-| `pixi run tag --local` | Tag the corpus with the local model |
-| `pixi run tag --remote` | Tag the corpus through the Space |
-| `pixi run novelty --run` | Record novelty events |
-| `pixi run validate` | Check the gold controls and the negatives |
-| `pixi run aggregate` | Rebuild the JSON bundles |
-| `pixi run weekly` | The whole refresh, last seven days |
-| `pixi run drift` | Weekly drift check; never retrains |
-| `pixi run findings` | Regenerate `FINDINGS.md` |
-| `pixi run qc` | Drive the app through Chromium and axe-core |
+| `pixi run train` | Fine-tune and score the tagger |
+| `pixi run tag --local` | Tag the corpus on this machine |
+| `pixi run tag --remote` | Tag through the Hugging Face Space |
+| `pixi run lab <experiment>` | Run one lab experiment; `pixi run lab report` writes `LAB_REPORT.md` |
+| `pixi run aggregate` | Rebuild the data the app reads |
+| `pixi run weekly` | The weekly refresh: the last seven days, end to end |
 | `pixi run test` | The test suite |
 
-Every stage is resumable: each writes a manifest under `data/manifests/` and checks for
-its own output before doing the work again.
-
-### 🛠️ Configuration
-
-Nothing about the machine is hard-coded. `tools/hwprobe.py` writes `config/hardware.toml`
-and `config/tuning.toml`, and the pipeline reads batch sizes and model paths from there.
-`config/vocab.toml` holds the controlled vocabulary and every display label, and the
-charts are built from it, so a vocabulary change moves the app. `config/query.toml` holds
-the PubMed strategies, `config/deploy.toml` the host, `config/hf.toml` and
-`config/wandb.toml` the optional services.
-
-All four API keys are optional. Without `NCBI_API_KEY` the harvest runs at three requests
-a second. Without `ANTHROPIC_API_KEY` the bootstrap labels are written by hand. Without
-`WANDB_API_KEY` the run logs offline under `wandb/`. Without `HF_TOKEN` inference takes
-path B. Each fallback is logged rather than silent.
+Every stage can be stopped and restarted, and picks up where it left off. Machine settings
+come from `config/tuning.toml`, written by `tools/hwprobe.py`, and nothing is hard-coded.
+All API keys are optional, and each has a logged fallback.
 
 ## The weekly refresh
 
-One timer, either a systemd timer on the droplet or a launchd job on the Studio, runs
-`pipeline/weekly.py`: harvest the last seven days by `EDAT`, verify, tag the new papers,
-score novelty, rebuild the bundles, push the data and run the drift check. It is
-idempotent, so a second run over the same week adds nothing. It never retrains. If
-relevance F1 falls below 0.90 or the review rate stays above 25 % for two runs, the drift
-check appends a recommendation to `FINDINGS.md` and stops there.
-
-## Deploying
-
-`deploy/deploy.sh` rsyncs the app and the data to the host in `config/deploy.toml`,
-installs the uv environment from `requirements.txt`, and restarts gunicorn behind nginx.
-`--data-only` pushes the database and the bundles without touching the code;
-`--provision` sets up a bare droplet.
-
-## Quality
-
-`pixi run test` covers the schema and its repair path, DOI verification against mocked
-HTTP, the aggregate totals against the same numbers computed in SQL, novelty, the
-priority tiers, the vocabulary candidate accounting and every app route.
-
-`pixi run qc` starts gunicorn on a spare port and drives the preinstalled Chromium
-through all four tabs at 1440x900 and 390x844, checking that each route returns 200, that
-there are no console errors or failed requests, that axe-core reports no serious or
-critical violations, that the Atlas is interactive inside 1.5 s, and that the Atlas region
-and body node click-throughs work. Screenshots and a JSON summary land in `qc/`.
+Once a week a timer harvests the last seven days, verifies and tags the new papers, records
+anything novel, and rebuilds the app's data. It never retrains the tagger. If tagging quality
+drifts, it says so in `FINDINGS.md` and stops there.
 
 ## Limits
 
-DEBRIS indexes what the literature reports. It does not adjudicate the science, and
-nothing in the schema or the app asserts that plastics cause disease in people. An empty
-region of the Venn is an absence of published work, not evidence of safety. Tags are
-produced by a 3B model and the ones it is unsure about are marked as needing review
-rather than hidden. Papers are read from their abstracts, so a paper whose full text says
-more than its abstract is tagged on the abstract.
+DEBRIS indexes what the literature reports. It does not judge the science, and nothing in it
+claims that plastics cause disease in people. An empty region of the map is an absence of
+published work, not evidence of safety. Papers are read from their abstracts, so a paper
+whose full text says more is tagged on what its abstract says.
 
 ## Project files
 
 | File | What it holds |
 |---|---|
 | `DEBRIS_BUILD_SPEC.md` | The specification this was built from |
-| `MODEL_CARD.md` | The tagger, its training and its metrics |
-| `FINDINGS.md` | The corpus, the funnel, the gaps; generated |
-| `config/vocab.toml` | The controlled vocabulary: every polymer, organ, mechanism and label |
+| `MODEL_CARD.md` | The tagger, its training and its scores |
+| `LAB_PLAN.md`, `LAB_REPORT.md` | How each improvement was tested, and the results |
+| `FINDINGS.md` | The corpus, the funnel and the gaps; generated |
+| `config/vocab.toml` | Every plastic, organ, mechanism and label |
 
 ---
 

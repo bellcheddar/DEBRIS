@@ -847,3 +847,28 @@ and nothing coordinates two processes. Fold 0 alone peaked at 34.7 GB of active 
 its cache. Any concurrent lab jobs therefore need an explicit per-process memory and cache
 limit (`mx.set_memory_limit`, `mx.set_cache_limit`), set from config/tuning.toml rather than
 hard-coded, and measured alone on the GPU before the lab relies on them.
+
+## D37 Phase 0 result: the lab model passes the exit test, and the lab trains to 600 iterations
+
+The baseline recipe on Qwen2.5-1.5B (round 07, three folds, 1,438 papers each scored once)
+reaches a floor mean of 0.764 ± 0.014 at 800 iterations. Against round 04 (the 3B, 32 layers,
+frozen test split) it sits 10 points lower on relevance, 11 on polymers, 14 on organ systems,
+7 on pathways, 11 on exact rungs, 7 on rungs within one and 13 on model type, with valid JSON
+at 1.000. Every field is inside the plan's 15-point window, so the 1.5B stays the lab model.
+The comparison is across different evaluation sets, so it is a sanity check, not a ranking.
+
+The fold 0 learning curve gives a floor mean of 0.746, 0.775, 0.787 and 0.778 at 200, 400, 600
+and 800 iterations. Organ systems (+0.04) and pathways (+0.07) are still improving between 400
+and 600 and nothing improves after it, so the plan's rule ("the shortest count at which the
+fields stop improving") gives 600. Phase 1 and the seed check train to 600, and the baseline is
+reported at 600, with folds 1 and 2 scored from their saved 600 checkpoints rather than retrained.
+That rescoring is not logged to wandb again (WANDB_MODE disabled), to avoid duplicate runs.
+
+The seed check runs on fold 0 rather than fold 1 as LAB_PLAN.md says: fold 0 already has seed
+42 scored at 600 from the curve, and the report compares on it. Which fold carries the check
+does not change what it measures. Reverse by setting `folds = [1]` in config/lab/phase0-seeds.toml.
+
+The concurrent scheduler is `pipeline/lab_queue.py` (`pixi run lab-queue phase1`). Each
+experiment is its own `lab.py run` process under the caps in the tuning [lab] table, rounds
+are fixed in the parent before any child starts, and a failure is logged without stopping the
+queue. How many run at once comes only from `tools/lab_bench.py`.

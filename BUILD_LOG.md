@@ -230,3 +230,19 @@
   and aborted the scoring (D36). Fold 0's training was complete and saved; Phase 0 resumed
   alone. Concurrent jobs need per-process memory caps before they run again.
 - 2026-10-29 18:54 lab phase0-baseline f0 s42 @ 200: relevant_f1 0.8944, polymers_f1 0.758, organ_systems_f1 0.6514, pathways_f1 0.5228, rungs_exact 0.6021, rungs_within_one 0.8125, model_type_accuracy 0.7269, valid_json 1.0, 0.46 s/paper
+- 2026-10-29 18:58 lab phase0-baseline f0 s42 @ 400: relevant_f1 0.8952, polymers_f1 0.7757, organ_systems_f1 0.6563, pathways_f1 0.5124, rungs_exact 0.8, rungs_within_one 0.8375, model_type_accuracy 0.7192, valid_json 1.0, 0.47 s/paper
+- 2026-10-29 19:01 lab phase0-baseline f0 s42 @ 600: relevant_f1 0.8925, polymers_f1 0.7737, organ_systems_f1 0.6948, pathways_f1 0.5786, rungs_exact 0.7854, rungs_within_one 0.8417, model_type_accuracy 0.7308, valid_json 1.0, 0.44 s/paper
+- 2026-10-29 19:05 lab phase0-baseline f0 s42 @ 800: relevant_f1 0.9014, polymers_f1 0.7532, organ_systems_f1 0.6693, pathways_f1 0.5649, rungs_exact 0.7667, rungs_within_one 0.8083, model_type_accuracy 0.7577, valid_json 1.0, 0.45 s/paper
+- 2026-10-29 19:05 lab phase0-baseline f1 s42: training 800 iterations
+- 2026-10-29 19:05 train: mlx_lm.lora --model Qwen/Qwen2.5-1.5B-Instruct --train --data /Users/dellboy/Documents/Vibe_Coding/debris/data/lab/phase0-baseline/f1-s42/data ...
+- 2026-10-29 19:38 lab phase0-baseline f1 s42: trained in 32.4 min
+- 2026-10-29 19:41 lab phase0-baseline f1 s42 @ 800: relevant_f1 0.8782, polymers_f1 0.7848, organ_systems_f1 0.665, pathways_f1 0.5747, rungs_exact 0.7474, rungs_within_one 0.8079, model_type_accuracy 0.7423, valid_json 1.0, 0.46 s/paper
+- 2026-10-29 19:41 lab phase0-baseline f2 s42: training 800 iterations
+- 2026-10-29 19:41 train: mlx_lm.lora --model Qwen/Qwen2.5-1.5B-Instruct --train --data /Users/dellboy/Documents/Vibe_Coding/debris/data/lab/phase0-baseline/f2-s42/data ...
+- 2026-10-29 20:14 lab phase0-baseline f2 s42: trained in 32.8 min
+- 2026-10-29 20:18 lab phase0-baseline f2 s42 @ 800: relevant_f1 0.837, polymers_f1 0.7484, organ_systems_f1 0.6521, pathways_f1 0.55, rungs_exact 0.6994, rungs_within_one 0.7578, model_type_accuracy 0.6577, valid_json 1.0, 0.46 s/paper
+- 2026-10-29 20:18 lab phase0-baseline: done
+- 2026-10-29 20:18 lab report: 1 experiments written to LAB_REPORT.md
+- 2026-10-29 20:19 lab: wrote eight Phase 1 configurations at 600 iterations
+- 2026-10-29 20:19 ceiling: labelling 150 papers with mlx-community/Qwen2.5-32B-Instruct-4bit
+- 2026-10-29 20:21 lab: Phase 0 exit test passed; N = 600 from the fold 0 curve (D37); lab_queue.py written, 5 tests

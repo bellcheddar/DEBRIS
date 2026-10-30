@@ -1,0 +1,12 @@
+description = "Phase 1 configuration 1: A off, B off, C off, D off"
+reuse = "phase0-baseline"
+iters = 600
+folds = [0, 1, 2]
+seeds = [42]
+compare_to = "phase1-c1"
+
+[switches]
+mask_prompt = false
+types = false
+order = false
+drop_confidence = false

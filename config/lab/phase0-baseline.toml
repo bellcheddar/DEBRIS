@@ -5,7 +5,8 @@ description = "Phase 0: the current recipe, three folds, learning curve on fold 
 iters = 800
 folds = [0, 1, 2]
 seeds = [42]
-score_iters = [800]
+score_iters = [600, 800]
+report_iter = 600  # set from the fold 0 curve: the shortest count at which the fields stop improving
 curve_iters = [200, 400, 600]
 
 [switches]

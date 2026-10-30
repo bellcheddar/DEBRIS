@@ -49,6 +49,7 @@ readme = "python tools/readme.py"
 errors = "python tools/errors.py"
 screen = "python tools/screen.py"
 lab = "python pipeline/lab.py"
+lab-queue = "python pipeline/lab_queue.py"
 smoke = "python tools/smoke_test.py"
 # QC drives the app venv's Playwright; pixi only supplies the entry point.
 qc = ".venv/bin/python tools/qc_ui.py"

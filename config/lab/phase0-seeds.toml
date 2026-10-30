@@ -1,0 +1,10 @@
+# Phase 0 (LAB_PLAN.md): training noise alone. Fold 0, the baseline recipe at the chosen
+# iteration count, two further seeds; seed 42 is the baseline's own fold 0 at 600.
+description = "Phase 0: seeds 43 and 44 on fold 0 at 600 iterations"
+iters = 600
+folds = [0]
+seeds = [43, 44]
+score_iters = [600]
+report = false
+
+[switches]

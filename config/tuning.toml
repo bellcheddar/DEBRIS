@@ -7,6 +7,7 @@ tag_batch_size = 8
 memory_headroom_gb = 24
 max_compute_hours = 24
 ncbi_rate_per_second = 3
+tag_batch_size_status = "measured by tools/tag_bench.py 2026-10-30"
 
 [env]
 TOKENIZERS_PARALLELISM = "false"
@@ -19,3 +20,14 @@ job_cache_gb = 24.2
 overlap_scoring = false
 parallel_jobs_status = "measured 2026-10-30: pair speedup 1.04x, training slowed 14% beside scoring"
 bench = "{\"train_alone\":{\"it_per_s\":0.513,\"peak_gb\":26.374,\"failed\":false},\"train_pair\":{\"jobs\":[{\"it_per_s\":0.268,\"peak_gb\":26.374,\"failed\":false},{\"it_per_s\":0.268,\"peak_gb\":26.374,\"failed\":false}],\"it_per_s_total\":0.536,\"failed\":false},\"score_alone\":{\"s_per_paper\":0.451,\"failed\":false},\"train_with_scoring\":{\"train\":{\"it_per_s\":0.44,\"peak_gb\":26.374,\"failed\":false},\"score\":{\"s_per_paper\":1.871,\"failed\":false}}}"
+
+[tag]
+batch_size = 8
+prefix_cache = false
+s_per_paper = 1.763
+status = "measured 2026-10-30, see data/manifests/tag_bench.json"
+
+[tag.projected_hours]
+current = 11.7
+chosen_two_pass = 9.2
+chosen_greedy_only = 4.6

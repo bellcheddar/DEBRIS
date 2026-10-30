@@ -1053,3 +1053,21 @@ The chain stops after step 2 if the 3B's floor-mean effect does not point the sa
 **Reporting.** `LAB_REPORT.md` gains a Phase 2 section from `lab_v2.report_section`: tissues, parent-level polymers and the three organ-system policies, paired against `phase2-base`, plus per-tissue recall. It measures and does not adopt: definitions are the owner's call (rule 5).
 
 **Fixed on the way.** `labels_v2` imported `lab` at module level and `lab` now imports `lab_v2`, which imports `labels_v2`: a circular import, broken by importing `lab` where it is used.
+
+## D45 Tag bench results; the confidence trade-off goes to the owner
+
+Measured 2026-10-30 on 128 papers, `debris_v1_q4` (7B, 4-bit); the corpus is 9,376 papers. Full results are in `data/manifests/tag_bench.json`.
+
+| arm | s per paper | matches the old loop (16 papers) |
+|---|---|---|
+| sequential (now) | 2.25 | 16 of 16 |
+| batched 8 / 16 / 32 / 64 | 1.76 / 1.69 / 1.53 / 2.07 | 15, 14, 14, 14 of 16 |
+| shared system-prompt cache, batch 8 | 1.22 | 15 of 16 |
+| speculative, 0.5B draft | 3.17 | 15 of 16 |
+| lab 1.5B, batch 8 | 0.42 | (a different model) |
+
+**Prompt reading dominates.** The 7B reads prompts at about 750 tokens a second against 4,600 for the 1.5B, and output is about 103 tokens a paper, so batching (which speeds up writing) gains little and the system-prompt cache (which skips reading) gains most. Speculative decoding is slower here.
+
+**Where answers differ** it is one or two papers of 16 on `evidence_rungs` or `pathways`, the kind of flip a different matmul order in a batch produces. Sixteen papers cannot tell that apart from a change in quality, so the bench's automatic pick (95 % agreement on 16 papers, which needs 16 of 16) chose nothing, and the batch 8 with no cache it wrote to `[tag]` is a fallback, not a finding. The next bench compares arms against gold labels on the labelled papers instead, and adds the cache at batch 32 and the unquantised fused weights, whose prompt reading may be faster.
+
+**Confidence.** The greedy pass's mean token probability ranks the papers where the sampled pass disagrees with an AUC of 0.81 (minimum probability 0.65); the sampled pass at 0.7 disagrees with the greedy tag on at least one structured field for 45 % of papers. Per the owner's ruling (D42), the choice between two passes, token probabilities, and a hybrid is presented, not made.

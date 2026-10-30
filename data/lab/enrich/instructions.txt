@@ -1,0 +1,148 @@
+Tag the article against the DEBRIS schema.
+
+relevant: true only if the article concerns micro/nanoplastics (or plastic particles,
+or their leachates) in relation to a disease state, pathology, toxicity or pathway in
+humans, animals, tissue or cells. false for positron emission tomography, polymer
+chemistry or recycling, and analytical method development with no health endpoint.
+Wildlife surveys and trophic-transfer work (counting particles in whales, seabirds,
+fish or invertebrates, or tracing them up a food chain) are false; a controlled
+exposure experiment that measures pathology, oxidative stress, immune or genotoxic
+endpoints is true whatever the species. Also false for bulk polymer
+devices and implants (a Dacron or PET vascular graft, PVC tubing, PMMA cement,
+polypropylene mesh) where no particles, wear debris or leachate are studied; for
+exposure to monomers or additives alone (vinyl chloride, bisphenol A, phthalates)
+with no particle involvement; and for drugs that merely carry a polymer name
+(sodium polystyrene sulfonate). Particulate wear debris and degradation products
+shed from an implant are relevant. Particles used only as an inert tool are not:
+polystyrene beads as a phagocytosis tracer or a calibration standard, polystyrene
+spheres as a culture scaffold, a polymer used only to carry a drug. When relevant is false, use
+empty lists, disease_categories ["none"], size_class "unspecified", confidence as
+usual, and a one-line summary of what the paper is actually about.
+
+polymers: only polymers the study actually used or detected. mixed_unspecified when
+the study reports microplastics with no polymer identification.
+size_class: nano < 1 um, micro 1 um to 5 mm, mixed, unspecified.
+organ_systems and disease_categories: only what the article reports; ["none"] for
+disease_categories when no disease endpoint is reported.
+disease_terms: up to four free-text clinical terms as written in the article.
+pathways: mechanisms the article reports evidence for, not mechanisms it speculates about.
+model_type: the single strongest design in the article, and not_applicable when
+relevant is false.
+evidence_rungs: every rung the article itself supports. 1 detected in human tissue or
+fluid; 2 associated with an outcome in a human cohort; 3 reproduced in vivo in animals;
+4 mechanism in vitro or ex vivo; 5 dose-response demonstrated, only where the article
+reports more than one exposure level or states a dose or concentration dependent effect;
+6 effect reversible on particle removal or degradation. Reviews and meta-analyses: [].
+pet_specific: true only when PET (polyethylene terephthalate) is specifically studied
+or detected, not merely listed among polymers found in the environment.
+summary: at most 30 words, British English, no causal claim about humans (use
+detected, associated, implicated, reported).
+confidence: 0 to 1, your confidence in the whole tag.
+
+For model_type, pathways and polymers use the v2 rules below instead of the lines above,
+and add a tissues field under the v2 rules.
+
+Label four fields of a micro/nanoplastic health paper under the DEBRIS v2 rules.
+Read only what the record gives (title, journal, publication types, MeSH, abstract). Every
+value must be supported by the text; when the text does not say, leave it out.
+
+model_type: one value, the strongest design in the paper, by this order:
+  meta_analysis > review > human_cohort > human_tissue > animal_in_vivo > organoid > human_in_vitro > cell_line > cell_free > in_silico.
+  meta_analysis or review when the publication types or the abstract say the paper is one
+  (a review with a small experiment of its own is still a review). human_cohort: an
+  association between exposure and an outcome tested in people. human_tissue: particles
+  detected or measured in human tissue or fluid, with no outcome association.
+  animal_in_vivo: living animals exposed, any species. organoid: organoids or
+  organ-on-chip. human_in_vitro: primary human cells, explants or ex vivo human tissue.
+  cell_line: an immortalised or named line of any species (HepG2, Caco-2, A549, HUVEC
+  lines sold as lines, RAW264.7, BEAS-2B ...), and primary cells from animals.
+  in_silico: docking, simulation or modelling only.
+
+pathways: tag a mechanism only where the abstract reports an assay, a marker or a result
+  for it in this study (ROS, MDA, SOD for oxidative_stress; NLRP3 or IL-1b measured for
+  inflammasome_il1b; a measured cytokine panel or NF-kB activation for nfkb_cytokine ...).
+  A mechanism named as background, hypothesis or future work is not tagged. Reviews: [].
+  Values: oxidative_stress, inflammasome_il1b, nfkb_cytokine, endothelial_dysfunction, platelet_activation_thrombosis, fibrosis_tgfb, emt_migration, barrier_disruption, mitochondrial_dysfunction, apoptosis_ferroptosis, dysbiosis, dna_damage_genotoxicity, immune_dysregulation, leachate_chemical_toxicity, lipid_metabolism, er_stress_autophagy, endocrine_disruption, or other:<short_snake_case> for a measured mechanism with
+  no value above.
+
+polymers: every polymer the study used or detected, at the finest type the text states:
+  PA6 or PA66 when stated, PA when only polyamide or nylon is said; PBAT, PLA as stated.
+  mixed_unspecified when particles are reported with no polymer identified. Polymers only
+  listed as found in the environment, or in other studies, are not tagged.
+  Values: PET, PS, PE, PP, PVC, PA, PA6, PA66, PU, PMMA, PC, PLA, PBAT, PTFE, tyre_wear, mixed_unspecified, or other:<name>.
+
+tissues: the anatomical sites where this study measures particles or measures an effect,
+  in any species. Not sites named as background or as routes in general.
+  Values: blood, adrenal, thyroid, pancreas, brain, frontal_lobe, medulla_oblongata, kidney, liver, lung, spleen, stomach, intestine, small_intestine, myocardium, skeletal_muscle, adipose, testis, ovary, uterus.
+  brain or intestine when no region or segment is named; frontal_lobe, medulla_oblongata,
+  small_intestine only when named. heart muscle or heart tissue is myocardium. blood when
+  particles are measured in blood, plasma or serum, or blood cells are the subject; a serum
+  marker read for another organ (ALT for the liver) counts as that organ, not blood. Cells
+  count as the tissue they model when the abstract names it (hepatocytes = liver; lung
+  epithelial cells = lung). Sites outside these are other:<key>, using exactly these keys
+  where they fit: placenta, semen, colon, faeces, skin, artery, breast_milk, urine, bone_marrow, lymph_node, cerebrospinal_fluid, gill, hepatopancreas, gonad, blood_vessel, thrombus, nasal_cavity, sputum; otherwise other:<short_snake_case>.
+  Whole embryos or larvae, or behaviour, with no organ named give no tissue; an organ
+  measured inside them does (zebrafish larval brain = brain). A biodistribution study
+  lists the organs the abstract names as measured.
+  A paper with no anatomical site (an environmental survey, a pure cell-free assay) has [].
+
+v2.1 rulings (settled after the first pass, D40):
+- An abstract that plainly reports original data outranks a "Review" publication type.
+  Editorials, commentary and news count as review. Reviews take empty pathways, polymers
+  and tissues: a review measures nothing.
+- cell_free: laboratory work with no cells or organisms (sorption or desorption in
+  simulated fluids, surfactant films, purified proteins, particles released from products).
+  Ex vivo animal tissue and primary animal cells are cell_line.
+- A mechanism that was assayed counts whether or not the result was positive. Inflammation
+  with no named marker is not nfkb_cytokine. Transcriptomic enrichment counts as a result.
+- leachate_chemical_toxicity: chemicals released from or carried on the particles
+  (eluates, additives in the plastic, pre-contaminated particles), not an additive dosed
+  separately alongside them.
+- Haemolymph and haemocytes are blood. Heart rate or heartbeat counts as myocardium.
+  Neurotransmitter or acetylcholinesterase changes are other:neurotransmitter_disruption.
+
+
+v2.2 assay cues. Tag a pathway when the study itself measured one of these (a null result counts); the same words used only as background do not count:
+  oxidative_stress: ROS, MDA or lipid peroxidation, SOD, catalase, GSH or GPx, Nrf2 or HO-1
+  inflammasome_il1b: NLRP3, IL-1β, caspase-1, pyroptosis or GSDMD, IL-18
+  nfkb_cytokine: NF-κB, TNF-α, IL-6, IL-8, IFN-γ, IL-10, MCP-1, TLR4, a measured cytokine panel
+  endothelial_dysfunction: endothelial cells or function, eNOS, VCAM-1 or ICAM-1, vascular permeability
+  platelet_activation_thrombosis: platelet activation or aggregation, thrombus formation, coagulation times, fibrinogen
+  fibrosis_tgfb: fibrosis on histology, TGF-β, collagen deposition, α-SMA, Smad
+  emt_migration: EMT markers (E-cadherin, N-cadherin, vimentin), migration, invasion or wound-healing assays
+  barrier_disruption: tight junctions (ZO-1, occludin, claudin), intestinal or blood-brain barrier permeability, goblet cells or mucus
+  mitochondrial_dysfunction: mitochondrial membrane potential, oxygen consumption, ATP production, respiratory chain, mtDNA
+  apoptosis_ferroptosis: apoptosis (caspase-3, Bax or Bcl-2, TUNEL, annexin V), ferroptosis (GPX4)
+  dysbiosis: gut microbiota or microbiome composition, 16S sequencing
+  dna_damage_genotoxicity: comet assay, micronuclei, γ-H2AX, 8-OHdG, DNA strand breaks, chromosomal damage
+  immune_dysregulation: immune cell counts or function (macrophage polarisation, lymphocytes, T cells, neutrophils), immunoglobulins, lysozyme, complement, phagocytosis
+  leachate_chemical_toxicity: leachates or eluates of the particles, additives released from or carried on them
+  lipid_metabolism: triglycerides, total cholesterol, LDL or HDL, fatty acids, lipogenesis (SREBP, PPAR), steatosis or lipid droplets
+  er_stress_autophagy: ER stress (GRP78, CHOP, ATF4 or ATF6, PERK, IRE1), autophagy (LC3, Beclin-1, p62)
+  endocrine_disruption: sex hormones (testosterone, oestradiol, LH, FSH), steroidogenesis (StAR, 3β-HSD, 17β-HSD, CYP17, CYP19), thyroid hormones (T3, T4, TSH), cortisol or corticosterone, HPG or HPT axis genes, vitellogenin
+
+v2.3 rulings, model type and polymers:
+- human_cohort when particle levels or exposure are tested against an outcome or compared
+  between people grouped by disease: cases and controls, tumour against para-tumour tissue,
+  levels against disease severity or a clinical measure. Controlled human exposure
+  experiments and trials are human_cohort too. human_tissue when particles are only
+  detected or quantified, even in patients, or when a patient is described in passing.
+- human_in_vitro is primary human cells, explants or ex vivo human tissue only (PBMCs,
+  freshly isolated or donor cells, HPAEpiC). Every other cultured cell is cell_line: a named
+  or immortalised line of any species (THLE-2, BEAS-2B, A549, HepG2, Caco-2, THP-1,
+  RAW264.7, GC-2, TM3, EA.hy926, and commercial HUVEC), and primary cells or explants from
+  animals (rat cardiomyocytes, trout kidney cells, sheep placental cells). When a study uses
+  both a line and primary human cells, it is human_in_vitro by the order above.
+- The design is the strongest one the study itself ran. In vivo work mentioned as earlier
+  findings or as motivation does not make an in vitro study animal_in_vivo.
+- cell_free covers measured release, sorption or desorption in simulated fluids even when a
+  model then estimates intake from the measurements; in_silico is modelling with no
+  measurement of its own.
+- polymers: in a detection study, every polymer the study reports detecting, minor
+  fractions included. A study of plastic-related chemicals with no particles has [], not
+  mixed_unspecified; mixed_unspecified needs particles with no polymer identified.
+
+Return one JSON object per paper, one per line, nothing else:
+{"pmid":"...","relevant":true,"polymers":[],"size_class":"","organ_systems":[],
+"disease_categories":[],"disease_terms":[],"pathways":[],"model_type":"","tissues":[],
+"evidence_rungs":[],"pet_specific":false,"summary":"","confidence":0.0}

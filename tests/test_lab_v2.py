@@ -110,3 +110,12 @@ def test_rare_pathways_train_and_score_as_one_class():
     label = {"model_type": "cell_line", "pathways": ["other:x"], "polymers": [], "tissues": []}
     assert V.apply(tag, label, {"pathways_v2": True})["pathways"] == ["other_pathway"]
     assert "other_pathway" in V.vocabulary_block({"pathways_v2": True})
+
+
+def test_the_final_split_trains_on_every_lab_paper_and_holds_out_the_test_split():
+    from pipeline import lab
+
+    records, folds = lab.final_split()
+    test = lab.test_pmids()
+    assert {p for p, f in folds.items() if f == 0} == test
+    assert sum(1 for f in folds.values() if f == 1) == len(lab.canonical_records())

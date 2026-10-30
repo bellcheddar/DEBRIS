@@ -207,7 +207,10 @@ def build_data(cfg: dict, fold: int, records: list[dict], folds: dict[str, int],
     random.Random(FOLD_SEED + fold).shuffle(train_rows)
     out.mkdir(parents=True, exist_ok=True)
     c.jsonl_write(out / "train.jsonl", [chat_row(r, switches) for r in train_rows])
-    c.jsonl_write(out / "valid.jsonl", [chat_row(r, switches) for r in held_out[:VALID_ROWS]])
+    # The final arm's held-out fold is the test split, which must not even be looked at
+    # during training, so its validation-loss rows come from the training papers.
+    valid = train_rows[:VALID_ROWS] if cfg.get("final") else held_out[:VALID_ROWS]
+    c.jsonl_write(out / "valid.jsonl", [chat_row(r, switches) for r in valid])
 
 
 def train_unit(cfg: dict, fold: int, seed: int, records: list[dict],
@@ -361,13 +364,47 @@ def log_unit(cfg: dict, fold: int, seed: int, scored: dict[int, dict]) -> None:
         c.log(f"lab wandb: {type(exc).__name__}: {exc}")
 
 
+def final_split() -> tuple[list[dict], dict[str, int]]:
+    """Phase 5: every cross-validation paper trains, and the frozen test split is the one
+    held-out fold (fold 0). Scored once, at one checkpoint fixed before the run."""
+    records = canonical_records()
+    test = list(c.jsonl_read(c.TRAIN / "test_meta.jsonl"))
+    return records + test, {**{r["pmid"]: 1 for r in records}, **{r["pmid"]: 0 for r in test}}
+
+
+def import_predictions(cfg: dict) -> None:
+    """A production round's saved test predictions as a lab unit, scored against the same
+    gold as the lab's final arm, so the two pair paper by paper without retraining it."""
+    out = unit_dir(cfg["name"], 0, 42) / f"pred-{cfg['iters']}.jsonl"
+    if out.exists():
+        return
+    test = {r["pmid"]: r for r in c.jsonl_read(c.TRAIN / "test_meta.jsonl")}
+    rows = [{"pmid": r["pmid"], "gold": gold_for(test[r["pmid"]], cfg), "pred": r["pred"],
+             "parsed": r.get("parsed", True), "problems": r.get("problems", [])}
+            for r in c.jsonl_read(c.ROOT / cfg["predictions"])]
+    out.parent.mkdir(parents=True, exist_ok=True)
+    c.jsonl_write(out, rows)
+    metrics = production.field_metrics([(r["gold"], r["pred"]) for r in rows])
+    if cfg.get("gold") == "v2":
+        metrics.update(lab_v2.metrics([(r["gold"], r["pred"]) for r in rows]))
+    c.manifest_write("lab", {"experiment": cfg["name"], "fold": 0, "seed": 42, "stage": "scored",
+                             "iter": cfg["iters"], "n": len(rows), "metrics": metrics, "at": c.now()})
+    c.log(f"lab {cfg['name']}: imported {len(rows)} predictions from {cfg['predictions']}")
+
+
 def run_experiment(name: str) -> None:
     cfg = load_config(name)
     if cfg.get("reuse"):
         c.log(f"lab {name}: reuses {cfg['reuse']}, nothing to train")
         return
-    records = canonical_records()
-    folds = assign_folds(records)
+    if cfg.get("predictions"):
+        import_predictions(cfg)
+        return
+    if cfg.get("final"):
+        records, folds = final_split()
+    else:
+        records = canonical_records()
+        folds = assign_folds(records)
     experiment_round(cfg)
     for fold in cfg["folds"]:
         for seed in cfg["seeds"]:

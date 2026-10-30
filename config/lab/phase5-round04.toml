@@ -1,0 +1,8 @@
+description = "Phase 5 reference: round 04 (3B, 32 layers, 1600 iterations, the v1 recipe), its saved test predictions scored on v2 test gold"
+model = "Qwen/Qwen2.5-3B-Instruct"
+num_layers = 32
+iters = 1600
+folds = [0]
+seeds = [42]
+gold = "v2"
+predictions = "data/adapters/debris_v1_32layer1600/predictions_fused.jsonl"

@@ -511,3 +511,9 @@
 - 2026-10-30 17:36 ceiling v2: 81 second labels in 36.1 min
 - 2026-10-30 17:36 v2.3 ceiling done (pathways 0.684, polymers 1.000, model type 0.877, tissues 0.821; all within noise of v2.1). Supervisor ALL DONE. D49.
 - 2026-10-30 18:05 owner's rulings D50 applied: all four v2 definitions, v2.3 rules official, unfused weights, rare pathways grouped. 159 tests pass.
+- 2026-10-30 18:31 lab queue: 1 experiments, 1 at a time, 96.8 GB each (24.2 GB cache)
+- 2026-10-30 18:31 lab queue: started phase2-all
+- 2026-10-30 18:31 lab phase2-all f0 s42: training 600 iterations
+- 2026-10-30 18:31 train: /Users/dellboy/Documents/Vibe_Coding/debris/.pixi/envs/default/bin/python /Users/dellboy/Documents/Vibe_Coding/debris/pipeline/mlx_capped.py mlx_lm.lora --model Qwen/Qwen2.5-1.5B-Instruct --train ...
+- 2026-10-30 18:37 lab phase5-round04: imported 162 predictions from data/adapters/debris_v1_32layer1600/predictions_fused.jsonl
+- 2026-10-30 18:37 D51: phase2-all running; Phase 3b moot; Phase 5 (3B final on test, against round 04) queued behind it.

@@ -1,0 +1,17 @@
+description = "Phase 5 confirmation: the adopted recipe (D50) on the 3B as round 04 was trained, all 1,438 papers, scored once on the frozen test split"
+model = "Qwen/Qwen2.5-3B-Instruct"
+num_layers = 32
+iters = 1600
+save_every = 400
+folds = [0]
+seeds = [42]
+gold = "v2"
+final = true
+compare_to = "phase5-round04"
+
+[switches]
+mask_prompt = true
+model_type_v2 = true
+pathways_v2 = true
+polymers_v2 = true
+tissues = true

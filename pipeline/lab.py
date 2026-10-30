@@ -139,7 +139,19 @@ def v2_label(pmid: str) -> dict | None:
     global _V2_LABELS
     if _V2_LABELS is None:
         _V2_LABELS = lab_v2.labels()
+        # Phase 3a papers carry their own v2 labels; they never collide with the lab's.
+        enrich = c.DATA / "lab" / "enrich" / "labels_v2.jsonl"
+        if enrich.exists():
+            _V2_LABELS = {**{r["pmid"]: r for r in c.jsonl_read(enrich)}, **_V2_LABELS}
     return _V2_LABELS.get(pmid)
+
+
+def enrich_records() -> list[dict]:
+    """Phase 3a: the extra labelled papers, which only ever train (pipeline/enrich.py)."""
+    path = c.DATA / "lab" / "enrich" / "records.jsonl"
+    if not path.exists():
+        raise SystemExit("no enrichment labels: run `pixi run python pipeline/enrich.py merge`")
+    return list(c.jsonl_read(path))
 
 
 def gold_for(record: dict, cfg: dict) -> dict:
@@ -203,6 +215,8 @@ def build_data(cfg: dict, fold: int, records: list[dict], folds: dict[str, int],
                out: Path) -> None:
     switches = cfg["switches"]
     train_rows = [r for r in records if folds[r["pmid"]] != fold]
+    if switches.get("enrich"):
+        train_rows += enrich_records()
     held_out = sorted((r for r in records if folds[r["pmid"]] == fold), key=lambda r: r["pmid"])
     random.Random(FOLD_SEED + fold).shuffle(train_rows)
     out.mkdir(parents=True, exist_ok=True)

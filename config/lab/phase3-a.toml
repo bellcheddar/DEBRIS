@@ -1,0 +1,14 @@
+description = "Phase 3a: the adopted recipe plus about 300 papers aimed at the sparse tissues, human studies, PET and rare mechanisms; training only"
+iters = 600
+folds = [0, 1, 2]
+seeds = [42]
+gold = "v2"
+compare_to = "phase2-all"
+
+[switches]
+mask_prompt = true
+model_type_v2 = true
+pathways_v2 = true
+polymers_v2 = true
+tissues = true
+enrich = true

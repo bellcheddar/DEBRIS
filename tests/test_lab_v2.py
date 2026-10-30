@@ -119,3 +119,16 @@ def test_the_final_split_trains_on_every_lab_paper_and_holds_out_the_test_split(
     test = lab.test_pmids()
     assert {p for p, f in folds.items() if f == 0} == test
     assert sum(1 for f in folds.values() if f == 1) == len(lab.canonical_records())
+
+
+def test_enrichment_papers_only_ever_train(tmp_path, monkeypatch):
+    from pipeline import lab
+
+    extra = [{"pmid": "e1", "paper": {"title": "t"}, "tag": {"relevant": False}}]
+    monkeypatch.setattr(lab, "enrich_records", lambda: extra)
+    monkeypatch.setattr(lab, "chat_row", lambda r, s: {"pmid": r["pmid"]})
+    records = [{"pmid": "a"}, {"pmid": "b"}]
+    lab.build_data({"switches": {"enrich": True}}, 0, records, {"a": 0, "b": 1}, tmp_path)
+    train = [r["pmid"] for r in lab.c.jsonl_read(tmp_path / "train.jsonl")]
+    valid = [r["pmid"] for r in lab.c.jsonl_read(tmp_path / "valid.jsonl")]
+    assert sorted(train) == ["b", "e1"] and valid == ["a"]

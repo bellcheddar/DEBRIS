@@ -175,3 +175,11 @@ urine = "renal"                         # 6
 bone_marrow = "hematologic"             # 4
 lymph_node = "immune"
 cerebrospinal_fluid = "neurological"
+# v2.1 (D40): sites the labellers met repeatedly, mostly in fish and invertebrates.
+gill = "respiratory"
+hepatopancreas = "hepatic"
+gonad = "reproductive_placental"
+blood_vessel = "cardiovascular"
+thrombus = "cardiovascular"
+nasal_cavity = "respiratory"
+sputum = "respiratory"

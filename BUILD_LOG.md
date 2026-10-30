@@ -272,3 +272,6 @@
 - 2026-10-29 22:05 lab phase1-c2 f0 s42: training 600 iterations
 - 2026-10-29 22:05 train: /Users/dellboy/Documents/Vibe_Coding/debris/.pixi/envs/default/bin/python /Users/dellboy/Documents/Vibe_Coding/debris/pipeline/mlx_capped.py mlx_lm.lora --model Qwen/Qwen2.5-1.5B-Instruct --train ...
 - 2026-10-29 22:06 labels v2: roster from Liu et al. in config/vocab_v2.toml; 868 papers exported in 10 batches; labelling started (D39)
+- 2026-10-29 22:08 labels v2: merged 868 labels, 30 second readings of 30 repeated papers
+- 2026-10-29 22:10 labels v2: merged 868 labels, 30 second readings of 30 repeated papers
+- 2026-10-29 22:10 labels v2: 868 merged, v2.1 rulings and 18 overrides; self-agreement mt 0.967, pathways 0.919, polymers 1.0, tissues 0.949 (D40)

@@ -13,7 +13,8 @@ each, so the session's agreement with itself is measured too.
 
   pixi run python pipeline/labels_v2.py export     # data/lab/labels_v2/batches/bNN.jsonl
   pixi run python pipeline/labels_v2.py check      # validates data/lab/labels_v2/out/bNN.jsonl
-  pixi run python pipeline/labels_v2.py merge      # data/lab/labels_v2/labels.jsonl
+  pixi run python pipeline/labels_v2.py merge      # data/lab/labels_v2/labels.jsonl, with the
+                                                 # v2.1 rulings and overrides.jsonl applied
 """
 from __future__ import annotations
 
@@ -45,7 +46,23 @@ PROMOTED_PATHWAYS = ["lipid_metabolism", "er_stress_autophagy", "endocrine_disru
 PATHWAYS = list(V1["pathways"]) + PROMOTED_PATHWAYS
 OTHER_TISSUES = list(V2["other_tissue_system"])
 DESIGN_ORDER = ["meta_analysis", "review", "human_cohort", "human_tissue", "animal_in_vivo",
-                "organoid", "human_in_vitro", "cell_line", "in_silico"]
+                "organoid", "human_in_vitro", "cell_line", "cell_free", "in_silico"]
+# v2 adds cell_free (D40): laboratory work with no cells or organisms (sorption, surfactant
+# films, protein assays, particles released from products), which no v1 value fits.
+MODEL_TYPES = [m for m in V1["model_types"] if m != "not_applicable"] + ["cell_free", "not_applicable"]
+OVERRIDES = HOME / "overrides.jsonl"
+
+# v2.1 spellings (D40): what the ten labellers wrote for the same thing, mapped to one key.
+NORMALISE = {
+    "tissues": {"other:gills": "other:gill", "other:digestive_gland": "other:hepatopancreas",
+                "other:hemolymph": "blood", "other:haemolymph": "blood",
+                "other:head_kidney": "kidney", "other:umbilical_vein": "other:blood_vessel",
+                "other:retina": "other:eye"},
+    "pathways": {"other:acetylcholinesterase_inhibition": "other:neurotransmitter_disruption",
+                 "other:cholinergic_disruption": "other:neurotransmitter_disruption",
+                 "other:neurotransmission": "other:neurotransmitter_disruption",
+                 "other:neurotoxicity": "other:neurotransmitter_disruption"},
+}
 
 INSTRUCTIONS = f"""Label four fields of a micro/nanoplastic health paper under the DEBRIS v2 rules.
 Read only what the record gives (title, journal, publication types, MeSH, abstract). Every
@@ -90,6 +107,21 @@ tissues: the anatomical sites where this study measures particles or measures an
   measured inside them does (zebrafish larval brain = brain). A biodistribution study
   lists the organs the abstract names as measured.
   A paper with no anatomical site (an environmental survey, a pure cell-free assay) has [].
+
+v2.1 rulings (settled after the first pass, D40):
+- An abstract that plainly reports original data outranks a "Review" publication type.
+  Editorials, commentary and news count as review. Reviews take empty pathways, polymers
+  and tissues: a review measures nothing.
+- cell_free: laboratory work with no cells or organisms (sorption or desorption in
+  simulated fluids, surfactant films, purified proteins, particles released from products).
+  Ex vivo animal tissue and primary animal cells are cell_line.
+- A mechanism that was assayed counts whether or not the result was positive. Inflammation
+  with no named marker is not nfkb_cytokine. Transcriptomic enrichment counts as a result.
+- leachate_chemical_toxicity: chemicals released from or carried on the particles
+  (eluates, additives in the plastic, pre-contaminated particles), not an additive dosed
+  separately alongside them.
+- Haemolymph and haemocytes are blood. Heart rate or heartbeat counts as myocardium.
+  Neurotransmitter or acetylcholinesterase changes are other:neurotransmitter_disruption.
 
 Return one JSON object per paper, one per line, nothing else:
 {{"pmid":"...","model_type":"...","pathways":[],"polymers":[],"tissues":[]}}"""
@@ -152,7 +184,7 @@ def clean(row: dict) -> tuple[dict, list[str]]:
     problems = []
     out = {"pmid": str(row.get("pmid", ""))}
     mt = row.get("model_type")
-    out["model_type"] = mt if mt in V1["model_types"] else None
+    out["model_type"] = mt if mt in MODEL_TYPES else None
     if out["model_type"] is None:
         problems.append(f"model_type {mt!r}")
     spec = {"pathways": (PATHWAYS, V1.get("synonyms", {}).get("pathways", {})),
@@ -172,6 +204,17 @@ def clean(row: dict) -> tuple[dict, list[str]]:
                 kept.append(canon)
         out[field] = kept
     return out, problems
+
+
+def normalise(row: dict) -> dict:
+    """The v2.1 rulings that need no rereading: one spelling per site and mechanism, and
+    reviews measure nothing."""
+    row = dict(row)
+    for field, table in NORMALISE.items():
+        row[field] = list(dict.fromkeys(table.get(v, v) for v in row.get(field) or []))
+    if row.get("model_type") == "review":
+        row["pathways"], row["polymers"], row["tissues"] = [], [], []
+    return row
 
 
 def check() -> dict:
@@ -199,13 +242,18 @@ def merge() -> None:
     second: list[dict] = []
     for path in sorted(OUT.glob("b*.jsonl")):
         for row in c.jsonl_read(path):
-            label, problems = clean(row)
+            label, problems = clean(normalise(row))
             label["batch"] = path.stem
             label["problems"] = problems
             if label["pmid"] in seen:
                 second.append(label)
             else:
                 seen[label["pmid"]] = label
+    overrides = {r["pmid"]: r for r in c.jsonl_read(OVERRIDES)} if OVERRIDES.exists() else {}
+    for pmid, row in overrides.items():
+        label, problems = clean(normalise(row))
+        seen[pmid] = {**label, "batch": "override", "reason": row.get("reason", ""),
+                      "problems": problems}
     c.jsonl_write(LABELS, [seen[k] for k in sorted(seen)])
     c.jsonl_write(HOME / "second_reading.jsonl", sorted(second, key=lambda r: r["pmid"]))
     c.log(f"labels v2: merged {len(seen)} labels, {len(second)} second readings of "

@@ -1,0 +1,18 @@
+{"pmid":"41580100","model_type":"animal_in_vivo","pathways":["oxidative_stress","immune_dysregulation"],"polymers":["PS"],"tissues":["liver","other:gill"],"reason":"Review type, primary fish exposure"}
+{"pmid":"35504440","model_type":"animal_in_vivo","pathways":["apoptosis_ferroptosis","oxidative_stress","immune_dysregulation"],"polymers":["PS"],"tissues":["myocardium"],"reason":"Review type, primary carp exposure"}
+{"pmid":"33395930","model_type":"human_tissue","pathways":[],"polymers":["PP"],"tissues":["other:placenta"],"reason":"Review type, primary detection in six placentas"}
+{"pmid":"42822122","model_type":"animal_in_vivo","pathways":["lipid_metabolism","er_stress_autophagy"],"polymers":["PS"],"tissues":["liver"],"reason":"DEHP dosed separately: not leachate"}
+{"pmid":"40819401","model_type":"animal_in_vivo","pathways":["oxidative_stress","apoptosis_ferroptosis"],"polymers":["PS"],"tissues":["myocardium"],"reason":"DEHP dosed separately: not leachate"}
+{"pmid":"36423728","model_type":"animal_in_vivo","pathways":["oxidative_stress","er_stress_autophagy","mitochondrial_dysfunction"],"polymers":["PS"],"tissues":["kidney"],"reason":"DEHP dosed separately: not leachate"}
+{"pmid": "30227286", "pathways": [], "polymers": ["PE"], "tissues": [], "model_type": "cell_free", "reason": "no cells or organisms: cell_free (v2.1)"}
+{"pmid": "33691242", "pathways": ["other:protein_fibrillation"], "polymers": ["PS"], "tissues": [], "model_type": "cell_free", "reason": "no cells or organisms: cell_free (v2.1)"}
+{"pmid": "34581385", "pathways": [], "polymers": ["PE", "PP", "PS"], "tissues": [], "model_type": "cell_free", "reason": "no cells or organisms: cell_free (v2.1)"}
+{"pmid": "35964535", "pathways": [], "polymers": ["PE", "PP", "PS"], "tissues": [], "model_type": "cell_free", "reason": "no cells or organisms: cell_free (v2.1)"}
+{"pmid": "37652241", "pathways": [], "polymers": ["PS"], "tissues": [], "model_type": "cell_free", "reason": "no cells or organisms: cell_free (v2.1)"}
+{"pmid": "37703772", "pathways": [], "polymers": ["PP"], "tissues": [], "model_type": "cell_free", "reason": "no cells or organisms: cell_free (v2.1)"}
+{"pmid": "38077139", "pathways": [], "polymers": ["PVC"], "tissues": [], "model_type": "cell_free", "reason": "no cells or organisms: cell_free (v2.1)"}
+{"pmid": "40505392", "pathways": ["other:surfactant_dysfunction"], "polymers": ["PP"], "tissues": [], "model_type": "cell_free", "reason": "no cells or organisms: cell_free (v2.1)"}
+{"pmid": "38043900", "pathways": ["oxidative_stress"], "polymers": ["mixed_unspecified"], "tissues": [], "model_type": "cell_free", "reason": "no cells or organisms: cell_free (v2.1)"}
+{"pmid": "35236033", "pathways": ["oxidative_stress", "other:surfactant_disruption"], "polymers": ["PS"], "tissues": [], "model_type": "cell_free", "reason": "no cells or organisms: cell_free (v2.1)"}
+{"pmid": "36931485", "pathways": ["platelet_activation_thrombosis"], "polymers": ["PS"], "tissues": [], "model_type": "cell_free", "reason": "no cells or organisms: cell_free (v2.1)"}
+{"pmid": "41996166", "model_type": "animal_in_vivo", "pathways": ["mitochondrial_dysfunction", "apoptosis_ferroptosis", "oxidative_stress", "barrier_disruption", "dysbiosis", "leachate_chemical_toxicity", "other:neurotransmitter_disruption"], "polymers": ["PET", "tyre_wear"], "tissues": ["liver", "brain", "intestine"], "reason": "worked example: serotonergic, cholinergic, dopaminergic, GABAergic pathways reported"}

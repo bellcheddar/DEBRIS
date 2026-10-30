@@ -945,3 +945,41 @@ been committed and pushed, because nothing ignored them. They are now untracked 
 together with all lab adapters, checkpoint copies, training data and the benchmark runs.
 They remain in git history. Removing them would mean rewriting pushed history, which is
 left to the owner.
+
+## D40 The v2 labels: 868 papers, the v2.1 rulings, and the session's agreement with itself
+
+Ten subagents labelled the ten batches, 898 readings in all (868 papers plus 30 read twice).
+Every batch passed `labels_v2.py check` with no unknown values. One agent's final message
+was cut off by an API safeguard error after its file was already written and checked.
+
+Each agent reported the cases the rules left open. Several came up in nearly every batch,
+and they are settled as v2.1, written into the instructions so the 32B ceiling run uses them:
+- **A plainly primary abstract outranks a "Review" publication type.** Three papers were
+  relabelled by hand: 41580100, 35504440, and 33395930 (Plasticenta, now human_tissue).
+- **Reviews (including editorials and news) take empty pathways, polymers and tissues.**
+  The batches had split on whether a review's focal organ counts.
+- **A new model type, `cell_free`,** for laboratory work with no cells or organisms: sorption
+  in simulated fluids, surfactant films, purified fibrinogen, particles released from
+  infusion products. That is 11 papers, which had been forced into in_silico, cell_line or
+  human_in_vitro. Ex vivo animal tissue and primary animal cells stay `cell_line`.
+- **A pathway that was assayed counts, null or not.** Every batch had already read it that
+  way, and a model cannot tell a null from a positive reliably in a 400-token answer anyway.
+- **`leachate_chemical_toxicity` covers chemicals released from or carried on the
+  particles,** not an additive dosed separately. The tag was removed from three DEHP
+  co-exposure papers.
+- **One spelling each.** Haemolymph and haemocytes are blood. Digestive gland becomes
+  hepatopancreas, head kidney becomes kidney, and umbilical vein becomes blood vessel. Four
+  spellings of neurotransmitter or acetylcholinesterase effects become
+  `other:neurotransmitter_disruption`, which also went into the worked example that had
+  left it out. Gill, hepatopancreas, gonad, blood vessel, thrombus, nasal cavity and sputum
+  get organ systems.
+
+Two inconsistencies are left as noise because fixing them would mean rereading the corpus.
+Some batches counted a cohort's outcome organ (cancer site) as a tissue and others did not.
+The same split applied to systemic serum markers counting as blood. Both are rare.
+
+Agreement on the 30 papers read twice, after the rulings: model type 0.967, pathways F1
+0.919, polymers 1.000, tissues 0.949. Under the v1 rules, an independent reader reached 0.45
+on pathways and 0.57 on organ systems. The comparison flatters v2, because both readings
+come from the same model family under the same rules. The 32B ceiling under v2.1, run after
+Phase 1, is the like-for-like figure.

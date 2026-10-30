@@ -44,32 +44,6 @@ SAMPLE = HOME / "sample.json"
 LABELS = HOME / "qwen32b.jsonl"
 LABELS_V2 = HOME / "qwen32b_v2.jsonl"
 RULES = {"v2.1": LABELS_V2, "v2.2": HOME / "qwen32b_v2_2.jsonl", "v2.3": HOME / "qwen32b_v2_3.jsonl"}
-# v2.3 (D48): the model-type and polymer boundaries the v2.1 ceiling disagreed on, written
-# as the gold already applies them. Kept here until Phase 2 releases labels_v2.py.
-V2_3_RULINGS = """
-
-v2.3 rulings, model type and polymers:
-- human_cohort when particle levels or exposure are tested against an outcome or compared
-  between people grouped by disease: cases and controls, tumour against para-tumour tissue,
-  levels against disease severity or a clinical measure. Controlled human exposure
-  experiments and trials are human_cohort too. human_tissue when particles are only
-  detected or quantified, even in patients, or when a patient is described in passing.
-- human_in_vitro is primary human cells, explants or ex vivo human tissue only (PBMCs,
-  freshly isolated or donor cells, HPAEpiC). Every other cultured cell is cell_line: a named
-  or immortalised line of any species (THLE-2, BEAS-2B, A549, HepG2, Caco-2, THP-1,
-  RAW264.7, GC-2, TM3, EA.hy926, and commercial HUVEC), and primary cells or explants from
-  animals (rat cardiomyocytes, trout kidney cells, sheep placental cells). When a study uses
-  both a line and primary human cells, it is human_in_vitro by the order above.
-- The design is the strongest one the study itself ran. In vivo work mentioned as earlier
-  findings or as motivation does not make an in vitro study animal_in_vivo.
-- cell_free covers measured release, sorption or desorption in simulated fluids even when a
-  model then estimates intake from the measurements; in_silico is modelling with no
-  measurement of its own.
-- polymers: in a detection study, every polymer the study reports detecting, minor
-  fractions included. A study of plastic-related chemicals with no particles has [], not
-  mixed_unspecified; mixed_unspecified needs particles with no polymer identified.
-"""
-MARKERS = c.ROOT / "config" / "pathway_markers.toml"
 V2_LISTS = ("pathways", "polymers", "tissues")
 
 
@@ -156,21 +130,11 @@ def summary() -> dict | None:
 
 # ---------------------------------------------------------------- v2 rules (Phase 2)
 
-def cue_block() -> str:
-    """The v2.2 addition: the assays and markers that count as evidence for each pathway."""
-    import tomllib
-
-    table = tomllib.loads(MARKERS.read_text())["cues"]
-    return ("\n\nv2.2 assay cues. Tag a pathway when the study itself measured one of these "
-            "(a null result counts); the same words used only as background do not count:\n"
-            + "\n".join(f"  {k}: {v}" for k, v in table.items()))
-
-
 def instructions(rules: str) -> str:
     from pipeline import labels_v2 as L
 
-    return (L.INSTRUCTIONS + (cue_block() if rules in ("v2.2", "v2.3") else "")
-            + (V2_3_RULINGS if rules == "v2.3" else ""))
+    return (L.BASE_INSTRUCTIONS + (L.cue_block() if rules in ("v2.2", "v2.3") else "")
+            + (L.V2_3_RULINGS if rules == "v2.3" else ""))
 
 
 def open_fields(raw: dict | None) -> dict:

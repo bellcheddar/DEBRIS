@@ -42,6 +42,8 @@ BATCH = 90
 OVERLAP = 30
 SEED = 39
 FIELDS = ("model_type", "pathways", "polymers", "tissues")
+# Open fields: a bare name outside the vocabulary is the labeller's other:<name> (D47, D50).
+OPEN = ("pathways", "tissues")
 PROMOTED_PATHWAYS = ["lipid_metabolism", "er_stress_autophagy", "endocrine_disruption"]
 PATHWAYS = list(V1["pathways"]) + PROMOTED_PATHWAYS
 OTHER_TISSUES = list(V2["other_tissue_system"])
@@ -64,7 +66,7 @@ NORMALISE = {
                  "other:neurotoxicity": "other:neurotransmitter_disruption"},
 }
 
-INSTRUCTIONS = f"""Label four fields of a micro/nanoplastic health paper under the DEBRIS v2 rules.
+BASE_INSTRUCTIONS = f"""Label four fields of a micro/nanoplastic health paper under the DEBRIS v2 rules.
 Read only what the record gives (title, journal, publication types, MeSH, abstract). Every
 value must be supported by the text; when the text does not say, leave it out.
 
@@ -125,6 +127,54 @@ v2.1 rulings (settled after the first pass, D40):
 
 Return one JSON object per paper, one per line, nothing else:
 {{"pmid":"...","model_type":"...","pathways":[],"polymers":[],"tissues":[]}}"""
+
+# v2.3 (D48, adopted by the owner D50): the model-type and polymer boundaries the v2.1
+# ceiling disagreed on, written as the gold already applies them.
+V2_3_RULINGS = """
+
+v2.3 rulings, model type and polymers:
+- human_cohort when particle levels or exposure are tested against an outcome or compared
+  between people grouped by disease: cases and controls, tumour against para-tumour tissue,
+  levels against disease severity or a clinical measure. Controlled human exposure
+  experiments and trials are human_cohort too. human_tissue when particles are only
+  detected or quantified, even in patients, or when a patient is described in passing.
+- human_in_vitro is primary human cells, explants or ex vivo human tissue only (PBMCs,
+  freshly isolated or donor cells, HPAEpiC). Every other cultured cell is cell_line: a named
+  or immortalised line of any species (THLE-2, BEAS-2B, A549, HepG2, Caco-2, THP-1,
+  RAW264.7, GC-2, TM3, EA.hy926, and commercial HUVEC), and primary cells or explants from
+  animals (rat cardiomyocytes, trout kidney cells, sheep placental cells). When a study uses
+  both a line and primary human cells, it is human_in_vitro by the order above.
+- The design is the strongest one the study itself ran. In vivo work mentioned as earlier
+  findings or as motivation does not make an in vitro study animal_in_vivo.
+- cell_free covers measured release, sorption or desorption in simulated fluids even when a
+  model then estimates intake from the measurements; in_silico is modelling with no
+  measurement of its own.
+- polymers: in a detection study, every polymer the study reports detecting, minor
+  fractions included. A study of plastic-related chemicals with no particles has [], not
+  mixed_unspecified; mixed_unspecified needs particles with no polymer identified.
+"""
+MARKERS = c.ROOT / "config" / "pathway_markers.toml"
+
+
+def cue_block() -> str:
+    """The v2.2 addition: the assays and markers that count as evidence for each pathway."""
+    table = tomllib.loads(MARKERS.read_text())["cues"]
+    return ("\n\nv2.2 assay cues. Tag a pathway when the study itself measured one of these "
+            "(a null result counts); the same words used only as background do not count:\n"
+            + "\n".join(f"  {k}: {v}" for k, v in table.items()))
+
+
+# The official rules (owner, D50): v2.1 with the v2.2 assay cues and the v2.3 rulings.
+INSTRUCTIONS = BASE_INSTRUCTIONS + cue_block() + V2_3_RULINGS
+
+# Rare pathways (owner, D50): every other:<name> pathway counts as one class for training
+# and scoring; the specific name stays in labels.jsonl as the note.
+OTHER_PATHWAY = "other_pathway"
+
+
+def group_pathways(values) -> list[str]:
+    return list(dict.fromkeys(OTHER_PATHWAY if v.startswith("other:") else v for v in values or []))
+
 
 
 def view(paper: dict) -> str:
@@ -199,7 +249,12 @@ def clean(row: dict) -> tuple[dict, list[str]]:
             values = []
         kept = []
         for v in values:
-            canon = canonical(v, allowed, synonyms)
+            if field == "pathways" and v == OTHER_PATHWAY:
+                canon = OTHER_PATHWAY
+            else:
+                canon = canonical(v, allowed, synonyms)
+            if canon is None and field in OPEN and isinstance(v, str) and _key(v):
+                canon = "other:" + _key(v)
             if canon is None:
                 problems.append(f"{field} {v!r}")
             elif canon not in kept:

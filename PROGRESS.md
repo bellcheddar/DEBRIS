@@ -90,5 +90,6 @@ Open gates: none.
 - [x] Phase 1: A (mask the prompt) adopted, +0.034 floor mean [+0.026, +0.043]; B and C no effect; D (drop confidence) rejected, harms relevant (D43)
 - [x] Phase 2 roster from Liu et al.: `config/vocab_v2.toml` (D39)
 - [x] Phase 2 relabelling: 868 papers, v2.1 rulings, self-agreement 0.92 to 1.0 (D40)
-- [ ] Tag bench (D42), then transfer check on the 3B, 32B v2 ceiling, Phase 2 (5 arms by 3 folds), chained (D44)
-- [ ] Phase 2 runs, Phase 3 enrichment, Phase 4, Phase 5 confirmation
+- [x] Tag bench (D42, D45), transfer check on the 3B, 32B v2 ceiling (D47), batched tagger verified against gold (D46, D49)
+- [x] Phase 2 runs, 5 arms by 3 folds; v2.3 ceiling (D49); owner's rulings applied (D50)
+- [ ] Phase 3 enrichment, Phase 4, Phase 5 confirmation and retrain on the adopted recipe, full corpus tagging (about 3.5 h)

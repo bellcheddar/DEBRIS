@@ -80,7 +80,6 @@ def test_ceiling_reads_bare_open_values_as_other_and_recovers_old_rows():
     assert raw["pathways"] == ["lipid_metabolism", "other:odd_one"]
     row = {"pred": {"tissues": ["liver"], "pathways": []}, "problems": ["tissues 'gills'"]}
     assert C.recovered(row)["pred"]["tissues"] == ["liver", "other:gill"]
-    assert "lipid_metabolism: triglycerides" in C.cue_block()
 
 
 def test_v2_3_instructions_stack_on_v2_2():
@@ -89,3 +88,25 @@ def test_v2_3_instructions_stack_on_v2_2():
     assert "v2.2 assay cues" in C.instructions("v2.3") and "v2.3 rulings" in C.instructions("v2.3")
     assert "v2.3 rulings" not in C.instructions("v2.2")
     assert "v2.2 assay cues" not in C.instructions("v2.1")
+
+
+def test_the_official_rules_are_v2_3_and_open_fields_keep_bare_names():
+    from pipeline import labels_v2 as L
+
+    assert "lipid_metabolism: triglycerides" in L.cue_block()
+    assert L.INSTRUCTIONS.startswith(L.BASE_INSTRUCTIONS)
+    assert "v2.2 assay cues" in L.INSTRUCTIONS and "v2.3 rulings" in L.INSTRUCTIONS
+    row, problems = L.clean({"pmid": "1", "model_type": "cell_line", "polymers": [],
+                             "tissues": ["gill", "liver"], "pathways": ["odd one", "other_pathway"]})
+    assert row["tissues"] == ["other:gill", "liver"]
+    assert row["pathways"] == ["other:odd_one", "other_pathway"] and not problems
+
+
+def test_rare_pathways_train_and_score_as_one_class():
+    from pipeline import labels_v2 as L
+
+    assert L.group_pathways(["oxidative_stress", "other:a", "other:b"]) == ["oxidative_stress", "other_pathway"]
+    tag = {"relevant": True, "pathways": [], "polymers": [], "model_type": "cell_line", "evidence_rungs": [3]}
+    label = {"model_type": "cell_line", "pathways": ["other:x"], "polymers": [], "tissues": []}
+    assert V.apply(tag, label, {"pathways_v2": True})["pathways"] == ["other_pathway"]
+    assert "other_pathway" in V.vocabulary_block({"pathways_v2": True})

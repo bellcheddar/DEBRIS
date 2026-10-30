@@ -2,7 +2,8 @@
 
 Four switches, each replacing one field of the v1 gold with its v2 label (D39, D40):
   model_type_v2  2a  the explicit design order, and cell_free
-  pathways_v2    2b  measured in this study, the three promoted values
+  pathways_v2    2b  measured in this study, the three promoted values; every other:
+                     pathway trains and scores as one other_pathway class (D50)
   polymers_v2    2c  the finest stated type, PA6 and PA66 under PA, PBAT
   tissues        2d  a new field from Liu et al.'s 18, with organ systems derived from it
 
@@ -52,7 +53,7 @@ def apply(tag: dict, label: dict | None, switches: dict) -> dict:
     if switches.get("model_type_v2"):
         out["model_type"] = v2["model_type"]
     if switches.get("pathways_v2"):
-        out["pathways"] = list(v2["pathways"])
+        out["pathways"] = L.group_pathways(v2["pathways"])
     if switches.get("polymers_v2"):
         out["polymers"] = list(v2["polymers"])
     if switches.get("tissues"):
@@ -76,7 +77,7 @@ def vocabulary_block(switches: dict) -> str:
         if key == "polymers" and switches.get("polymers_v2"):
             line = f"polymers: {','.join(V2['polymers'])},other:<text>"
         elif key == "pathways" and switches.get("pathways_v2"):
-            line = f"pathways: {','.join(L.PATHWAYS)},other:<text>"
+            line = f"pathways: {','.join(L.PATHWAYS)},{L.OTHER_PATHWAY}"
         elif key == "model_type" and switches.get("model_type_v2"):
             line = f"model_type: {','.join(L.MODEL_TYPES)}"
         out.append(line)
@@ -104,6 +105,8 @@ def validate(raw: dict | None, switches: dict) -> tuple[dict | None, list[str]]:
                           ("tissues", "tissues")):
         if switches.get(switch):
             pred[field] = v2[field] if pred["relevant"] else []
+    if switches.get("pathways_v2"):
+        pred["pathways"] = L.group_pathways(pred["pathways"])
     return pred, problems + [p for p in v2_problems if not p.startswith("model_type")]
 
 

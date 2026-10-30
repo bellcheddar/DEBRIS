@@ -1124,3 +1124,14 @@ All three ran unattended on 2026-10-30 under the supervisor with no restarts. Fu
 - **v2.3 ceiling** (32B, 81 papers): model type 0.877 (v2.1 0.889), pathways 0.684 (0.657), polymers 1.000 (0.988), tissues 0.821 (0.834). Every interval overlaps v2.1, so the written-down cues and rulings move the ceiling by no more than noise on this sample; they codify what the gold already does rather than change it.
 
 Per rule 5 none of this is adopted. The definition choices go to the owner.
+
+## D50 Owner's rulings on the Phase 2 definitions (rule 5)
+
+Put to the owner in plain terms on 2026-10-30; all four answered with the recommendation.
+
+1. **New labels: use all four.** The Phase 5 recipe trains on v2 model type, v2 pathways, v2 polymers and the new tissues field, on top of mask_prompt (Phase 1). Organ systems stay tagged directly (D49).
+2. **Rulebook: v2.3 is official.** `labels_v2.INSTRUCTIONS` is now v2.1 plus the v2.2 assay cues plus the v2.3 rulings; `BASE_INSTRUCTIONS` keeps v2.1 so the ceiling's rule sets stay reproducible. The rulings and `cue_block()` moved from ceiling.py into labels_v2.py. No relabel: the gold already follows them (D49).
+3. **Speed: keep the tested unfused weights.** [tag] stays batch 32, prefix cache, hybrid, about 3.5 h a pass. The fused weights are not used.
+4. **Rare pathways: one class.** Every `other:<name>` pathway trains and scores as `other_pathway` (`labels_v2.group_pathways`, applied in `lab_v2.apply` and `lab_v2.validate`); the specific name stays in labels.jsonl as the note. Rescoring the saved Phase 2 predictions this way (ungrouped training, so a lower bound): phase2-b pathways 0.608 to 0.711, phase2-base 0.457 to 0.477.
+
+Also applied: open fields (tissues, pathways) read a bare unknown name as `other:<name>` in `labels_v2.clean`, the staged fix from D47. Phase 2 results on disk are unchanged; each prediction file stores the gold it was scored against.

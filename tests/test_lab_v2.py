@@ -70,3 +70,14 @@ def test_report_section_counts_match_metrics_and_pair_arms():
     text = "\n".join(lines)
     assert "arm vs base" in text and "+0.000" in text and "Per tissue, arm" in text
     assert lab_v2.report_section({"x": rows}, {"x": {}}) == []
+
+
+def test_ceiling_reads_bare_open_values_as_other_and_recovers_old_rows():
+    from pipeline import ceiling as C
+
+    raw = C.open_fields({"tissues": ["gill", "liver"], "pathways": ["lipid_metabolism", "odd_one"]})
+    assert raw["tissues"] == ["other:gill", "liver"]
+    assert raw["pathways"] == ["lipid_metabolism", "other:odd_one"]
+    row = {"pred": {"tissues": ["liver"], "pathways": []}, "problems": ["tissues 'gills'"]}
+    assert C.recovered(row)["pred"]["tissues"] == ["liver", "other:gill"]
+    assert "lipid_metabolism: triglycerides" in C.cue_block()

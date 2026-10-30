@@ -1,0 +1,43 @@
+# Assay and marker cues for each pathway (v2.2 draft, D47). A cue in an abstract is evidence
+# that the study measured the mechanism; it is not a label by itself (the v2 rule still
+# needs the study's own assay, not background). Used by tools/label_audit.py and, once
+# adopted, written into the labelling instructions. Patterns are case-insensitive regexes.
+
+[markers]
+oxidative_stress = ['\bROS\b', 'reactive oxygen', '\bMDA\b', 'malondialdehyde', '\bSOD\b', 'superoxide dismutase', '\bcatalase\b', '\bGSH\b', 'glutathione', '\bGPx\b', 'lipid peroxid', '\bNrf2\b', '\bHO-1\b', 'oxidative stress', 'antioxidant enzyme']
+inflammasome_il1b = ['NLRP3', 'inflammasome', 'IL-1(β|b|beta)', 'interleukin-1(β|b| beta)', 'caspase-1', 'pyroptosis', 'GSDMD', '\bIL-18\b']
+nfkb_cytokine = ['NF-?(κ|k)B', '\bTNF', '\bIL-6\b', '\bIL-8\b', 'IFN-?(γ|g)', '\bIL-10\b', '\bMCP-1\b', '\bTLR4\b', 'cytokine']
+endothelial_dysfunction = ['endotheli', '\beNOS\b', 'VCAM', 'ICAM', 'vascular permeab']
+platelet_activation_thrombosis = ['platelet', 'thromb', 'coagulat', 'fibrinogen']
+fibrosis_tgfb = ['fibros', 'TGF-?(β|b)', 'collagen deposit', '(α|a)-SMA', '\bSmad']
+emt_migration = ['epithelial.mesenchymal', '\bEMT\b', 'E-cadherin', 'vimentin', 'N-cadherin', 'cell migration', 'invasion assay', 'wound.healing assay']
+barrier_disruption = ['tight junction', '\bZO-1\b', 'occludin', 'claudin', 'barrier', 'intestinal permeab', 'goblet cell', 'mucus layer']
+mitochondrial_dysfunction = ['mitochond', 'membrane potential', 'oxygen consumption', 'OXPHOS', 'respiratory chain', 'mtDNA', 'ATP (production|content|level)']
+apoptosis_ferroptosis = ['apopto', 'caspase-3', '\bBax\b', 'Bcl-2', 'TUNEL', 'ferroptos', 'GPX4', 'annexin']
+dysbiosis = ['microbiota', 'microbiome', '\b16S\b', 'gut bacteri', 'Firmicutes', 'Bacteroid', 'dysbiosis', 'Proteobacteria']
+dna_damage_genotoxicity = ['DNA damage', 'comet assay', 'micronucle', '(γ|g)-?H2AX', 'genotox', '8-OHdG', 'strand break', 'chromosom']
+immune_dysregulation = ['immun', 'macrophage', 'lymphocyte', 'T cell', 'neutrophil', 'immunoglobulin', '\bIg[GEAM]\b', 'lysozyme', 'complement', 'phagocyt', 'splenocyte', 'leukocyte']
+leachate_chemical_toxicity = ['leachate', 'eluate', 'leach', 'additive']
+lipid_metabolism = ['lipid metabol', 'lipid accumul', 'triglycerid', '\bTG\b', 'cholesterol', '\bLDL', '\bHDL', 'fatty acid', 'lipogen', 'SREBP', '\bPPAR', 'steatos', 'lipid droplet']
+er_stress_autophagy = ['ER stress', 'endoplasmic reticulum stress', 'unfolded protein', 'GRP78', '\bCHOP\b', '\bATF[46]\b', '\bPERK\b', 'IRE1', 'autophag', '\bLC3', 'Beclin', '\bp62\b']
+endocrine_disruption = ['testosterone', 'estradiol', 'oestradiol', '\bE2\b', '\bLH\b', '\bFSH\b', 'steroidogen', '\bStAR\b', '(3|17)(β|b)-HSD', 'CYP1[79]', 'aromatase', 'thyroid hormone', '\bT[34]\b', '\bTSH\b', 'cortisol', 'corticosterone', 'HP[GT] axis', 'vitellogenin', 'endocrine']
+
+# The same cues as the labelling instructions show them (D47).
+[cues]
+oxidative_stress = "ROS, MDA or lipid peroxidation, SOD, catalase, GSH or GPx, Nrf2 or HO-1"
+inflammasome_il1b = "NLRP3, IL-1β, caspase-1, pyroptosis or GSDMD, IL-18"
+nfkb_cytokine = "NF-κB, TNF-α, IL-6, IL-8, IFN-γ, IL-10, MCP-1, TLR4, a measured cytokine panel"
+endothelial_dysfunction = "endothelial cells or function, eNOS, VCAM-1 or ICAM-1, vascular permeability"
+platelet_activation_thrombosis = "platelet activation or aggregation, thrombus formation, coagulation times, fibrinogen"
+fibrosis_tgfb = "fibrosis on histology, TGF-β, collagen deposition, α-SMA, Smad"
+emt_migration = "EMT markers (E-cadherin, N-cadherin, vimentin), migration, invasion or wound-healing assays"
+barrier_disruption = "tight junctions (ZO-1, occludin, claudin), intestinal or blood-brain barrier permeability, goblet cells or mucus"
+mitochondrial_dysfunction = "mitochondrial membrane potential, oxygen consumption, ATP production, respiratory chain, mtDNA"
+apoptosis_ferroptosis = "apoptosis (caspase-3, Bax or Bcl-2, TUNEL, annexin V), ferroptosis (GPX4)"
+dysbiosis = "gut microbiota or microbiome composition, 16S sequencing"
+dna_damage_genotoxicity = "comet assay, micronuclei, γ-H2AX, 8-OHdG, DNA strand breaks, chromosomal damage"
+immune_dysregulation = "immune cell counts or function (macrophage polarisation, lymphocytes, T cells, neutrophils), immunoglobulins, lysozyme, complement, phagocytosis"
+leachate_chemical_toxicity = "leachates or eluates of the particles, additives released from or carried on them"
+lipid_metabolism = "triglycerides, total cholesterol, LDL or HDL, fatty acids, lipogenesis (SREBP, PPAR), steatosis or lipid droplets"
+er_stress_autophagy = "ER stress (GRP78, CHOP, ATF4 or ATF6, PERK, IRE1), autophagy (LC3, Beclin-1, p62)"
+endocrine_disruption = "sex hormones (testosterone, oestradiol, LH, FSH), steroidogenesis (StAR, 3β-HSD, 17β-HSD, CYP17, CYP19), thyroid hormones (T3, T4, TSH), cortisol or corticosterone, HPG or HPT axis genes, vitellogenin"

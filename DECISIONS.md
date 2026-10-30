@@ -1081,3 +1081,16 @@ Measured 2026-10-30 on 128 papers, `debris_v1_q4` (7B, 4-bit); the corpus is 9,3
 `tools/tag_verify.py` scores the old loop and the new path on the 162 test papers against gold, paired, at batch 8, 16 and 32. The fused weights are scored too. A new arm counts as equivalent under the lab's guardrail rule: no floor metric's interval lies wholly below zero. The fastest equivalent arm goes into `[tag]`, along with the measured hybrid cost per paper. The test papers here only check that the code tags as well as before; nothing chooses a model. It runs on the GPU after Phase 2, as the supervisor's last stage.
 
 A smoke test on the CPU ran the new path end to end. Its output is unusable, but so is plain `mlx_lm.generate` on the CPU (bf16 arithmetic), so quality is judged only on the GPU.
+
+## D47 Why the pathway and tissue ceilings are low, and what was done on the CPU
+
+**Tissues, an artefact.** The 32B wrote sites outside the 18 as bare names (`gill`, `placenta`) instead of `other:gill`. Cleaning dropped them as unknown values, so 44 tissue values counted as disagreements. Recovered from the problem notes the cleaning kept, the v2.1 tissue ceiling is 0.834 [0.771, 0.885], not 0.750. Tissues and pathways are open fields, so `ceiling.open_fields` now reads a bare unknown name as `other:<name>`, and new ceiling rows keep the raw answer. The same reading belongs in `labels_v2.clean` for model predictions. It is staged until Phase 2 finishes, because each Phase 2 arm imports `labels_v2` when it starts, and a mid-phase change would score the arms differently.
+
+**Pathways, mostly the 32B labelling too little.** Of the disagreements, 76 values are in the gold only and 14 in the 32B's labels only. Reading the abstracts behind the misses (testosterone, StAR and 17β-HSD measured; triglycerides and cholesterol measured; TNF-α and IL-6 measured), the gold follows the v2 rule and the 32B left measured mechanisms out. A screen of the 868 gold labels against assay cues (`tools/label_audit.py`, `config/pathway_markers.toml`) agrees: most labelled pathways have a cue in the abstract, for example `lipid_metabolism` 71 of 83 and `oxidative_stress` 404 of 422. The one-off `other:` pathways cost about 9 points: the ceiling is 0.700 when they count as a single `other` class and 0.747 when they are left out.
+
+**Done.** The v2.1 instructions give marker examples for 3 of the 17 pathways. v2.2 adds a cue line for every pathway (`[cues]` in `config/pathway_markers.toml`). The 32B relabels the ceiling sample under v2.2 tonight, after the tagger check, so the effect of the cues on the ceiling is measured, not assumed.
+
+**For the owner (rule 5).** Three definitional choices follow, none adopted by the build:
+1. v2.2 cues in the labelling instructions, and in the tagger's system prompt as a Phase 4 switch.
+2. How to score the `other:` pathway tail: as one `other` class, left out, or kept as is.
+3. Whether the gold's 12 to 18 cue-less labels per pathway are read again.

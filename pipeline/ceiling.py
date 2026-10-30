@@ -15,6 +15,7 @@ estimate of the true ceiling, a level the labels are at least that consistent to
   pixi run python pipeline/ceiling.py summary
   pixi run python pipeline/ceiling.py label-v2   # the same sample under the v2.1 rules (D40)
   pixi run python pipeline/ceiling.py summary-v2
+  pixi run python pipeline/ceiling.py label-v2 --rules v2.2   # plus the assay cues (D47)
 """
 from __future__ import annotations
 
@@ -22,6 +23,7 @@ import argparse
 import collections
 import json
 import random
+import re
 import sys
 import time
 from pathlib import Path
@@ -41,6 +43,8 @@ HOME = lab.LAB / "ceiling"
 SAMPLE = HOME / "sample.json"
 LABELS = HOME / "qwen32b.jsonl"
 LABELS_V2 = HOME / "qwen32b_v2.jsonl"
+RULES = {"v2.1": LABELS_V2, "v2.2": HOME / "qwen32b_v2_2.jsonl"}
+MARKERS = c.ROOT / "config" / "pathway_markers.toml"
 V2_LISTS = ("pathways", "polymers", "tissues")
 
 
@@ -127,12 +131,63 @@ def summary() -> dict | None:
 
 # ---------------------------------------------------------------- v2 rules (Phase 2)
 
-def v2_prompt(paper: dict, examples: list[tuple[dict, dict]]) -> str:
-    """The v2.1 instructions and worked examples the first labeller had, then the paper."""
+def cue_block() -> str:
+    """The v2.2 addition: the assays and markers that count as evidence for each pathway."""
+    import tomllib
+
+    table = tomllib.loads(MARKERS.read_text())["cues"]
+    return ("\n\nv2.2 assay cues. Tag a pathway when the study itself measured one of these "
+            "(a null result counts); the same words used only as background do not count:\n"
+            + "\n".join(f"  {k}: {v}" for k, v in table.items()))
+
+
+def instructions(rules: str) -> str:
+    from pipeline import labels_v2 as L
+
+    return L.INSTRUCTIONS + (cue_block() if rules == "v2.2" else "")
+
+
+def open_fields(raw: dict | None) -> dict:
+    """Tissues and pathways are open fields, so a bare name outside the vocabulary is the
+    labeller's other:<name> without the prefix. Read it so, rather than dropping it: the
+    v2.1 ceiling lost 44 tissue values this way (D47)."""
+    from pipeline import labels_v2 as L
+
+    raw = dict(raw or {})
+    allowed = {"tissues": (L.V2["tissues"], L.V2["synonyms"]["tissues"]),
+               "pathways": (L.PATHWAYS, L.V1.get("synonyms", {}).get("pathways", {}))}
+    for field, (vocab, synonyms) in allowed.items():
+        values = raw.get(field)
+        if isinstance(values, list):
+            raw[field] = [v if not isinstance(v, str) or v.startswith("other:")
+                          or L.canonical(v, vocab, synonyms) else "other:" + v for v in values]
+    return raw
+
+
+def recovered(row: dict) -> dict:
+    """A v2.1 second label with the bare names cleaning dropped put back as other:,
+    from the problems it recorded, since its raw answer was not kept."""
+    from pipeline import labels_v2 as L
+
+    if row.get("raw") is not None or row["pred"] is None:
+        return row
+    pred = {k: list(v) if isinstance(v, list) else v for k, v in row["pred"].items()}
+    for problem in row["problems"]:
+        m = re.match(r"(tissues|pathways) '(.+)'$", problem)
+        if m:
+            v = "other:" + L._key(m.group(2))
+            v = L.NORMALISE.get(m.group(1), {}).get(v, v)
+            if v not in pred[m.group(1)]:
+                pred[m.group(1)].append(v)
+    return {**row, "pred": pred}
+
+
+def v2_prompt(paper: dict, examples: list[tuple[dict, dict]], rules: str = "v2.1") -> str:
+    """The instructions and worked examples the first labeller had, then the paper."""
     from pipeline import labels_v2 as L
 
     shown = "\n\n".join(f"{L.view(p)}\nANSWER: {json.dumps(a)}" for p, a in examples)
-    return (L.INSTRUCTIONS + "\n\nWorked examples:\n\n" + shown
+    return (instructions(rules) + "\n\nWorked examples:\n\n" + shown
             + "\n\nLabel the paper below. Return only one JSON object.\n\n" + L.view(paper))
 
 
@@ -151,31 +206,33 @@ def v2_sample() -> tuple[list[str], dict[str, dict], list[tuple[dict, dict]]]:
     return pmids, {p: dict(records[p], v2=gold[p]) for p in pmids}, examples
 
 
-def label_v2() -> None:
+def label_v2(rules: str = "v2.1") -> None:
     from mlx_lm import load
 
     from pipeline import labels_v2 as L
 
+    out = RULES[rules]
     pmids, records, examples = v2_sample()
-    done = {r["pmid"] for r in c.jsonl_read(LABELS_V2)} if LABELS_V2.exists() else set()
+    done = {r["pmid"] for r in c.jsonl_read(out)} if out.exists() else set()
     todo = [p for p in pmids if p not in done]
     if not todo:
         c.log("ceiling v2: every sampled paper already has its second v2 label")
         return
-    c.log(f"ceiling v2: labelling {len(todo)} papers with {SECOND_LABELLER}")
+    c.log(f"ceiling {rules}: labelling {len(todo)} papers with {SECOND_LABELLER}")
     model, tokenizer = load(SECOND_LABELLER)
     started = time.monotonic()
-    rows = list(c.jsonl_read(LABELS_V2)) if LABELS_V2.exists() else []
+    rows = list(c.jsonl_read(out)) if out.exists() else []
     for start in range(0, len(todo), lab.SCORE_BATCH):
         chunk = todo[start:start + lab.SCORE_BATCH]
         texts = lab.generate_batch(model, tokenizer,
-                                   [v2_prompt(records[p]["paper"], examples) for p in chunk])
+                                   [v2_prompt(records[p]["paper"], examples, rules) for p in chunk])
         for pmid, text in zip(chunk, texts):
             raw = schema.extract_json(text)
-            second, problems = L.clean(L.normalise({**(raw or {}), "pmid": pmid}))
-            rows.append({"pmid": pmid, "gold": records[pmid]["v2"], "pred": second,
+            read = open_fields(raw) if rules != "v2.1" else (raw or {})
+            second, problems = L.clean(L.normalise({**read, "pmid": pmid}))
+            rows.append({"pmid": pmid, "gold": records[pmid]["v2"], "pred": second, "raw": raw,
                          "parsed": raw is not None, "problems": problems})
-        c.jsonl_write(LABELS_V2, rows)
+        c.jsonl_write(out, rows)
     c.log(f"ceiling v2: {len(todo)} second labels in {(time.monotonic() - started) / 60:.1f} min")
 
 
@@ -211,38 +268,48 @@ def agreement_v2(pairs: list[tuple[dict, dict]]) -> dict[str, tuple[float, float
 
 
 def summary_v2() -> dict | None:
-    """The v2 ceiling, beside the v1 ceiling on the same papers (tissues are new in v2)."""
-    if not LABELS_V2.exists():
+    """Every v2 ceiling run so far, beside the v1 ceiling on the same papers. Tissues are
+    new in v2, so the v1 block leaves them out. The v2.1 run is read with its dropped bare
+    names recovered, and also as it was first reported."""
+    runs = {rules: [r for r in c.jsonl_read(path) if r["pred"] is not None]
+            for rules, path in RULES.items() if path.exists()}
+    runs = {k: v for k, v in runs.items() if v}
+    if not runs:
         return None
-    rows = [r for r in c.jsonl_read(LABELS_V2) if r["pred"] is not None]
-    if not rows:
-        return None
+    out = {}
+    if "v2.1" in runs:
+        out["v2.1 as reported"] = agreement_v2([(r["gold"], r["pred"]) for r in runs["v2.1"]])
+        runs["v2.1"] = [recovered(r) for r in runs["v2.1"]]
+    for rules, rows in runs.items():
+        out[rules] = agreement_v2([(r["gold"], r["pred"]) for r in rows])
+    rows = next(iter(runs.values()))
     v1 = {r["pmid"]: r for r in c.jsonl_read(LABELS)} if LABELS.exists() else {}
     both = [r for r in rows if r["pmid"] in v1]
-    out = {"papers": len(rows), "v2": agreement_v2([(r["gold"], r["pred"]) for r in rows])}
     if both:
-        out["v1_same_papers"] = agreement_v2([(v1[r["pmid"]]["gold"], v1[r["pmid"]]["pred"])
-                                              for r in both])
+        out["v1 same papers"] = {k: v for k, v in agreement_v2(
+            [(v1[r["pmid"]]["gold"], v1[r["pmid"]]["pred"]) for r in both]).items()
+            if not k.startswith("tissues")}
     return out
 
 
 def main() -> int:
     ap = argparse.ArgumentParser(description="The label ceiling (LAB_PLAN.md)")
     ap.add_argument("step", choices=["sample", "label", "summary", "label-v2", "summary-v2"])
+    ap.add_argument("--rules", choices=sorted(RULES), default="v2.1")
     args = ap.parse_args()
     if args.step == "sample":
         draw_sample(lab.canonical_records())
     elif args.step == "label":
         label()
     elif args.step == "label-v2":
-        label_v2()
+        label_v2(args.rules)
     elif args.step == "summary-v2":
         result = summary_v2()
         if result is None:
             print("no second v2 labels yet")
-        for block in ("v2", "v1_same_papers"):
-            for k, (point, lo, hi) in (result or {}).get(block, {}).items():
-                print(f"{block:<16}{k:<22}{point:.3f}  [{lo:.3f}, {hi:.3f}]")
+        for block, metrics in (result or {}).items():
+            for k, (point, lo, hi) in metrics.items():
+                print(f"{block:<20}{k:<22}{point:.3f}  [{lo:.3f}, {hi:.3f}]")
     else:
         result = summary()
         if result is None:

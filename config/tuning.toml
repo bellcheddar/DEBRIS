@@ -16,3 +16,6 @@ OMP_NUM_THREADS = "14"
 parallel_jobs = 1
 job_memory_gb = 96.8
 job_cache_gb = 24.2
+overlap_scoring = false
+parallel_jobs_status = "measured 2026-10-30: pair speedup 1.04x, training slowed 14% beside scoring"
+bench = "{\"train_alone\":{\"it_per_s\":0.513,\"peak_gb\":26.374,\"failed\":false},\"train_pair\":{\"jobs\":[{\"it_per_s\":0.268,\"peak_gb\":26.374,\"failed\":false},{\"it_per_s\":0.268,\"peak_gb\":26.374,\"failed\":false}],\"it_per_s_total\":0.536,\"failed\":false},\"score_alone\":{\"s_per_paper\":0.451,\"failed\":false},\"train_with_scoring\":{\"train\":{\"it_per_s\":0.44,\"peak_gb\":26.374,\"failed\":false},\"score\":{\"s_per_paper\":1.871,\"failed\":false}}}"

@@ -872,3 +872,31 @@ The concurrent scheduler is `pipeline/lab_queue.py` (`pixi run lab-queue phase1`
 experiment is its own `lab.py run` process under the caps in the tuning [lab] table, rounds
 are fixed in the parent before any child starts, and a failure is logged without stopping the
 queue. How many run at once comes only from `tools/lab_bench.py`.
+
+## D38 One lab job at a time; and the label ceiling says pathways and organs are definition problems
+
+**Benchmark (tools/lab_bench.py, GPU otherwise idle, every job capped).** One 1.5B training
+ran at 0.513 iterations a second; two together totalled 0.536 (1.04x); a training beside a
+scoring slowed 14 % while the scoring slowed from 0.451 to 1.871 s a paper. No memory failure.
+Both pre-set rules fail (1.25x for two jobs, under 10 % for overlap), so `parallel_jobs = 1`
+and `overlap_scoring = false`. D36's observation that a training did not slow beside scoring
+was a few noisy iterations; measured properly, one training uses nearly the whole GPU. The
+queue still applies the caps and runs experiments back to back. Reverse by rerunning the bench
+if the model or batch size changes.
+
+**Label ceiling (pipeline/ceiling.py, 150 papers, Qwen2.5-32B 4-bit, zero-shot, the first
+labeller's exact view and instructions).** Agreement with the training labels: relevant 0.903,
+polymers 0.759, organ systems 0.567 [0.469, 0.658], pathways 0.452 [0.383, 0.517], disease
+categories 0.850, rungs exact 0.753, within one 0.833, model type 0.778, valid JSON 1.000,
+floor mean 0.756. All 150 answers parsed.
+
+The fine-tuned 1.5B agrees with the labels more than this second labeller does on organ
+systems (0.662) and pathways (0.563). A model trained on the labels learns the first
+labeller's conventions; an independent careful reader, given the same written instructions,
+does not reproduce them. So on those two fields the instructions underdetermine the answer,
+and the floors (0.85 and 0.75) sit well above what two readers agree on. The ceiling is
+pessimistic (the 32B is zero-shot and quantised), so this is not proof that the floors are
+out of reach, but it moves the weight of the plan: the formatting ideas in Phase 1 cannot fix
+a field whose labels are inconsistent, and Phase 2's sharper definitions (pathways measured,
+not mentioned; organs from an explicit tissue list) are where those two fields can move.
+Phase 1 runs as planned, because its factors target model type, rungs and the composite.

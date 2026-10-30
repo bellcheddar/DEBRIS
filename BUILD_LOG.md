@@ -246,3 +246,15 @@
 - 2026-10-29 20:19 lab: wrote eight Phase 1 configurations at 600 iterations
 - 2026-10-29 20:19 ceiling: labelling 150 papers with mlx-community/Qwen2.5-32B-Instruct-4bit
 - 2026-10-29 20:21 lab: Phase 0 exit test passed; N = 600 from the fold 0 curve (D37); lab_queue.py written, 5 tests
+- 2026-10-29 20:47 ceiling: 150 second labels in 27.1 min
+- 2026-10-29 20:47 lab bench: one training alone
+- 2026-10-29 20:49 lab bench: two trainings together
+- 2026-10-29 20:54 lab bench: one scoring alone
+- 2026-10-29 20:55 lab bench: one training beside one scoring
+- 2026-10-29 20:58 lab bench: one training 0.513 it/s; two together 0.536 it/s (1.04x); training beside scoring 0.44 it/s (14% slower); scoring alone 0.451 s/paper, beside training 1.871 s/paper; failures none. parallel_jobs 1, overlap_scoring False
+- 2026-10-29 21:02 lab phase0-baseline f1 s42 @ 600: relevant_f1 0.8401, polymers_f1 0.7465, organ_systems_f1 0.6333, pathways_f1 0.5195, rungs_exact 0.6701, rungs_within_one 0.7537, model_type_accuracy 0.6577, valid_json 1.0, 0.45 s/paper
+- 2026-10-29 21:06 lab phase0-baseline f2 s42 @ 600: relevant_f1 0.8928, polymers_f1 0.7834, organ_systems_f1 0.6834, pathways_f1 0.5696, rungs_exact 0.7724, rungs_within_one 0.833, model_type_accuracy 0.7923, valid_json 1.0, 0.46 s/paper
+- 2026-10-29 21:06 lab phase0-baseline: done
+- 2026-10-29 21:06 lab phase0-seeds f0 s43: training 600 iterations
+- 2026-10-29 21:06 train: mlx_lm.lora --model Qwen/Qwen2.5-1.5B-Instruct --train --data /Users/dellboy/Documents/Vibe_Coding/debris/data/lab/phase0-seeds/f0-s43/data ...
+- 2026-10-29 21:21 lab: bench 1.04x pair speedup -> parallel_jobs 1; ceiling floor mean 0.756, organs 0.567, pathways 0.452 (D38)

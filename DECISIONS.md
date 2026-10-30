@@ -1013,3 +1013,5 @@ Those are the figures each Phase 2 switch is compared against, alongside the v2 
 **Next.** Rewrite the local path of `tag.py` around the chosen settings, with a test that its greedy tags match the old loop on a sample. Replacing the sampled pass with token probabilities changes a spec 5.6 metric and needs its own decision, on the AUC the bench reports.
 
 **Reverse.** Delete the `[tag]` table; `tag.py` does not read it yet.
+
+**Owner ruling (2026-10-30).** Confidence scoring stays. Any option that drops or replaces it (the sampled pass, or Phase 1 switch D, which drops the confidence field) is presented to the owner as a measured trade-off, not adopted by the build.

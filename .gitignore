@@ -15,3 +15,14 @@ tests/qc_screenshots/
 wandb/
 qc/*.png
 **/wandb/
+# Lab artefacts that are regenerable or large: adapters (about 22 MB a checkpoint), the
+# per-unit checkpoint copies and training data, and the benchmark's scratch runs.
+data/lab/**/adapters/
+data/lab/**/ckpt-*/
+data/lab/**/data/
+data/lab/**/wandb_id
+data/lab/bench/
+# Reference papers are under publisher copyright: kept locally, never committed (D39).
+uploads/*.pdf
+data/reference/
+.claude/scheduled_tasks.lock

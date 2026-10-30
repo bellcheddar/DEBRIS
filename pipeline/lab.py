@@ -16,6 +16,7 @@ from __future__ import annotations
 import argparse
 import collections
 import json
+import os
 import random
 import shutil
 import sys
@@ -198,7 +199,10 @@ def train_unit(cfg: dict, fold: int, seed: int, records: list[dict],
     build_data(cfg, fold, records, folds, home / "data")
     for stale in adapters.glob("*_adapters.safetensors"):
         stale.unlink()
-    cmd = ["mlx_lm.lora", "--model", cfg["model"], "--train", "--data", str(home / "data"),
+    # Through the capped launcher, so a cap the queue set reaches the training too (D36);
+    # with no cap set it is plain mlx_lm.lora.
+    cmd = [sys.executable, str(c.ROOT / "pipeline" / "mlx_capped.py"), "mlx_lm.lora",
+           "--model", cfg["model"], "--train", "--data", str(home / "data"),
            "--fine-tune-type", "lora", "--num-layers", str(cfg["num_layers"]),
            "--batch-size", str(cfg["batch_size"]), "--iters", str(cfg["iters"]),
            "--learning-rate", str(cfg["learning_rate"]), "--adapter-path", str(adapters),
@@ -611,6 +615,9 @@ def report() -> None:
 # ------------------------------------------------------------------------------- main
 
 def main() -> int:
+    if os.environ.get("DEBRIS_MLX_MEMORY_GB"):
+        from pipeline.mlx_capped import apply_caps
+        apply_caps()          # this process scores in process: cap it as well
     ap = argparse.ArgumentParser(description="The DEBRIS lab (LAB_PLAN.md)")
     sub = ap.add_subparsers(dest="cmd", required=True)
     f = sub.add_parser("folds")

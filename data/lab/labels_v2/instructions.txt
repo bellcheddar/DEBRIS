@@ -1,0 +1,46 @@
+Label four fields of a micro/nanoplastic health paper under the DEBRIS v2 rules.
+Read only what the record gives (title, journal, publication types, MeSH, abstract). Every
+value must be supported by the text; when the text does not say, leave it out.
+
+model_type: one value, the strongest design in the paper, by this order:
+  meta_analysis > review > human_cohort > human_tissue > animal_in_vivo > organoid > human_in_vitro > cell_line > in_silico.
+  meta_analysis or review when the publication types or the abstract say the paper is one
+  (a review with a small experiment of its own is still a review). human_cohort: an
+  association between exposure and an outcome tested in people. human_tissue: particles
+  detected or measured in human tissue or fluid, with no outcome association.
+  animal_in_vivo: living animals exposed, any species. organoid: organoids or
+  organ-on-chip. human_in_vitro: primary human cells, explants or ex vivo human tissue.
+  cell_line: an immortalised or named line of any species (HepG2, Caco-2, A549, HUVEC
+  lines sold as lines, RAW264.7, BEAS-2B ...), and primary cells from animals.
+  in_silico: docking, simulation or modelling only.
+
+pathways: tag a mechanism only where the abstract reports an assay, a marker or a result
+  for it in this study (ROS, MDA, SOD for oxidative_stress; NLRP3 or IL-1b measured for
+  inflammasome_il1b; a measured cytokine panel or NF-kB activation for nfkb_cytokine ...).
+  A mechanism named as background, hypothesis or future work is not tagged. Reviews: [].
+  Values: oxidative_stress, inflammasome_il1b, nfkb_cytokine, endothelial_dysfunction, platelet_activation_thrombosis, fibrosis_tgfb, emt_migration, barrier_disruption, mitochondrial_dysfunction, apoptosis_ferroptosis, dysbiosis, dna_damage_genotoxicity, immune_dysregulation, leachate_chemical_toxicity, lipid_metabolism, er_stress_autophagy, endocrine_disruption, or other:<short_snake_case> for a measured mechanism with
+  no value above.
+
+polymers: every polymer the study used or detected, at the finest type the text states:
+  PA6 or PA66 when stated, PA when only polyamide or nylon is said; PBAT, PLA as stated.
+  mixed_unspecified when particles are reported with no polymer identified. Polymers only
+  listed as found in the environment, or in other studies, are not tagged.
+  Values: PET, PS, PE, PP, PVC, PA, PA6, PA66, PU, PMMA, PC, PLA, PBAT, PTFE, tyre_wear, mixed_unspecified, or other:<name>.
+
+tissues: the anatomical sites where this study measures particles or measures an effect,
+  in any species. Not sites named as background or as routes in general.
+  Values: blood, adrenal, thyroid, pancreas, brain, frontal_lobe, medulla_oblongata, kidney, liver, lung, spleen, stomach, intestine, small_intestine, myocardium, skeletal_muscle, adipose, testis, ovary, uterus.
+  brain or intestine when no region or segment is named; frontal_lobe, medulla_oblongata,
+  small_intestine only when named. heart muscle or heart tissue is myocardium. blood when
+  particles are measured in blood, plasma or serum, or blood cells are the subject; a serum
+  marker read for another organ (ALT for the liver) counts as that organ, not blood. Cells
+  count as the tissue they model when the abstract names it (hepatocytes = liver; lung
+  epithelial cells = lung). Sites outside these are other:<key>, using exactly these keys
+  where they fit: placenta, semen, colon, faeces, skin, artery, breast_milk, urine, bone_marrow, lymph_node, cerebrospinal_fluid; otherwise other:<short_snake_case>.
+  Whole embryos or larvae, or behaviour, with no organ named give no tissue; an organ
+  measured inside them does (zebrafish larval brain = brain). A biodistribution study
+  lists the organs the abstract names as measured.
+  A paper with no anatomical site (an environmental survey, a pure cell-free assay) has [].
+
+Return one JSON object per paper, one per line, nothing else:
+{"pmid":"...","model_type":"...","pathways":[],"polymers":[],"tissues":[]}

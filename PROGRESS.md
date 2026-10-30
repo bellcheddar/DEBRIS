@@ -81,3 +81,13 @@ Rewritten after every phase and at least every 30 minutes during compute.
 - [ ] Final README and FINDINGS.md regenerated against the tagged corpus
 
 Open gates: none.
+
+## Lab (LAB_PLAN.md)
+
+- [x] Phase 0: baseline 0.769 floor mean at 600 (3 folds, 1,438 papers); exit test passed; seed range 0.036 (D37, D39)
+- [x] Label ceiling: 32B agreement 0.756, organs 0.567, pathways 0.452 (D38)
+- [x] Bench: one job at a time (1.04x pair speedup) (D38)
+- [ ] Phase 1: 2^(4-1) factorial, c2 to c8, running overnight through `lab-queue`
+- [x] Phase 2 roster from Liu et al.: `config/vocab_v2.toml` (D39)
+- [ ] Phase 2 relabelling: 868 papers in 10 batches, in progress
+- [ ] Phase 2 runs, Phase 3 enrichment, Phase 4, Phase 5 confirmation

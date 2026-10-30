@@ -1,0 +1,177 @@
+# DEBRIS vocabulary v2: the extended roster for LAB_PLAN.md Phase 2 (switches 2c and 2d).
+# An overlay on config/vocab.toml, read only by the lab when a v2 switch is on; nothing in
+# production reads it until Phase 2 adopts a switch (D39). Kept apart so the Phase 1 runs,
+# whose prompts are built from vocab.toml, cannot change underneath them.
+#
+# Source: Liu Z et al., Tissue-specific microplastic burdens in humans: an intra-individual
+# mapping of 18 tissue types. J Hazard Mater 518:144001 (2026), doi 10.1016/j.jhazmat.2026.144001,
+# PMID 42933105, methods 2.1 (tissues) and 2.2 (polymers by Py-GC/MS). Extracted text is in
+# data/reference/liu2026.txt.
+
+schema_version = "2.0-draft"
+
+# ------------------------------------------------------------------ 2c polymers, the 11
+# Liu et al. quantify PS, PE, PP, PMMA, PVC, PET, PC, PA6, PA66, PLA and PBAT. Ten are already
+# in v1 at the parent level; PA splits into PA6 and PA66, and PBAT is new. A paper is labelled
+# with the finest type its abstract states; "polyamide" or "nylon" alone stays PA. Scoring
+# rolls every child up to its parent as well, so both levels are reported.
+polymers = ["PET", "PS", "PE", "PP", "PVC", "PA", "PA6", "PA66", "PU", "PMMA", "PC", "PLA",
+            "PBAT", "PTFE", "tyre_wear", "mixed_unspecified"]
+liu_polymers = ["PS", "PE", "PP", "PMMA", "PVC", "PET", "PC", "PA6", "PA66", "PLA", "PBAT"]
+
+# Tissues: see the 2d section below for the rules.
+tissues = ["blood", "adrenal", "thyroid", "pancreas", "brain", "frontal_lobe",
+           "medulla_oblongata", "kidney", "liver", "lung", "spleen", "stomach",
+           "intestine", "small_intestine", "myocardium", "skeletal_muscle", "adipose", "testis",
+           "ovary", "uterus"]
+liu_tissues = ["blood", "adrenal", "thyroid", "pancreas", "frontal_lobe", "medulla_oblongata",
+               "kidney", "liver", "lung", "spleen", "stomach", "small_intestine", "myocardium",
+               "skeletal_muscle", "adipose", "testis", "ovary", "uterus"]
+
+[polymer_parent]
+PA6 = "PA"
+PA66 = "PA"
+
+[polymer_labels]
+PA6 = "Polyamide 6 (nylon 6)"
+PA66 = "Polyamide 66 (nylon 66)"
+PBAT = "Polybutylene adipate terephthalate"
+
+[polymer_short]
+PA6 = "PA6"
+PA66 = "PA66"
+PBAT = "PBAT"
+
+[synonyms.polymers]
+pa6 = "PA6"
+pa_6 = "PA6"
+nylon_6 = "PA6"
+nylon6 = "PA6"
+polyamide_6 = "PA6"
+polycaprolactam = "PA6"
+pa66 = "PA66"
+pa_66 = "PA66"
+nylon_66 = "PA66"
+nylon_6_6 = "PA66"
+nylon66 = "PA66"
+polyamide_66 = "PA66"
+polyamide_6_6 = "PA66"
+pbat = "PBAT"
+polybutylene_adipate_terephthalate = "PBAT"
+poly_butylene_adipate_co_terephthalate = "PBAT"
+
+# ------------------------------------------------------------------ 2d tissues, the 18
+# Liu et al.'s 18 sampled tissues, keyed at the level the literature names them. Two keys are
+# broader than the paper's sampling site, recorded in tissue_labels: Liu sampled pectoral
+# muscle (skeletal_muscle) and abdominal subcutaneous adipose (adipose). `brain` is a parent
+# for a paper that says only "brain", in the same way PA is for polyamide, and `intestine`
+# likewise for "gut" or "intestine" with no segment named. A paper's tissues
+# are the anatomical sites it samples, measures or studies, not ones named as background.
+# A tissue outside the 18 (placenta, arterial plaque, colon, skin, semen ...) is written
+# `other:<name>`, the convention pathways already use, and recurring ones are promoted later.
+[tissue_parent]
+frontal_lobe = "brain"
+medulla_oblongata = "brain"
+small_intestine = "intestine"
+
+[tissue_labels]
+blood = "Blood"
+adrenal = "Adrenal gland"
+thyroid = "Thyroid gland"
+pancreas = "Pancreas"
+brain = "Brain"
+frontal_lobe = "Frontal lobe"
+medulla_oblongata = "Medulla oblongata"
+kidney = "Kidney"
+liver = "Liver"
+lung = "Lung"
+spleen = "Spleen"
+stomach = "Stomach"
+intestine = "Intestine"
+small_intestine = "Small intestine"
+myocardium = "Myocardium"
+skeletal_muscle = "Skeletal muscle (Liu: pectoral)"
+adipose = "Adipose (Liu: abdominal subcutaneous)"
+testis = "Testis"
+ovary = "Ovary"
+uterus = "Uterus"
+
+# Organ systems derived from tissues (the 2d hypothesis). Skeletal muscle maps to no v1
+# system: v1 has no musculoskeletal class, and forcing it into endocrine_metabolic or
+# systemic would put a convention back into a field meant to be literal. Pancreas and adipose
+# follow Liu et al.'s own grouping of endocrine and metabolic organs.
+[tissue_system]
+blood = "hematologic"
+adrenal = "endocrine_metabolic"
+thyroid = "endocrine_metabolic"
+pancreas = "endocrine_metabolic"
+adipose = "endocrine_metabolic"
+brain = "neurological"
+frontal_lobe = "neurological"
+medulla_oblongata = "neurological"
+kidney = "renal"
+liver = "hepatic"
+lung = "respiratory"
+spleen = "immune"
+stomach = "gastrointestinal"
+intestine = "gastrointestinal"
+small_intestine = "gastrointestinal"
+myocardium = "cardiovascular"
+testis = "reproductive_placental"
+ovary = "reproductive_placental"
+uterus = "reproductive_placental"
+
+[synonyms.tissues]
+whole_blood = "blood"
+plasma = "blood"
+serum = "blood"
+peripheral_blood = "blood"
+adrenal_gland = "adrenal"
+adrenal_glands = "adrenal"
+thyroid_gland = "thyroid"
+cerebral_cortex = "brain"
+cortex = "brain"
+frontal_cortex = "frontal_lobe"
+medulla = "medulla_oblongata"
+brainstem = "medulla_oblongata"
+kidneys = "kidney"
+renal = "kidney"
+hepatic = "liver"
+lungs = "lung"
+pulmonary = "lung"
+gastric = "stomach"
+intestine = "intestine"
+intestinal = "intestine"
+gut = "intestine"
+ileum = "small_intestine"
+jejunum = "small_intestine"
+duodenum = "small_intestine"
+heart = "myocardium"
+cardiac_muscle = "myocardium"
+heart_muscle = "myocardium"
+muscle = "skeletal_muscle"
+pectoral_muscle = "skeletal_muscle"
+adipose_tissue = "adipose"
+fat = "adipose"
+subcutaneous_adipose = "adipose"
+visceral_adipose = "adipose"
+testes = "testis"
+testicle = "testis"
+testicles = "testis"
+ovaries = "ovary"
+
+# Sites outside the 18 that recur in the corpus, written `other:<key>` with exactly these
+# spellings so the labels stay consistent, each with the organ system it derives. Counts are
+# mentions among the 780 relevant cross-validation papers (D39).
+[other_tissue_system]
+placenta = "reproductive_placental"     # 28
+semen = "reproductive_placental"        # 31
+colon = "gastrointestinal"              # 17
+faeces = "gastrointestinal"             # 15
+skin = "dermal"                         # 21
+artery = "cardiovascular"               # 9, carotid and coronary plaque included
+breast_milk = "reproductive_placental"  # 7
+urine = "renal"                         # 6
+bone_marrow = "hematologic"             # 4
+lymph_node = "immune"
+cerebrospinal_fluid = "neurological"

@@ -1,0 +1,5 @@
+{"pmid": "35709674", "model_type": "animal_in_vivo", "pathways": ["oxidative_stress", "apoptosis_ferroptosis"], "polymers": ["PS"], "tissues": []}
+{"pmid": "31272252", "model_type": "cell_line", "pathways": ["er_stress_autophagy"], "polymers": ["PS"], "tissues": ["lung"]}
+{"pmid": "33550074", "model_type": "animal_in_vivo", "pathways": ["oxidative_stress", "inflammasome_il1b", "apoptosis_ferroptosis"], "polymers": ["PS"], "tissues": ["ovary"]}
+{"pmid": "41996166", "model_type": "animal_in_vivo", "pathways": ["mitochondrial_dysfunction", "apoptosis_ferroptosis", "oxidative_stress", "barrier_disruption", "dysbiosis", "leachate_chemical_toxicity"], "polymers": ["PET", "tyre_wear"], "tissues": ["liver", "brain", "intestine"]}
+{"pmid": "37167737", "model_type": "animal_in_vivo", "pathways": [], "polymers": ["PLA", "other:pga"], "tissues": []}

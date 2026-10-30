@@ -258,3 +258,17 @@
 - 2026-10-29 21:06 lab phase0-seeds f0 s43: training 600 iterations
 - 2026-10-29 21:06 train: mlx_lm.lora --model Qwen/Qwen2.5-1.5B-Instruct --train --data /Users/dellboy/Documents/Vibe_Coding/debris/data/lab/phase0-seeds/f0-s43/data ...
 - 2026-10-29 21:21 lab: bench 1.04x pair speedup -> parallel_jobs 1; ceiling floor mean 0.756, organs 0.567, pathways 0.452 (D38)
+- 2026-10-29 21:31 lab phase0-seeds f0 s43: trained in 24.9 min
+- 2026-10-29 21:34 lab phase0-seeds f0 s43 @ 600: relevant_f1 0.8826, polymers_f1 0.743, organ_systems_f1 0.6473, pathways_f1 0.5585, rungs_exact 0.7583, rungs_within_one 0.8, model_type_accuracy 0.7308, valid_json 1.0, 0.46 s/paper
+- 2026-10-29 21:34 lab phase0-seeds f0 s44: training 600 iterations
+- 2026-10-29 21:34 train: mlx_lm.lora --model Qwen/Qwen2.5-1.5B-Instruct --train --data /Users/dellboy/Documents/Vibe_Coding/debris/data/lab/phase0-seeds/f0-s44/data ...
+- 2026-10-29 22:00 lab phase0-seeds f0 s44: trained in 25.7 min
+- 2026-10-29 22:03 labels v2: exported 868 relevant papers in 10 batches, 30 read twice
+- 2026-10-29 22:04 lab phase0-seeds f0 s44 @ 600: relevant_f1 0.9105, polymers_f1 0.7632, organ_systems_f1 0.701, pathways_f1 0.5929, rungs_exact 0.8063, rungs_within_one 0.8479, model_type_accuracy 0.7846, valid_json 1.0, 0.46 s/paper
+- 2026-10-29 22:04 lab phase0-seeds: done
+- 2026-10-29 22:04 lab report: 2 experiments written to LAB_REPORT.md
+- 2026-10-29 22:05 lab queue: 7 experiments, 1 at a time, 96.8 GB each (24.2 GB cache)
+- 2026-10-29 22:05 lab queue: started phase1-c2
+- 2026-10-29 22:05 lab phase1-c2 f0 s42: training 600 iterations
+- 2026-10-29 22:05 train: /Users/dellboy/Documents/Vibe_Coding/debris/.pixi/envs/default/bin/python /Users/dellboy/Documents/Vibe_Coding/debris/pipeline/mlx_capped.py mlx_lm.lora --model Qwen/Qwen2.5-1.5B-Instruct --train ...
+- 2026-10-29 22:06 labels v2: roster from Liu et al. in config/vocab_v2.toml; 868 papers exported in 10 batches; labelling started (D39)

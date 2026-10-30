@@ -900,3 +900,48 @@ out of reach, but it moves the weight of the plan: the formatting ideas in Phase
 a field whose labels are inconsistent, and Phase 2's sharper definitions (pathways measured,
 not mentioned; organs from an explicit tissue list) are where those two fields can move.
 Phase 1 runs as planned, because its factors target model type, rungs and the composite.
+
+## D39 The v2 roster from Liu et al., the relabelling pass, and what the seed spread means
+
+**The roster.** The paper (uploaded 29 October, kept locally in `uploads/` and as extracted
+text in `data/reference/`, both git-ignored because they are under publisher copyright)
+lists the 18 tissues in methods 2.1: blood, adrenal, thyroid, pancreas, frontal lobe, medulla
+oblongata, kidney, liver, lung, spleen, stomach, small intestine, myocardium, pectoral muscle,
+abdominal subcutaneous adipose, testicle, ovary and uterus. Its 11 Py-GC/MS polymers are PS,
+PE, PP, PMMA, PVC, PET, PC, PA6, PA66, PLA and PBAT. (LDIR found 30 types besides, led by
+FKM and ACR, but those are particle counts in the 20 to 500 um window; the 11 are the roster.)
+
+They go in `config/vocab_v2.toml`, an overlay read only by the lab, because the tagger's
+system prompt is built from `config/vocab.toml` and Phase 1 is running on it. Choices made:
+- Tissue keys are named as the literature names them. Pectoral muscle is `skeletal_muscle`
+  and abdominal subcutaneous adipose is `adipose`, with Liu's sites kept in the labels.
+- `brain` and `intestine` are parents, as PA is for PA6 and PA66, for papers that name no
+  region or segment. That makes 20 tissue values covering Liu's 18.
+- Skeletal muscle derives no organ system, because v1 has no musculoskeletal class.
+- Sites outside the 18 are `other:<key>`, with eleven fixed spellings, each mapped to a
+  system. Among the 780 relevant cross-validation papers, semen (31), placenta (28), skin
+  (21) and colon (17) are mentioned more often than eight of Liu's 18. Pancreas (4),
+  thyroid (3), uterus (2), adrenal (1), frontal lobe and medulla (0) are near empty, which is
+  what Phase 3 enrichment is for.
+
+**The labelling.** `pipeline/labels_v2.py` holds the v2 rules for model type (an explicit
+design order), pathways (measured in this study, plus the three promoted `other:` values),
+polymers (finest stated) and tissues. The 868 v1-relevant papers (780 cross-validation, 88
+test) are in ten batches. Each batch is read by a separate session subagent from the same
+written rules and five worked examples, and keyword scripts are forbidden. Thirty
+cross-validation papers are read twice, in two different batches, to measure the session's
+agreement with itself. The 32B relabels the 150-paper ceiling sample under the v2 rules once
+the GPU is free.
+
+**Seed spread.** On fold 0 at 600 iterations, seeds 42, 43 and 44 give floor means of 0.787,
+0.765 and 0.801: a range of 0.036, and 0.03 to 0.05 on single fields. The paired bootstrap
+captures sampling noise only, not this. A single Phase 1 configuration against c1 is
+therefore not decisive on its own. The factorial's main effects each average 12 trainings
+against 12, which shrinks the training noise by about the square root of 12, and the main
+effects are what the adoption rules apply to.
+
+**Repository.** Fold 0's eight baseline checkpoints (about 180 MB) and the wandb logs had
+been committed and pushed, because nothing ignored them. They are now untracked and ignored,
+together with all lab adapters, checkpoint copies, training data and the benchmark runs.
+They remain in git history. Removing them would mean rewriting pushed history, which is
+left to the owner.

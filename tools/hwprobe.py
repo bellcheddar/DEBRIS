@@ -89,6 +89,9 @@ def derive(hw: dict, previous: dict | None) -> dict:
             if key in previous:
                 tuning[key] = previous[key]
     tuning["lab"] = lab_tuning(hw, (previous or {}).get("lab", {}))
+    # Measured by tools/tag_bench.py, so a re-probe has nothing to derive it from.
+    if previous and "tag" in previous:
+        tuning["tag"] = previous["tag"]
     return tuning
 
 

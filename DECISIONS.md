@@ -999,3 +999,17 @@ The yardstick moves as expected. The Phase 0 baseline at 600 (trained on v1), sc
 v2 gold instead of v1, gives pathways 0.435 (from 0.556), polymers 0.724 (from 0.769), model
 type 0.731 (from 0.727), and organ systems unchanged at 0.671 because they keep their v1 gold.
 Those are the figures each Phase 2 switch is compared against, alongside the v2 ceiling.
+
+## D42 Tagging speed is measured before tag.py is rewritten
+
+**Decision.** `tools/tag_bench.py` times the ways to tag the corpus on one seeded sample of 128 papers, with the GPU idle, and writes the result to a new `[tag]` table in `config/tuning.toml` (and `tag_batch_size`), which `tools/hwprobe.py` now keeps across re-probes. It is chained to run as soon as Phase 1 releases the GPU (D36), before the 32B v2 ceiling.
+
+**Why.** A full pass with `pipeline/tag.py` runs for ten hours or more. The production tagger is the 7B (`debris_v1_q4`, 28 layers), called one paper at a time with unbatched generation and two passes per paper, so the GPU does a fraction of the work it could. The lab bench (D38) showed that a second process gains nothing (1.04x), so the speed has to come from inside one process: continuous batching, the shared system prompt computed once, and possibly fewer passes.
+
+**Arms.** The sequential loop (the reference), continuous batching at 8, 16, 32 and 64, the best of those with a shared system-prompt cache, the sampled pass at the same settings, whether the greedy pass's token probabilities predict where the sampled pass disagrees (AUC), speculative decoding with a 0.5B draft, and the lab's 1.5B adapter for scale. An arm is only a candidate when at least 95 % of its greedy answers match the sequential loop's, confidence aside.
+
+**Not tried.** The Neural Engine: MLX cannot use it and a Core ML port of a 7B decoder would be slower than this GPU. CPU inference beside the GPU: it shares the same memory bandwidth.
+
+**Next.** Rewrite the local path of `tag.py` around the chosen settings, with a test that its greedy tags match the old loop on a sample. Replacing the sampled pass with token probabilities changes a spec 5.6 metric and needs its own decision, on the AUC the bench reports.
+
+**Reverse.** Delete the `[tag]` table; `tag.py` does not read it yet.

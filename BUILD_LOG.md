@@ -275,3 +275,89 @@
 - 2026-10-29 22:08 labels v2: merged 868 labels, 30 second readings of 30 repeated papers
 - 2026-10-29 22:10 labels v2: merged 868 labels, 30 second readings of 30 repeated papers
 - 2026-10-29 22:10 labels v2: 868 merged, v2.1 rulings and 18 overrides; self-agreement mt 0.967, pathways 0.919, polymers 1.0, tissues 0.949 (D40)
+- 2026-10-29 22:27 lab phase1-c2 f0 s42: trained in 22.3 min
+- 2026-10-29 22:31 lab phase1-c2 f0 s42 @ 600: relevant_f1 0.9357, polymers_f1 0.8098, organ_systems_f1 0.7308, pathways_f1 0.6192, rungs_exact 0.8063, rungs_within_one 0.8625, model_type_accuracy 0.8154, valid_json 1.0, 0.44 s/paper
+- 2026-10-29 22:31 lab phase1-c2 f1 s42: training 600 iterations
+- 2026-10-29 22:31 train: /Users/dellboy/Documents/Vibe_Coding/debris/.pixi/envs/default/bin/python /Users/dellboy/Documents/Vibe_Coding/debris/pipeline/mlx_capped.py mlx_lm.lora --model Qwen/Qwen2.5-1.5B-Instruct --train ...
+- 2026-10-29 22:53 lab phase1-c2 f1 s42: trained in 22.1 min
+- 2026-10-29 22:56 lab phase1-c2 f1 s42 @ 600: relevant_f1 0.8857, polymers_f1 0.7922, organ_systems_f1 0.6676, pathways_f1 0.5787, rungs_exact 0.7223, rungs_within_one 0.7996, model_type_accuracy 0.7269, valid_json 1.0, 0.43 s/paper
+- 2026-10-29 22:56 lab phase1-c2 f2 s42: training 600 iterations
+- 2026-10-29 22:56 train: /Users/dellboy/Documents/Vibe_Coding/debris/.pixi/envs/default/bin/python /Users/dellboy/Documents/Vibe_Coding/debris/pipeline/mlx_capped.py mlx_lm.lora --model Qwen/Qwen2.5-1.5B-Instruct --train ...
+- 2026-10-29 23:18 lab phase1-c2 f2 s42: trained in 22.2 min
+- 2026-10-29 23:22 lab phase1-c2 f2 s42 @ 600: relevant_f1 0.9147, polymers_f1 0.802, organ_systems_f1 0.7182, pathways_f1 0.6239, rungs_exact 0.7724, rungs_within_one 0.8267, model_type_accuracy 0.8615, valid_json 1.0, 0.46 s/paper
+- 2026-10-29 23:22 lab phase1-c2: done
+- 2026-10-29 23:22 lab queue: phase1-c2 done
+- 2026-10-29 23:22 lab queue: started phase1-c3
+- 2026-10-29 23:22 lab phase1-c3 f0 s42: training 600 iterations
+- 2026-10-29 23:22 train: /Users/dellboy/Documents/Vibe_Coding/debris/.pixi/envs/default/bin/python /Users/dellboy/Documents/Vibe_Coding/debris/pipeline/mlx_capped.py mlx_lm.lora --model Qwen/Qwen2.5-1.5B-Instruct --train ...
+- 2026-10-29 23:45 lab phase1-c3 f0 s42: trained in 22.6 min
+- 2026-10-29 23:48 lab phase1-c3 f0 s42 @ 600: relevant_f1 0.8727, polymers_f1 0.7562, organ_systems_f1 0.6694, pathways_f1 0.5684, rungs_exact 0.7896, rungs_within_one 0.8313, model_type_accuracy 0.7077, valid_json 1.0, 0.44 s/paper
+- 2026-10-29 23:48 lab phase1-c3 f1 s42: training 600 iterations
+- 2026-10-29 23:48 train: /Users/dellboy/Documents/Vibe_Coding/debris/.pixi/envs/default/bin/python /Users/dellboy/Documents/Vibe_Coding/debris/pipeline/mlx_capped.py mlx_lm.lora --model Qwen/Qwen2.5-1.5B-Instruct --train ...
+- 2026-10-30 00:02 lab report: 3 experiments written to LAB_REPORT.md
+- 2026-10-30 00:11 lab phase1-c3 f1 s42: trained in 22.4 min
+- 2026-10-30 00:14 lab phase1-c3 f1 s42 @ 600: relevant_f1 0.833, polymers_f1 0.7515, organ_systems_f1 0.6208, pathways_f1 0.509, rungs_exact 0.6868, rungs_within_one 0.7829, model_type_accuracy 0.6385, valid_json 1.0, 0.44 s/paper
+- 2026-10-30 00:14 lab phase1-c3 f2 s42: training 600 iterations
+- 2026-10-30 00:14 train: /Users/dellboy/Documents/Vibe_Coding/debris/.pixi/envs/default/bin/python /Users/dellboy/Documents/Vibe_Coding/debris/pipeline/mlx_capped.py mlx_lm.lora --model Qwen/Qwen2.5-1.5B-Instruct --train ...
+- 2026-10-30 00:37 lab phase1-c3 f2 s42: trained in 22.4 min
+- 2026-10-30 00:40 lab phase1-c3 f2 s42 @ 600: relevant_f1 0.906, polymers_f1 0.7909, organ_systems_f1 0.6883, pathways_f1 0.5741, rungs_exact 0.7662, rungs_within_one 0.8267, model_type_accuracy 0.8308, valid_json 1.0, 0.46 s/paper
+- 2026-10-30 00:40 lab phase1-c3: done
+- 2026-10-30 00:41 lab queue: phase1-c3 done
+- 2026-10-30 00:41 lab queue: started phase1-c4
+- 2026-10-30 00:41 lab phase1-c4 f0 s42: training 600 iterations
+- 2026-10-30 00:41 train: /Users/dellboy/Documents/Vibe_Coding/debris/.pixi/envs/default/bin/python /Users/dellboy/Documents/Vibe_Coding/debris/pipeline/mlx_capped.py mlx_lm.lora --model Qwen/Qwen2.5-1.5B-Instruct --train ...
+- 2026-10-30 01:03 lab phase1-c4 f0 s42: trained in 22.8 min
+- 2026-10-30 01:07 lab phase1-c4 f0 s42 @ 600: relevant_f1 0.9364, polymers_f1 0.8048, organ_systems_f1 0.7247, pathways_f1 0.5908, rungs_exact 0.8042, rungs_within_one 0.8583, model_type_accuracy 0.8269, valid_json 1.0, 0.47 s/paper
+- 2026-10-30 01:07 lab phase1-c4 f1 s42: training 600 iterations
+- 2026-10-30 01:07 train: /Users/dellboy/Documents/Vibe_Coding/debris/.pixi/envs/default/bin/python /Users/dellboy/Documents/Vibe_Coding/debris/pipeline/mlx_capped.py mlx_lm.lora --model Qwen/Qwen2.5-1.5B-Instruct --train ...
+- 2026-10-30 01:30 lab phase1-c4 f1 s42: trained in 22.5 min
+- 2026-10-30 01:33 lab phase1-c4 f1 s42 @ 600: relevant_f1 0.8825, polymers_f1 0.7897, organ_systems_f1 0.6612, pathways_f1 0.5714, rungs_exact 0.7161, rungs_within_one 0.8038, model_type_accuracy 0.7115, valid_json 1.0, 0.45 s/paper
+- 2026-10-30 01:33 lab phase1-c4 f2 s42: training 600 iterations
+- 2026-10-30 01:33 train: /Users/dellboy/Documents/Vibe_Coding/debris/.pixi/envs/default/bin/python /Users/dellboy/Documents/Vibe_Coding/debris/pipeline/mlx_capped.py mlx_lm.lora --model Qwen/Qwen2.5-1.5B-Instruct --train ...
+- 2026-10-30 01:56 lab phase1-c4 f2 s42: trained in 22.5 min
+- 2026-10-30 02:00 lab phase1-c4 f2 s42 @ 600: relevant_f1 0.9234, polymers_f1 0.8134, organ_systems_f1 0.7181, pathways_f1 0.6383, rungs_exact 0.7891, rungs_within_one 0.8392, model_type_accuracy 0.8538, valid_json 1.0, 0.47 s/paper
+- 2026-10-30 02:00 lab phase1-c4: done
+- 2026-10-30 02:00 lab queue: phase1-c4 done
+- 2026-10-30 02:00 lab queue: started phase1-c5
+- 2026-10-30 02:00 lab phase1-c5 f0 s42: training 600 iterations
+- 2026-10-30 02:00 train: /Users/dellboy/Documents/Vibe_Coding/debris/.pixi/envs/default/bin/python /Users/dellboy/Documents/Vibe_Coding/debris/pipeline/mlx_capped.py mlx_lm.lora --model Qwen/Qwen2.5-1.5B-Instruct --train ...
+- 2026-10-30 02:23 lab phase1-c5 f0 s42: trained in 22.4 min
+- 2026-10-30 02:26 lab phase1-c5 f0 s42 @ 600: relevant_f1 0.8596, polymers_f1 0.7437, organ_systems_f1 0.6703, pathways_f1 0.541, rungs_exact 0.7812, rungs_within_one 0.8229, model_type_accuracy 0.6885, valid_json 1.0, 0.44 s/paper
+- 2026-10-30 02:26 lab phase1-c5 f1 s42: training 600 iterations
+- 2026-10-30 02:26 train: /Users/dellboy/Documents/Vibe_Coding/debris/.pixi/envs/default/bin/python /Users/dellboy/Documents/Vibe_Coding/debris/pipeline/mlx_capped.py mlx_lm.lora --model Qwen/Qwen2.5-1.5B-Instruct --train ...
+- 2026-10-30 02:48 lab phase1-c5 f1 s42: trained in 22.2 min
+- 2026-10-30 02:52 lab phase1-c5 f1 s42 @ 600: relevant_f1 0.8192, polymers_f1 0.7238, organ_systems_f1 0.6252, pathways_f1 0.4818, rungs_exact 0.6952, rungs_within_one 0.7704, model_type_accuracy 0.6115, valid_json 1.0, 0.44 s/paper
+- 2026-10-30 02:52 lab phase1-c5 f2 s42: training 600 iterations
+- 2026-10-30 02:52 train: /Users/dellboy/Documents/Vibe_Coding/debris/.pixi/envs/default/bin/python /Users/dellboy/Documents/Vibe_Coding/debris/pipeline/mlx_capped.py mlx_lm.lora --model Qwen/Qwen2.5-1.5B-Instruct --train ...
+- 2026-10-30 03:14 lab phase1-c5 f2 s42: trained in 22.2 min
+- 2026-10-30 03:18 lab phase1-c5 f2 s42 @ 600: relevant_f1 0.9025, polymers_f1 0.7986, organ_systems_f1 0.6804, pathways_f1 0.5732, rungs_exact 0.7704, rungs_within_one 0.8225, model_type_accuracy 0.7923, valid_json 1.0, 0.45 s/paper
+- 2026-10-30 03:18 lab phase1-c5: done
+- 2026-10-30 03:18 lab queue: phase1-c5 done
+- 2026-10-30 03:18 lab queue: started phase1-c6
+- 2026-10-30 03:18 lab phase1-c6 f0 s42: training 600 iterations
+- 2026-10-30 03:18 train: /Users/dellboy/Documents/Vibe_Coding/debris/.pixi/envs/default/bin/python /Users/dellboy/Documents/Vibe_Coding/debris/pipeline/mlx_capped.py mlx_lm.lora --model Qwen/Qwen2.5-1.5B-Instruct --train ...
+- 2026-10-30 03:41 lab phase1-c6 f0 s42: trained in 22.6 min
+- 2026-10-30 03:45 lab phase1-c6 f0 s42 @ 600: relevant_f1 0.9293, polymers_f1 0.7925, organ_systems_f1 0.7412, pathways_f1 0.6203, rungs_exact 0.7937, rungs_within_one 0.8542, model_type_accuracy 0.8269, valid_json 1.0, 0.46 s/paper
+- 2026-10-30 03:45 lab phase1-c6 f1 s42: training 600 iterations
+- 2026-10-30 03:45 train: /Users/dellboy/Documents/Vibe_Coding/debris/.pixi/envs/default/bin/python /Users/dellboy/Documents/Vibe_Coding/debris/pipeline/mlx_capped.py mlx_lm.lora --model Qwen/Qwen2.5-1.5B-Instruct --train ...
+- 2026-10-30 04:07 lab phase1-c6 f1 s42: trained in 22.4 min
+- 2026-10-30 04:11 lab phase1-c6 f1 s42 @ 600: relevant_f1 0.8778, polymers_f1 0.7824, organ_systems_f1 0.6721, pathways_f1 0.5621, rungs_exact 0.7015, rungs_within_one 0.7912, model_type_accuracy 0.6885, valid_json 1.0, 0.45 s/paper
+- 2026-10-30 04:11 lab phase1-c6 f2 s42: training 600 iterations
+- 2026-10-30 04:11 train: /Users/dellboy/Documents/Vibe_Coding/debris/.pixi/envs/default/bin/python /Users/dellboy/Documents/Vibe_Coding/debris/pipeline/mlx_capped.py mlx_lm.lora --model Qwen/Qwen2.5-1.5B-Instruct --train ...
+- 2026-10-30 04:33 lab phase1-c6 f2 s42: trained in 22.4 min
+- 2026-10-30 04:37 lab phase1-c6 f2 s42 @ 600: relevant_f1 0.9276, polymers_f1 0.8188, organ_systems_f1 0.7242, pathways_f1 0.6302, rungs_exact 0.785, rungs_within_one 0.8372, model_type_accuracy 0.85, valid_json 1.0, 0.47 s/paper
+- 2026-10-30 04:37 lab phase1-c6: done
+- 2026-10-30 04:37 lab queue: phase1-c6 done
+- 2026-10-30 04:37 lab queue: started phase1-c7
+- 2026-10-30 04:37 lab phase1-c7 f0 s42: training 600 iterations
+- 2026-10-30 04:37 train: /Users/dellboy/Documents/Vibe_Coding/debris/.pixi/envs/default/bin/python /Users/dellboy/Documents/Vibe_Coding/debris/pipeline/mlx_capped.py mlx_lm.lora --model Qwen/Qwen2.5-1.5B-Instruct --train ...
+- 2026-10-30 05:00 lab phase1-c7 f0 s42: trained in 22.8 min
+- 2026-10-30 05:04 lab phase1-c7 f0 s42 @ 600: relevant_f1 0.898, polymers_f1 0.7632, organ_systems_f1 0.6879, pathways_f1 0.5535, rungs_exact 0.8042, rungs_within_one 0.8625, model_type_accuracy 0.7385, valid_json 1.0, 0.46 s/paper
+- 2026-10-30 05:04 lab phase1-c7 f1 s42: training 600 iterations
+- 2026-10-30 05:04 train: /Users/dellboy/Documents/Vibe_Coding/debris/.pixi/envs/default/bin/python /Users/dellboy/Documents/Vibe_Coding/debris/pipeline/mlx_capped.py mlx_lm.lora --model Qwen/Qwen2.5-1.5B-Instruct --train ...
+- 2026-10-30 05:26 lab phase1-c7 f1 s42: trained in 22.6 min
+- 2026-10-30 05:30 lab report: 7 experiments written to LAB_REPORT.md
+- 2026-10-30 05:30 lab phase1-c7 f1 s42 @ 600: relevant_f1 0.8481, polymers_f1 0.7571, organ_systems_f1 0.6391, pathways_f1 0.5119, rungs_exact 0.7223, rungs_within_one 0.7933, model_type_accuracy 0.65, valid_json 1.0, 0.46 s/paper
+- 2026-10-30 05:30 lab phase1-c7 f2 s42: training 600 iterations
+- 2026-10-30 05:30 train: /Users/dellboy/Documents/Vibe_Coding/debris/.pixi/envs/default/bin/python /Users/dellboy/Documents/Vibe_Coding/debris/pipeline/mlx_capped.py mlx_lm.lora --model Qwen/Qwen2.5-1.5B-Instruct --train ...
+- 2026-10-30 05:40 tag bench written (tools/tag_bench.py, D42); chained to run when Phase 1 frees the GPU

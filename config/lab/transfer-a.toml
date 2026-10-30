@@ -1,0 +1,9 @@
+description = "Transfer check: the Phase 1 winner (A, mask the prompt) on the 3B, fold 0"
+model = "Qwen/Qwen2.5-3B-Instruct"
+iters = 600
+folds = [0]
+seeds = [42]
+compare_to = "transfer-base"
+
+[switches]
+mask_prompt = true

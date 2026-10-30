@@ -30,11 +30,11 @@ if __package__ in (None, ""):
     sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 from pipeline import common as c
-from pipeline import lab
 
 V1 = c.vocab()
 V2 = tomllib.loads((c.ROOT / "config" / "vocab_v2.toml").read_text())
-HOME = lab.LAB / "labels_v2"
+# The lab imports this module (through lab_v2), so lab itself is imported only where used.
+HOME = c.DATA / "lab" / "labels_v2"
 BATCHES = HOME / "batches"
 OUT = HOME / "out"
 LABELS = HOME / "labels.jsonl"
@@ -135,6 +135,8 @@ def view(paper: dict) -> str:
 
 def records() -> list[dict]:
     """Every v1-relevant paper, cross-validation and test, with its split."""
+    from pipeline import lab
+
     rows = [dict(r, split="cv") for r in lab.canonical_records()]
     rows += [dict(r, split="test") for r in c.jsonl_read(c.TRAIN / "test_meta.jsonl")]
     return sorted((r for r in rows if r["tag"]["relevant"]), key=lambda r: r["pmid"])

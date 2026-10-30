@@ -27,6 +27,7 @@ if __package__ in (None, ""):
     sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 from pipeline import common as c
+from pipeline import lab_v2
 from pipeline import schema
 from pipeline import train as production
 
@@ -131,11 +132,31 @@ def target(tag: dict, switches: dict) -> str:
     return json.dumps(out, separators=(",", ":"), ensure_ascii=False)
 
 
+_V2_LABELS: dict | None = None
+
+
+def v2_label(pmid: str) -> dict | None:
+    global _V2_LABELS
+    if _V2_LABELS is None:
+        _V2_LABELS = lab_v2.labels()
+    return _V2_LABELS.get(pmid)
+
+
+def gold_for(record: dict, cfg: dict) -> dict:
+    """The yardstick: v1 gold, or with `gold = "v2"` (every Phase 2 arm) the v2 gold."""
+    if cfg.get("gold") == "v2":
+        return lab_v2.gold(record["tag"], v2_label(record["pmid"]))
+    return record["tag"]
+
+
 def chat_row(record: dict, switches: dict) -> dict:
+    tag = record["tag"]
+    if lab_v2.any_on(switches):
+        tag = lab_v2.apply(tag, v2_label(record["pmid"]), switches)
     return {"messages": [
-        {"role": "system", "content": schema.SYSTEM_PROMPT},
+        {"role": "system", "content": lab_v2.system_prompt(switches)},
         {"role": "user", "content": user_prompt(record["paper"], switches)},
-        {"role": "assistant", "content": target(record["tag"], switches)}]}
+        {"role": "assistant", "content": target(tag, switches)}]}
 
 
 # ------------------------------------------------------------------------ experiments
@@ -232,12 +253,12 @@ def checkpoint(adapters: Path, iteration: int) -> Path:
     return home
 
 
-def generate_batch(model, tokenizer, prompts: list[str]) -> list[str]:
+def generate_batch(model, tokenizer, prompts: list[str], system: str | None = None) -> list[str]:
     """Greedy answers for a batch of papers, in the order given."""
     from mlx_lm import batch_generate
 
     tokens = [tokenizer.apply_chat_template(
-        [{"role": "system", "content": schema.SYSTEM_PROMPT},
+        [{"role": "system", "content": system or schema.SYSTEM_PROMPT},
          {"role": "user", "content": p}], add_generation_prompt=True) for p in prompts]
     # Similar lengths batch together with less padding; the answers are put back in order.
     order = sorted(range(len(tokens)), key=lambda i: len(tokens[i]))
@@ -266,17 +287,20 @@ def score_unit(cfg: dict, fold: int, seed: int, iteration: int, records: list[di
     model, tokenizer = load(cfg["model"], adapter_path=str(checkpoint(home / "adapters", iteration)))
     started = time.monotonic()
     texts = generate_batch(model, tokenizer,
-                           [user_prompt(r["paper"], cfg["switches"]) for r in held_out])
+                           [user_prompt(r["paper"], cfg["switches"]) for r in held_out],
+                           system=lab_v2.system_prompt(cfg["switches"]))
     rows = []
     for record, text in zip(held_out, texts):
         raw = schema.extract_json(text)
-        pred, problems, _ = schema.validate(raw)
-        rows.append({"pmid": record["pmid"], "gold": record["tag"],
+        pred, problems = lab_v2.validate(raw, cfg["switches"])
+        rows.append({"pmid": record["pmid"], "gold": gold_for(record, cfg),
                      "pred": pred if pred is not None else dict(production.UNPARSED),
                      "parsed": raw is not None, "problems": problems})
     seconds = (time.monotonic() - started) / max(1, len(rows))
     c.jsonl_write(out, rows)
     metrics = production.field_metrics([(r["gold"], r["pred"]) for r in rows])
+    if cfg.get("gold") == "v2":
+        metrics.update(lab_v2.metrics([(r["gold"], r["pred"]) for r in rows]))
     metrics["valid_json"] = round(sum(r["parsed"] for r in rows) / max(1, len(rows)), 4)
     metrics["seconds_per_paper"] = round(seconds, 3)
     c.manifest_write("lab", {"experiment": cfg["name"], "fold": fold, "seed": seed,
@@ -608,6 +632,7 @@ def report() -> None:
                 fmt_ci(*eff[k], signed=True) for k in METRICS) + f" | {call} |")
         lines.append("")
 
+    lines += lab_v2.report_section(results, {n: load_config(n) for n in results})
     REPORT.write_text("\n".join(lines) + "\n")
     c.log(f"lab report: {len(results)} experiments written to LAB_REPORT.md")
 

@@ -1,0 +1,7 @@
+description = "Transfer check: the current recipe on the 3B, fold 0 (LAB_PLAN.md, after Phase 1)"
+model = "Qwen/Qwen2.5-3B-Instruct"
+iters = 600
+folds = [0]
+seeds = [42]
+
+[switches]

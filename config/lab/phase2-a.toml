@@ -1,0 +1,10 @@
+description = "Phase 2 2a model type: v2 model types, on the Phase 1 recipe"
+iters = 600
+folds = [0, 1, 2]
+seeds = [42]
+gold = "v2"
+compare_to = "phase2-base"
+
+[switches]
+mask_prompt = true
+model_type_v2 = true

@@ -1015,3 +1015,41 @@ Those are the figures each Phase 2 switch is compared against, alongside the v2 
 **Reverse.** Delete the `[tag]` table; `tag.py` does not read it yet.
 
 **Owner ruling (2026-10-30).** Confidence scoring stays. Any option that drops or replaces it (the sampled pass, or Phase 1 switch D, which drops the confidence field) is presented to the owner as a measured trade-off, not adopted by the build.
+
+## D43 Phase 1: mask the prompt; keep the confidence field
+
+**Result** (main effects, paired bootstrap over 1,438 papers, `LAB_REPORT.md`):
+
+| factor | target | effect on target | floor mean | call |
+|---|---|---|---|---|
+| A mask the prompt | every floor | all intervals above zero, model type +0.076 | +0.034 [+0.026, +0.043] | adopt |
+| B types and full MeSH | model type | +0.009 [+0.000, +0.018] | +0.004 [+0.000, +0.007] | no effect (the interval touches zero) |
+| C answer order | rungs within one | +0.000 [-0.007, +0.007] | -0.002 | no effect |
+| D drop confidence | guardrails | relevant -0.008 [-0.013, -0.003] | -0.005 [-0.008, -0.001] | reject |
+
+The two-way interaction pairs are all within ±0.005 on the floor mean, so A acts alone. The winning recipe, A on and B, C, D off, is not one of the eight half-fraction configurations, so it is trained fresh as `phase2-base`.
+
+**D and the owner's ruling.** Dropping the confidence field makes the tagger slightly worse, so the field stays on the evidence as well as by the owner's ruling (D42).
+
+**B.** The point estimate is positive on model type and the floor mean, with a lower bound of exactly zero, so it is not adopted under rule 2. It is the first thing to retest if Phase 2a leaves model type short.
+
+## D44 After Phase 1: tag bench, transfer, v2 ceiling, Phase 2, chained
+
+**Order on the GPU, one job at a time (D36, D38):**
+1. `tools/tag_bench.py` (D42).
+2. Transfer check: `transfer-base` against `transfer-a` on the 3B at 16 layers.
+3. The 32B second labeller on the ceiling sample under the v2.1 rules (`ceiling.py label-v2`).
+4. Phase 2: `phase2-base` (A only), then 2a to 2d, each a switch on top of it, 15 trainings.
+
+The chain stops after step 2 if the 3B's floor-mean effect does not point the same way.
+
+**Deviations from LAB_PLAN.md.**
+- The transfer check scores fold 0 (480 papers) rather than the validation split. The validation papers are inside the cross-validation pool, and a fold gives three times as many papers.
+- Phase 2 has five arms, not four: the Phase 1 winner was never run as such, so its base is trained.
+- The v2 ceiling covers the 81 sampled papers that have v2 labels, less the five worked examples, which the 32B sees with their answers as the first labeller did. It is reported beside the v1 ceiling on the same papers.
+
+**Tag bench, first attempt.** Its agreement test compared whole tags, including the summary and disease terms. Free text rewords itself under the smallest numerical change, such as a different matmul order inside a batch, so batching appeared to change 25 % of answers. It now compares the structured fields only, lists as sets, reports agreement field by field, and keeps the raw answers.
+
+**Reporting.** `LAB_REPORT.md` gains a Phase 2 section from `lab_v2.report_section`: tissues, parent-level polymers and the three organ-system policies, paired against `phase2-base`, plus per-tissue recall. It measures and does not adopt: definitions are the owner's call (rule 5).
+
+**Fixed on the way.** `labels_v2` imported `lab` at module level and `lab` now imports `lab_v2`, which imports `labels_v2`: a circular import, broken by importing `lab` where it is used.

@@ -54,13 +54,28 @@ OUT = c.DATA / "manifests" / "tag_bench.json"
 
 # --------------------------------------------------------------------------- pure helpers
 
+# The free-text fields reword themselves under the smallest numerical change (a different
+# matmul order in a batch), so two runs are compared on what the tag asserts, not its prose.
+FREE_TEXT = ("summary", "disease_terms", "confidence")
+
+
 def answer_key(text: str) -> str | None:
-    """A tag reduced to what it says, so two runs compare on content, not whitespace.
-    Confidence is left out: it is a free number the model rounds differently run to run."""
+    """A tag reduced to its structured fields, lists as sets, so two runs compare on
+    content rather than on wording, order or whitespace."""
     tag = schema.extract_json(text)
     if tag is None:
         return None
-    return json.dumps({k: v for k, v in tag.items() if k != "confidence"}, sort_keys=True)
+    return json.dumps({k: sorted(map(str, v)) if isinstance(v, list) else v
+                       for k, v in tag.items() if k not in FREE_TEXT}, sort_keys=True)
+
+
+def field_agreement(a: list[str], b: list[str]) -> dict[str, float]:
+    """Agreement on each structured field alone, to show where two runs part company."""
+    pairs = [(schema.extract_json(x) or {}, schema.extract_json(y) or {}) for x, y in zip(a, b)]
+    fields = sorted({k for x, _ in pairs for k in x} - set(FREE_TEXT))
+    norm = lambda v: sorted(map(str, v)) if isinstance(v, list) else v
+    return {f: round(sum(norm(x.get(f)) == norm(y.get(f)) for x, y in pairs) / len(pairs), 3)
+            for f in fields} if pairs else {}
 
 
 def agreement(a: list[str], b: list[str]) -> float:
@@ -216,6 +231,7 @@ def main() -> int:
             texts[name] = r.pop("texts")
             if reference is not None:
                 r["agreement"] = agreement(texts[name][:len(reference)], reference)
+                r["by_field"] = field_agreement(texts[name][:len(reference)], reference)
         r.pop("mean_prob", None), r.pop("min_prob", None)
         results[name] = r
         c.log(f"tag bench: {name} {json.dumps(r)}")
@@ -278,6 +294,10 @@ def main() -> int:
                "batch_size": b, "prefix_cache": use_prefix, "projected_hours": hours,
                "arms": results}
     OUT.write_text(json.dumps(summary, indent=1))
+    # The raw answers, so agreement can be rescored without a rerun (git-ignored).
+    raw = c.DATA / "lab" / "bench" / "tag_texts.json"
+    raw.parent.mkdir(parents=True, exist_ok=True)
+    raw.write_text(json.dumps({"pmids": [p["pmid"] for p in papers], "texts": texts}))
     c.log(f"tag bench: batch {b}, prefix cache {use_prefix}; a full pass {hours['current']} h "
           f"now, {hours['chosen_two_pass']} h with both passes, {hours['chosen_greedy_only']} h "
           f"greedy only")

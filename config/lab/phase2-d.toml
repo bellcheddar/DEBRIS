@@ -1,0 +1,10 @@
+description = "Phase 2 2d tissues: the 18 plus other:, on the Phase 1 recipe"
+iters = 600
+folds = [0, 1, 2]
+seeds = [42]
+gold = "v2"
+compare_to = "phase2-base"
+
+[switches]
+mask_prompt = true
+tissues = true

@@ -149,3 +149,98 @@ def per_tissue(pairs: list[tuple[dict, dict]]) -> dict[str, dict]:
 
 def target_json(tag: dict) -> str:
     return json.dumps(tag, separators=(",", ":"), ensure_ascii=False)
+
+
+# ------------------------------------------------------------------------ report
+
+V2_METRICS = ("tissues_f1", "tissues_parent_f1", "polymers_parent_f1",
+              "organ_systems_derived_f1", "organ_systems_union_f1", "organ_systems_literal_f1")
+
+
+def paper_sets(g: dict, p: dict) -> dict[str, tuple[set, set]]:
+    """Gold and predicted sets per paper for each Phase 2 metric, as metrics() forms them."""
+    get = lambda d, k: d.get(k) or []
+    return {
+        "tissues_f1": (set(get(g, "tissues")), set(get(p, "tissues"))),
+        "tissues_parent_f1": (up(get(g, "tissues")), up(get(p, "tissues"))),
+        "polymers_parent_f1": (up(g["polymers"]), up(p["polymers"])),
+        "organ_systems_derived_f1": (set(g["organ_systems"]), systems(get(p, "tissues"))),
+        "organ_systems_union_f1": (set(g["organ_systems"]),
+                                   set(p["organ_systems"]) | systems(get(p, "tissues"))),
+        "organ_systems_literal_f1": (systems(get(g, "tissues")), systems(get(p, "tissues"))),
+    }
+
+
+def paper_counts(rows: list[dict]):
+    """(papers, 3) arrays of true positives, false positives and false negatives, so a
+    bootstrap resamples counts rather than recomputing sets."""
+    import numpy as np
+
+    out = {k: np.zeros((len(rows), 3), dtype=np.int64) for k in V2_METRICS}
+    for i, r in enumerate(rows):
+        for k, (a, b) in paper_sets(r["gold"], r["pred"]).items():
+            out[k][i] = (len(a & b), len(b - a), len(a - b))
+    return out
+
+
+def f1_counts(counts, idx) -> dict[str, float]:
+    out = {}
+    for k, arr in counts.items():
+        tp, fp, fn = arr[idx].sum(axis=0)
+        out[k] = 0.0 if tp == 0 and (fp or fn) else (1.0 if tp == 0 else float(2 * tp / (2 * tp + fp + fn)))
+    return out
+
+
+def report_section(results: dict[str, dict], configs: dict[str, dict], resamples: int = 2000) -> list[str]:
+    """Phase 2 in LAB_REPORT.md: the v2-only metrics for every arm scored on v2 gold, and
+    each arm's paired effect over its reference. Adopting a definition is the owner's call
+    (LAB_PLAN.md rule 5), so this measures and does not decide."""
+    import numpy as np
+
+    arms = [n for n in results if configs[n].get("gold") == "v2"]
+    if not arms:
+        return []
+    lines = ["## Phase 2: v2 metrics", "",
+             "Scored against v2 gold. Organ systems three ways: tagged directly (the floor "
+             "metric above), derived from the predicted tissues, and the union; `literal` "
+             "compares systems derived from tissues on both sides.", "",
+             "| experiment | " + " | ".join(V2_METRICS) + " |", "|---" * (len(V2_METRICS) + 1) + "|"]
+    for n in arms:
+        rows = [results[n][p] for p in sorted(results[n])]
+        m = f1_counts(paper_counts(rows), np.arange(len(rows)))
+        lines.append(f"| {n} | " + " | ".join(f"{m[k]:.3f}" for k in V2_METRICS) + " |")
+    lines.append("")
+    diffs = []
+    for n in arms:
+        ref = configs[n].get("compare_to")
+        if not ref or ref not in results or ref == n:
+            continue
+        shared = sorted(set(results[n]) & set(results[ref]))
+        a = paper_counts([results[ref][p] for p in shared])
+        b = paper_counts([results[n][p] for p in shared])
+        full = np.arange(len(shared))
+        point = {k: f1_counts(b, full)[k] - f1_counts(a, full)[k] for k in V2_METRICS}
+        rng = np.random.default_rng(7)
+        draws = {k: [] for k in V2_METRICS}
+        for _ in range(resamples):
+            idx = rng.integers(0, len(shared), len(shared))
+            fa, fb = f1_counts(a, idx), f1_counts(b, idx)
+            for k in V2_METRICS:
+                draws[k].append(fb[k] - fa[k])
+        cells = []
+        for k in V2_METRICS:
+            lo, hi = np.quantile(draws[k], 0.025), np.quantile(draws[k], 0.975)
+            cells.append(f"{point[k]:+.3f} [{lo:+.3f}, {hi:+.3f}]" + (" **real**" if lo > 0 or hi < 0 else ""))
+        diffs.append(f"| {n} vs {ref} | " + " | ".join(cells) + " |")
+    if diffs:
+        lines += ["| comparison | " + " | ".join(V2_METRICS) + " |",
+                  "|---" * (len(V2_METRICS) + 1) + "|"] + diffs + [""]
+    tissue_arms = [n for n in arms if configs[n].get("switches", {}).get("tissues")]
+    for n in tissue_arms:
+        rows = [results[n][p] for p in sorted(results[n])]
+        per = per_tissue([(r["gold"], r["pred"]) for r in rows])
+        lines += [f"### Per tissue, {n}", "", "| tissue | " + " | ".join(next(iter(per.values()))) + " |",
+                  "|---" * (len(next(iter(per.values()))) + 1) + "|"]
+        lines += [f"| {t} | " + " | ".join(str(v) for v in d.values()) + " |" for t, d in per.items()]
+        lines.append("")
+    return lines

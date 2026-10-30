@@ -51,3 +51,22 @@ def test_parent_level_and_derived_systems():
 def test_every_tissue_and_other_site_has_a_system_except_muscle():
     for t in V.V2["tissues"]:
         assert (t in V.SYSTEM_OF) == (t != "skeletal_muscle")
+
+
+def test_report_section_counts_match_metrics_and_pair_arms():
+    from pipeline import lab_v2
+
+    g = {"relevant": True, "polymers": ["PA6"], "organ_systems": ["nervous"], "tissues": ["frontal_lobe"]}
+    p = {"relevant": True, "polymers": ["PA"], "organ_systems": [], "tissues": ["brain"]}
+    rows = {str(i): {"gold": g, "pred": p} for i in range(6)}
+    import numpy as np
+    counted = lab_v2.f1_counts(lab_v2.paper_counts(list(rows.values())), np.arange(6))
+    direct = lab_v2.metrics([(g, p)] * 6)
+    for k in lab_v2.V2_METRICS:
+        assert abs(counted[k] - direct[k]) < 1e-4, k
+    configs = {"base": {"gold": "v2"}, "arm": {"gold": "v2", "compare_to": "base",
+                                                "switches": {"tissues": True}}}
+    lines = lab_v2.report_section({"base": rows, "arm": rows}, configs, resamples=20)
+    text = "\n".join(lines)
+    assert "arm vs base" in text and "+0.000" in text and "Per tissue, arm" in text
+    assert lab_v2.report_section({"x": rows}, {"x": {}}) == []

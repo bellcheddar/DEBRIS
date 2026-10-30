@@ -32,3 +32,10 @@ def test_pick_is_the_fastest_arm_that_tags_the_same():
                "batched-16": {"failed": "oom"}}
     assert tb.pick(results, [])["arm"] == "batched-32"
     assert tb.pick({"batched-8": {"failed": "x"}}, []) == {}
+
+
+def test_answer_key_ignores_free_text_and_list_order():
+    a = '{"relevant":true,"pathways":["b","a"],"summary":"one wording","disease_terms":["x"]}'
+    b = '{"relevant":true,"pathways":["a","b"],"summary":"another","disease_terms":["y"]}'
+    assert tb.answer_key(a) == tb.answer_key(b)
+    assert tb.field_agreement([a], [b]) == {"pathways": 1.0, "relevant": 1.0}

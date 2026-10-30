@@ -1,0 +1,10 @@
+description = "Phase 2 2b pathways: assayed pathways only, on the Phase 1 recipe"
+iters = 600
+folds = [0, 1, 2]
+seeds = [42]
+gold = "v2"
+compare_to = "phase2-base"
+
+[switches]
+mask_prompt = true
+pathways_v2 = true

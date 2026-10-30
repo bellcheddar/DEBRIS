@@ -1,0 +1,10 @@
+description = "Phase 2 base: the Phase 1 recipe (A only), trained on v1, scored on v2 gold"
+iters = 600
+folds = [0, 1, 2]
+seeds = [42]
+gold = "v2"
+
+
+[switches]
+mask_prompt = true
+

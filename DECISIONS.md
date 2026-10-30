@@ -1114,3 +1114,13 @@ The other four are 32B errors, or the order rule applied correctly by the gold. 
 **v2.3** writes these boundaries down as the gold already applies them, on top of the v2.2 cues: the comparison rule for cohort against tissue; human exposure experiments and trials as `human_cohort`; human_in_vitro as primary human cells only, with named lines; the study's own strongest design; cell_free against in_silico; and every detected polymer, with no `mixed_unspecified` when there are no particles. The text sits in `ceiling.V2_3_RULINGS` until Phase 2 releases `labels_v2.py`. Tonight the 32B relabels the ceiling sample under v2.2 and then v2.3, so each step's effect is measured separately. Adopting either is the owner's decision (rule 5). No gold label changes, because the rulings describe what the gold already does.
 
 **Owner's change (2026-10-30): one run.** The 32B relabels the ceiling sample once, under v2.3, which includes the v2.2 cues. The effect of the cues and of the v2.3 rulings is measured together and not separated. The v2.2 rule set stays in `ceiling.py` in case they need to be told apart later.
+
+## D49 Phase 2, tag_verify and the v2.3 ceiling: results, nothing adopted
+
+All three ran unattended on 2026-10-30 under the supervisor with no restarts. Full tables in LAB_REPORT.md and data/manifests/tag_verify.json.
+
+- **Phase 2** (1.5B, 3 folds, v2 gold, paired against phase2-base): pathways +0.151 [+0.129, +0.174]; polymers +0.115 [+0.083, +0.148]; model type +0.018 [+0.003, +0.034]; tissues 0.714 F1 from nothing. No arm harmed another field. Organ systems derived from predicted tissues (0.550) is weaker than tagging them directly (0.706), so direct tagging stays. Blood recall is 0.51 on 71 papers.
+- **tag_verify**: batch 8, 16 and 32 with the prefix cache are equivalent to the old loop on gold (floor mean within 0.004). [tag] is batch 32, prefix cache on; hybrid 1.343 s/paper, about 3.5 h a full pass. Fused weights: 0.881 s/paper, equivalent by the rule, pathways +0.054 [+0.006, +0.104], model type -0.023 [-0.060, 0.000]. Production stays unfused until the owner decides.
+- **v2.3 ceiling** (32B, 81 papers): model type 0.877 (v2.1 0.889), pathways 0.684 (0.657), polymers 1.000 (0.988), tissues 0.821 (0.834). Every interval overlaps v2.1, so the written-down cues and rulings move the ceiling by no more than noise on this sample; they codify what the gold already does rather than change it.
+
+Per rule 5 none of this is adopted. The definition choices go to the owner.

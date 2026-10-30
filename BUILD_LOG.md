@@ -508,3 +508,5 @@
 - 2026-10-30 17:00 tag verify: fused at batch 32 0.881 s/paper, equivalent True
 - 2026-10-30 17:00 tag verify: [tag] set to batch 32 with the shared prompt; a hybrid pass over 9346 papers ~3.5 h
 - 2026-10-30 17:00 ceiling v2.3: labelling 81 papers with mlx-community/Qwen2.5-32B-Instruct-4bit
+- 2026-10-30 17:36 ceiling v2: 81 second labels in 36.1 min
+- 2026-10-30 17:36 v2.3 ceiling done (pathways 0.684, polymers 1.000, model type 0.877, tissues 0.821; all within noise of v2.1). Supervisor ALL DONE. D49.

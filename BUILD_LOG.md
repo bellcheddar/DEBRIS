@@ -598,3 +598,8 @@
 - 2026-10-31 02:26 lab phase3-a f1 s42: trained in 47.8 min
 - 2026-10-31 02:28 qc ui: pass, 10 page renders, 0 serious or critical axe violations, 0 console errors, 0 failed requests
 - 2026-10-31 02:28 app: every panel has Open in Papers in its own head and on its card header, both with the selection's count; the Atlas year and evidence charts are panels; Pathways gains a card button that follows the last panel picked in.
+- 2026-10-31 02:30 lab phase3-a f1 s42 @ 600: relevant_f1 0.9098, polymers_f1 0.8783, organ_systems_f1 0.7017, pathways_f1 0.7206, rungs_exact 0.7516, rungs_within_one 0.8309, model_type_accuracy 0.7923, valid_json 1.0, 0.52 s/paper
+- 2026-10-31 02:30 lab phase3-a f2 s42: training 600 iterations
+- 2026-10-31 02:30 train: /Users/dellboy/Documents/Vibe_Coding/debris/.pixi/envs/default/bin/python /Users/dellboy/Documents/Vibe_Coding/debris/pipeline/mlx_capped.py mlx_lm.lora --model Qwen/Qwen2.5-1.5B-Instruct --train ...
+- 2026-10-31 02:33 qc ui: pass, 10 page renders, 0 serious or critical axe violations, 0 console errors, 0 failed requests
+- 2026-10-31 02:33 app: panel captions removed across the site (owner).

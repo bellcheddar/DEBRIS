@@ -82,7 +82,7 @@ Reviews report none of their own.
 
 ## The four tabs
 
-- **Atlas**: which plastics have been studied together, and the evidence ladder by disease and year.
+- **Atlas**: which plastics have been studied together, the kind of evidence by disease, and the corpus over time.
 - **Body**: click an organ to see the plastics found in it, the mechanisms and the papers behind them.
 - **Pathways**: how each plastic links to mechanisms and diseases.
 - **Papers**: the whole verified corpus, searchable and filterable. NEW marks papers from the

@@ -57,17 +57,42 @@
     }), DEBRIS.config);
 
     // A ribbon selects its two ends, a node selects itself; the same again clears it.
+    // Plotly reports ribbon clicks, but its node dragging swallows node clicks, so a
+    // node is taken from the last hover and selected on the page's own click event.
     el.removeAllListeners && el.removeAllListeners('plotly_click');
+    el.removeAllListeners && el.removeAllListeners('plotly_hover');
+    el.removeAllListeners && el.removeAllListeners('plotly_unhover');
+    let hoverNode = null;
+    el.on('plotly_hover', (ev) => {
+      const pt = ev.points[0];
+      hoverNode = pt && pt.sourceLinks !== undefined ? pt.pointNumber : null;
+    });
+    el.on('plotly_unhover', () => { hoverNode = null; });
+    // During a press Plotly lays a drag cover over the page, so the click never reaches
+    // the chart. A press and release a few pixels apart over a node is the click.
+    if (el.debrisDown) el.removeEventListener('pointerdown', el.debrisDown, true);
+    el.debrisDown = (e) => {
+      if (hoverNode === null) return;
+      const node = hoverNode, x = e.clientX, y = e.clientY;
+      const up = (u) => {
+        window.removeEventListener('pointerup', up, true);
+        if (Math.abs(u.clientX - x) < 5 && Math.abs(u.clientY - y) < 5) pickEnds([node]);
+      };
+      window.addEventListener('pointerup', up, true);
+    };
+    el.addEventListener('pointerdown', el.debrisDown, true);
     el.on('plotly_click', (ev) => {
       const point = ev.points[0];
-      const ends = [];
-      if (point.source && point.target) {
-        const shown = sankey.links.filter((l) => !(hideOther() && l.other));
-        const link = shown[point.index];
-        if (link) ends.push(link.source, link.target);
-      } else if (point.pointNumber !== undefined) {
-        ends.push(point.pointNumber);
-      }
+      if (!(point.source && point.target) || point.sourceLinks !== undefined) return;
+      const shown = sankey.links.filter((l) => !(hideOther() && l.other));
+      const link = shown[point.index];
+      if (!link) return;
+      pickEnds([link.source, link.target]);
+    });
+  }
+
+  function pickEnds(ends) {
+    {
       const qs = new URLSearchParams();
       ends.forEach((i) => {
         const key = keyFor(i);
@@ -79,7 +104,7 @@
       const s = qs.toString();
       sankeySel = !s || s === sankeySel ? null : s;
       DEBRIS.setOpen(document.querySelector('[data-open="sankey"]'), sankeySel || '', !!sankeySel);
-    });
+    }
   }
 
   /* Node labels are display names; the keys the API filters on come back from the

@@ -7,22 +7,21 @@
     polymer: document.getElementById('polymer'),
     organ: document.getElementById('organ'),
     rung: document.getElementById('rung'),
-    pet: document.getElementById('pet'),
   };
 
   // A click-through from the Atlas, Body or Pathways tab arrives as a query string.
   ['polymer', 'organ', 'rung', 'q'].forEach((k) => {
     if (params.get(k) && controls[k]) controls[k].value = params.get(k);
   });
-  ['pet', 'novel', 'new'].forEach((k) => {
+  ['novel', 'new'].forEach((k) => {
     if (params.get(k) === '1' && controls[k]) controls[k].checked = true;
   });
 
   // Filters another tab can send that have no control of their own here. They apply until
   // cleared, and the banner says what they are, so a click-through never filters silently.
-  const LINKED = ['novel', 'new', 'disease', 'pathway', 'polymers', 'not_polymers', 'organs',
+  const LINKED = ['pet', 'novel', 'new', 'disease', 'pathway', 'polymers', 'not_polymers', 'organs',
                   'rungs', 'tissue', 'model_type', 'entered_from', 'entered_to'];
-  const NAMES = { novel: 'novel', new: 'new this week', disease: 'disease', pathway: 'pathway',
+  const NAMES = { pet: 'PET specific', novel: 'novel', new: 'new this week', disease: 'disease', pathway: 'pathway',
                   polymers: 'polymers', not_polymers: 'without', organs: 'organs', rungs: 'evidence',
                   tissue: 'tissue', model_type: 'study type', entered_from: 'entered after',
                   entered_to: 'entered up to' };
@@ -31,7 +30,7 @@
   const banner = document.getElementById('linkfilters');
   if (banner && linked.length) {
     banner.innerHTML = '<span>Opened from another tab: '
-      + linked.map((k) => `<b>${DEBRIS.esc(NAMES[k])}</b> ${DEBRIS.esc(k === 'rungs'
+      + linked.map((k) => params.get(k) === '1' ? `<b>${DEBRIS.esc(NAMES[k])}</b>` : `<b>${DEBRIS.esc(NAMES[k])}</b> ${DEBRIS.esc(k === 'rungs'
         ? params.get(k).split(',').map(DEBRIS.evidence).join(' or ') : params.get(k).replace(/\|/g, ' and ').replace(/,/g, ', '))}`).join(' · ')
       + '</span><a class="btn ghost" href="/papers">Clear</a>';
     banner.hidden = false;
@@ -74,33 +73,40 @@
     paginationMode: 'remote',
     paginationSize: 50,
     sortMode: 'remote',
+    // Columns share the width rather than fixing it, so the table never scrolls sideways;
+    // on a narrow screen the lowest-priority columns fold into a row you can open.
     layout: 'fitColumns',
+    responsiveLayout: 'collapse',
     placeholder: 'No papers match these filters.',
     height: '640px',
     columns: [
-      { title: 'PMID', field: 'pmid', width: 92, cssClass: 'mono', headerSort: true },
-      { title: 'Year', field: 'year', width: 68, cssClass: 'mono', hozAlign: 'right' },
-      { title: 'Title', field: 'title', minWidth: 260, formatter: (cell) => {
+      { formatter: 'responsiveCollapse', width: 30, minWidth: 30, hozAlign: 'center',
+        resizable: false, headerSort: false, responsive: 0 },
+      { title: 'Title', field: 'title', minWidth: 150, widthGrow: 3, responsive: 0, formatter: (cell) => {
           const row = cell.getRow().getData();
           const title = DEBRIS.esc(cell.getValue() || '');
           return row.retracted ? `<span class="retracted">${title}</span>` : title;
         } },
-      { title: 'Journal', field: 'journal', width: 150 },
-      { title: 'Polymers', field: 'polymers', width: 170,
+      { title: 'Year', field: 'year', minWidth: 56, widthGrow: 0.5, cssClass: 'mono', hozAlign: 'right', responsive: 1 },
+      { title: 'Polymers', field: 'polymers', minWidth: 110, widthGrow: 1.2, responsive: 2,
         formatter: (cell) => tagList(cell, 'poly') },
-      { title: 'Organs', field: 'organ_systems', width: 160,
-        formatter: (cell) => tagList(cell) },
-      { title: 'Evidence', field: 'rungs', width: 200,
+      { title: 'Evidence', field: 'rungs', minWidth: 130, widthGrow: 1.4, responsive: 3,
         formatter: (cell) => (cell.getValue() || [])
           .map((r) => `<span class="tag rung">${DEBRIS.esc(DEBRIS.evidence(r))}</span>`).join(' ') },
-      { title: 'Model', field: 'model_type', width: 120 },
-      { title: 'Conf', field: 'confidence', width: 70, cssClass: 'mono', hozAlign: 'right',
+      { title: 'Model', field: 'model_type', minWidth: 100, widthGrow: 1, responsive: 4 },
+      { title: 'Organs', field: 'organ_systems', minWidth: 110, widthGrow: 1.2, responsive: 5,
+        formatter: (cell) => tagList(cell) },
+      { title: 'Conf', field: 'confidence', minWidth: 56, widthGrow: 0.5, cssClass: 'mono', hozAlign: 'right', responsive: 6,
         formatter: (cell) => cell.getValue() === null || cell.getValue() === undefined
           ? '' : Number(cell.getValue()).toFixed(2) },
+      { title: 'Journal', field: 'journal', minWidth: 100, widthGrow: 1, responsive: 7 },
+      { title: 'PMID', field: 'pmid', minWidth: 80, widthGrow: 0.6, cssClass: 'mono', headerSort: true, responsive: 8 },
     ],
   });
 
   table.on('rowClick', (_e, row) => DEBRIS.openPaper(row.getData().pmid));
+  // Re-measure once each page arrives, so narrow screens fold the low-priority columns.
+  table.on('dataProcessed', () => setTimeout(() => table.redraw(true), 0));
 
   /* Tabulator 6.3 nests role="rowgroup" inside role="rowgroup", which leaves the
      header without an owned row and the inner group without a grid parent. Marking
@@ -110,11 +116,11 @@
   table.on('tableBuilt', fixHeaderRoles);
   table.on('renderComplete', fixHeaderRoles);
 
-  const refresh = () => {
-    table.setData('/api/papers');
+  const download = () => {
     const qs = new URLSearchParams(filters()).toString();
     document.getElementById('download').href = '/download/debris_latest.csv' + (qs ? '?' + qs : '');
   };
+  const refresh = () => { table.setData('/api/papers'); download(); };
   Object.values(controls).forEach((el) => {
     if (!el) return;
     el.addEventListener(el.tagName === 'INPUT' && el.type === 'search' ? 'input' : 'change',
@@ -124,7 +130,8 @@
     () => table.download('csv', 'debris_page.csv'));
   document.querySelectorAll('.paper [data-pmid]').forEach((btn) =>
     btn.addEventListener('click', () => DEBRIS.openPaper(btn.dataset.pmid)));
-  refresh();
+  // The table loads its own first page once built; asking earlier is what threw.
+  download();
 
   function debounce(fn, ms) {
     let t;

@@ -53,7 +53,6 @@
       <option value="">All evidence</option>
       {% for r in vocab.rungs %}<option value="{{ r.rung }}">{{ vocab.evidence_labels[r.rung|string] }}</option>{% endfor %}
     </select>
-    <label class="switch"><input type="checkbox" id="pet"> PET-specific only</label>
     <button class="btn ghost" type="button" id="export">Export CSV</button>
     <a class="btn ghost" id="download" href="/download/debris_latest.csv">Full CSV</a>
     <span class="tablecount mono" id="tablecount" role="status" aria-live="polite"></span>

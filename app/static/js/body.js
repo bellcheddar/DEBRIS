@@ -375,9 +375,6 @@
     if (all) { all.dataset.label = 'Open in Papers'; DEBRIS.setOpen(all, query(node), true); }
   }
 
-  document.getElementById('pet-only').addEventListener('change', (e) => {
-    petMode = e.target.checked; figure.paint(); rail.paint(); selbar();
-  });
   document.getElementById('reset-pins').addEventListener('click', () => figure.reset());
   DEBRIS.chips('.rail-chip', (value) => { railMode = value; rail.build(); });
   DEBRIS.chips('.card-chip', (value) => { cardMode = value; cards.build(); });

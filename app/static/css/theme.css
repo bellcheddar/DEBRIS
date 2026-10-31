@@ -459,3 +459,19 @@ a.kpi:hover,a.kpi:focus-visible{border-color:var(--el-blue);background:var(--el-
 .serieslegend .series.off i{opacity:.35}
 .serieslegend .series.lit,.serieslegend .series:hover,.serieslegend .series:focus-visible{
   border-color:var(--el-blue);background:var(--el-tint);color:var(--el-ink);font-weight:700}
+/* Papers table cells wrap, so the columns can share the width. */
+#papers-table .tabulator-cell{white-space:normal;word-break:break-word}
+@media (max-width:768px){
+  #papers-table .tabulator-table,#papers-table .tabulator-row{min-width:0 !important;width:100% !important}
+  #papers-table .tabulator-responsive-collapse{max-width:100%;overflow-wrap:anywhere}
+}
+/* The folded columns' detail wraps inside its row instead of widening the table. */
+#papers-table .tabulator-responsive-collapse table{table-layout:fixed;width:100%}
+#papers-table .tabulator-responsive-collapse td{white-space:normal;overflow-wrap:anywhere;vertical-align:top;padding:2px 6px}
+#papers-table .tabulator-responsive-collapse td:first-child{width:34%}
+@media (max-width:768px){
+  .statusbox{flex:1 1 100%;width:100%;min-width:0;max-width:100%}
+  .healthtable{width:100%;table-layout:fixed}
+  .healthtable th{white-space:normal;padding-left:6px;letter-spacing:0.08em}
+  .healthtable td{white-space:normal;overflow-wrap:anywhere}
+}

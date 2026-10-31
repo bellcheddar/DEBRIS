@@ -609,3 +609,9 @@
 - 2026-10-31 02:39 qc ui: pass, 10 page renders, 0 serious or critical axe violations, 0 console errors, 0 failed requests
 - 2026-10-31 02:43 qc ui: pass, 10 page renders, 0 serious or critical axe violations, 0 console errors, 0 failed requests
 - 2026-10-31 02:43 app: panel subtitles and in-panel footer notes removed (owner).
+- 2026-10-31 02:58 qc ui: fail, 10 page renders, 2 serious or critical axe violations, 0 console errors, 0 failed requests
+- 2026-10-31 02:59 qc ui: pass, 10 page renders, 0 serious or critical axe violations, 0 console errors, 0 failed requests
+- 2026-10-31 03:05 qc ui: pass, 10 page renders, 0 serious or critical axe violations, 0 console errors, 0 failed requests
+- 2026-10-31 03:14 qc ui: pass, 10 page renders, 0 serious or critical axe violations, 0 console errors, 0 failed requests
+- 2026-10-31 03:17 qc ui: pass, 10 page renders, 0 serious or critical axe violations, 0 console errors, 0 failed requests
+- 2026-10-31 03:17 app: card descriptions and the PET switches removed (owner); Papers table fits the width (shared columns, low-priority columns fold on phones), early-load console error fixed; header status table fits phones; no page scrolls sideways at 1440, 390 or 360.

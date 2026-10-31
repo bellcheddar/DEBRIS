@@ -8,7 +8,7 @@
 <section class="card" id="card-newweek">
   <h2>New this week</h2>
   {% if bundle.new_this_week %}
-  <div class="feed">
+  <div class="feed five">
     {% for p in bundle.new_this_week %}
     <article class="paper{% if p.retracted %} retracted{% endif %}">
       <div class="meta">

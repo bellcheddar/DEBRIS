@@ -475,3 +475,9 @@ a.kpi:hover,a.kpi:focus-visible{border-color:var(--el-blue);background:var(--el-
   .healthtable th{white-space:normal;padding-left:6px;letter-spacing:0.08em}
   .healthtable td{white-space:normal;overflow-wrap:anywhere}
 }
+/* New this week: five cards to a row, fewer as the screen narrows. */
+.feed.five{grid-template-columns:repeat(5,minmax(0,1fr))}
+@media (max-width:1100px){.feed.five{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media (max-width:768px){.feed.five{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:480px){.feed.five{grid-template-columns:minmax(0,1fr)}}
+.feed.five .mono{overflow-wrap:anywhere}

@@ -46,7 +46,6 @@
     <button class="chip organ-chip" type="button" data-value="{{ chip.key }}"
             aria-pressed="{{ 'true' if chip.key == 'all' else 'false' }}">{{ chip.label }}</button>
     {% endfor %}
-    <label class="switch"><input type="checkbox" id="pet-only"> PET-specific only</label>
   </div>
   <div class="selbar" id="selbar" role="status" aria-live="polite"></div>
   <div class="panelgrid">

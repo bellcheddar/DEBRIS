@@ -258,7 +258,10 @@
       const disc = discLayer.selectAll('circle').data(nodes, (d) => d.k)
         .join('circle').attr('class', 'disc');
       disc.attr('cx', (d) => d.x).attr('cy', (d) => d.y).attr('r', (d) => d.r)
-        .attr('fill', (d) => colour(d.k)).attr('stroke', (d) => colour(d.k));
+        .attr('fill', (d) => colour(d.k)).attr('stroke', (d) => colour(d.k))
+        // The whole circle selects its polymer, not only the label at its centre.
+        .style('cursor', 'pointer')
+        .on('click', (e, d) => { e.stopPropagation(); select(d.k, null); });
 
       const mark = markLayer.selectAll('g').data(nodes, (d) => d.k).join((enter) => {
         const g = enter.append('g').style('cursor', 'grab');
@@ -687,9 +690,6 @@
 
   DEBRIS.chips('.organ-chip', (value) => { organ = value; rebuildAll(); });
   DEBRIS.chips('.ladder-chip', (value) => { ladderScope = value; ladder(); });
-  document.getElementById('pet-only').addEventListener('change', (e) => {
-    petOnly = e.target.checked; rebuildAll();
-  });
 
   rebuildAll();
   ladder();

@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% block title %}PET Watch{% endblock %}
+
+{% block content %}
+<section class="card" id="card-pet">
+  <h2>PET Watch</h2>
+  <div class="panelgrid">
+    <figure class="panel" id="panel-tissues">
+      <div class="panelhead"><h3>By tissue</h3>
+        <a class="panel-open" data-open="tissues" href="/papers?polymers=PET">Open in Papers</a></div>
+      <div id="pet-tissues" class="plot" style="min-height:420px"></div>
+    </figure>
+    <figure class="panel" id="panel-mechanisms">
+      <div class="panelhead"><h3>By mechanism</h3>
+        <a class="panel-open" data-open="mechanisms" href="/papers?polymers=PET">Open in Papers</a></div>
+      <div id="pet-mechanisms" class="plot" style="min-height:420px"></div>
+    </figure>
+    <figure class="panel" id="panel-evidence">
+      <div class="panelhead"><h3>By evidence</h3>
+        <a class="panel-open" data-open="evidence" href="/papers?polymers=PET">Open in Papers</a></div>
+      <div id="pet-evidence" class="plot" style="min-height:260px"></div>
+      <ol class="readlist" id="pet-reading" aria-label="Dose-response and reversibility papers"></ol>
+    </figure>
+    <figure class="panel" id="panel-rising">
+      <div class="panelhead"><h3>Rising</h3>
+        <a class="panel-open" data-open="rising" href="/papers?polymers=PET">Open in Papers</a></div>
+      <div class="risehead mono" id="pet-rise-head"></div>
+      <div id="pet-rising" class="plot" style="min-height:400px"></div>
+    </figure>
+  </div>
+</section>
+
+{% include "_drawer.html" %}
+{% endblock %}
+
+{% block scripts %}
+<script>window.PET = {{ bundle|tojson }};</script>
+<script src="{{ url_for('static', filename='js/pet.js') }}?v={{ asset_version('js/pet.js') }}"></script>
+{% endblock %}

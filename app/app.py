@@ -32,7 +32,7 @@ app.config["JSON_SORT_KEYS"] = False
 
 TABS = [("01", "Atlas", "/"), ("02", "Body", "/body"),
         ("03", "Pathways", "/pathways"), ("04", "Polymers", "/polymers"),
-        ("05", "Papers", "/papers"), ("06", "About", "/about")]
+        ("05", "PET Watch", "/pet"), ("06", "Papers", "/papers"), ("07", "About", "/about")]
 
 
 # ----------------------------------------------------------------------- plumbing
@@ -170,6 +170,11 @@ def pathways():
 @app.route("/polymers")
 def polymers():
     return render_template("polymers.html", active="/polymers", bundle=load_bundle("polymers"))
+
+
+@app.route("/pet")
+def pet():
+    return render_template("pet.html", active="/pet", bundle=load_bundle("pet"))
 
 
 @app.route("/papers")

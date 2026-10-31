@@ -588,6 +588,84 @@ def polymers_bundle(conn, trend: list[dict]) -> dict:
     }
 
 
+PET_TREND_MIN = 6   # papers across the two windows before a row's growth is shown
+
+
+def tissue_label(key: str) -> str:
+    if key in V.get("tissue_labels", {}):
+        return V["tissue_labels"][key]
+    return key.replace("other:", "").replace("_", " ").capitalize()
+
+
+def pet_bundle(conn) -> dict:
+    """PET Watch: papers naming PET by tissue, mechanism and kind of evidence, the short
+    list of dose-response and reversibility papers, and what is rising within PET (the
+    past twelve months by PubMed entry date against the twelve before)."""
+    pet = f"""FROM papers p JOIN tags t USING (pmid)
+              WHERE {CORPUS} AND t.relevant = 1
+                AND p.pmid IN (SELECT pmid FROM tag_polymers WHERE polymer = 'PET')"""
+    total = conn.execute(f"SELECT COUNT(*) {pet}").fetchone()[0]
+
+    def by(table: str, column: str, label) -> list[dict]:
+        rows = conn.execute(f"""
+            SELECT x.{column} AS k, COUNT(DISTINCT p.pmid) AS n,
+                   COUNT(DISTINCT CASE WHEN substr(p.edat, 1, 10) > date('now', '-12 months')
+                                       THEN p.pmid END) AS now,
+                   COUNT(DISTINCT CASE WHEN substr(p.edat, 1, 10) <= date('now', '-12 months')
+                                        AND substr(p.edat, 1, 10) > date('now', '-24 months')
+                                       THEN p.pmid END) AS before
+            FROM papers p JOIN tags t USING (pmid) JOIN {table} x ON x.pmid = p.pmid
+            WHERE {CORPUS} AND t.relevant = 1
+              AND p.pmid IN (SELECT pmid FROM tag_polymers WHERE polymer = 'PET')
+            GROUP BY x.{column}""").fetchall()
+        return sorted(({"key": r["k"], "label": label(r["k"]), "n": r["n"], "now": r["now"],
+                        "before": r["before"]} for r in rows), key=lambda r: -r["n"])
+
+    tissues = by("tag_tissues", "tissue", tissue_label)
+    pathways = by("tag_pathways", "pathway", lambda k: V["pathway_labels"].get(k, k))
+    rungs = {str(r["rung"]): r["n"] for r in conn.execute(f"""
+        SELECT r.rung AS rung, COUNT(DISTINCT p.pmid) AS n
+        FROM papers p JOIN tags t USING (pmid) JOIN tag_rungs r ON r.pmid = p.pmid
+        WHERE {CORPUS} AND t.relevant = 1
+          AND p.pmid IN (SELECT pmid FROM tag_polymers WHERE polymer = 'PET')
+        GROUP BY r.rung""")}
+    reading = [dict(r) | {"rungs": sorted(int(x) for x in r["rungs"].split(","))}
+               for r in conn.execute(f"""
+        SELECT p.pmid, p.title, p.journal, p.year,
+               (SELECT GROUP_CONCAT(rung) FROM tag_rungs WHERE pmid = p.pmid) AS rungs
+        FROM papers p JOIN tags t USING (pmid)
+        WHERE {CORPUS} AND t.relevant = 1
+          AND p.pmid IN (SELECT pmid FROM tag_polymers WHERE polymer = 'PET')
+          AND p.pmid IN (SELECT pmid FROM tag_rungs WHERE rung IN (5, 6))
+        ORDER BY (SELECT MAX(rung) FROM tag_rungs WHERE pmid = p.pmid) DESC, p.year DESC""")]
+    window = conn.execute("""SELECT date('now', '-12 months'), date('now', '-24 months'),
+                                    date('now')""").fetchone()
+    windows = conn.execute(f"""
+        SELECT COUNT(CASE WHEN substr(p.edat, 1, 10) > date('now', '-12 months') THEN 1 END),
+               COUNT(CASE WHEN substr(p.edat, 1, 10) <= date('now', '-12 months')
+                           AND substr(p.edat, 1, 10) > date('now', '-24 months') THEN 1 END)
+        {pet}""").fetchone()
+    corpus = conn.execute(f"""
+        SELECT COUNT(CASE WHEN substr(p.edat, 1, 10) > date('now', '-12 months') THEN 1 END),
+               COUNT(CASE WHEN substr(p.edat, 1, 10) <= date('now', '-12 months')
+                           AND substr(p.edat, 1, 10) > date('now', '-24 months') THEN 1 END)
+        FROM papers p JOIN tags t USING (pmid) WHERE {CORPUS} AND t.relevant = 1""").fetchone()
+    rising = [dict(r, kind="tissue") for r in tissues] + [dict(r, kind="pathway") for r in pathways]
+    rising = [r for r in rising if r["now"] + r["before"] >= PET_TREND_MIN
+              and not str(r["key"]).startswith("other")]
+    rising.sort(key=lambda r: -(r["now"] + 1) / (r["before"] + 1))
+    return {
+        "total": total,
+        "tissues": tissues[:12], "pathways": pathways[:12],
+        "rungs": rungs, "rung_labels": dict(V["evidence_labels"]),
+        "reading": reading,
+        "rising": rising[:10],
+        "windows": {"now_from": window[0], "before_from": window[1], "to": window[2],
+                    "pet_now": windows[0], "pet_before": windows[1],
+                    "corpus_now": corpus[0], "corpus_before": corpus[1]},
+    }
+
+
 def main() -> None:
     ap = argparse.ArgumentParser(description="Write the app's static aggregates")
     ap.add_argument("--quiet", action="store_true")
@@ -602,6 +680,7 @@ def main() -> None:
         "feed": feed_bundle(conn),
     }
     bundles["polymers"] = polymers_bundle(conn, bundles["atlas"]["trend"])
+    bundles["pet"] = pet_bundle(conn)
     total = 0
     for name, payload in bundles.items():
         path = c.STATIC_DATA / f"{name}.json"

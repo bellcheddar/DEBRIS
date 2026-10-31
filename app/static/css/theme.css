@@ -519,3 +519,13 @@ a.kpi:hover,a.kpi:focus-visible{border-color:var(--el-blue);background:var(--el-
 .healthtable .hbox.lit,.healthtable .hbox:focus-within{background:var(--el-soft)}
 .healthtable td.hbox a{color:inherit;text-decoration:none;display:block;padding-right:8px}
 .healthtable td.hbox a:focus-visible{outline:2px solid var(--el-blue);outline-offset:1px}
+/* PET Watch: the short list of dose-response and reversibility papers, and the rise line. */
+.readlist{list-style:none;margin:0;padding:4px 14px 14px;display:grid;gap:6px;max-height:300px;overflow:auto}
+.readlist li{display:flex;gap:8px;align-items:baseline;font-size:12px;line-height:1.35;border-top:1px solid var(--el-line);padding-top:6px}
+.readlist .ev{flex:0 0 auto;font:600 9px var(--mono);letter-spacing:.08em;text-transform:uppercase;padding:2px 6px;border-radius:2px;background:var(--el-soft);color:var(--el-ink)}
+.readlist .ev.rev{background:#9A6416;color:#fff}   /* the darker PET so white text clears 4.5:1 */
+.readlist a{color:var(--el-fg);text-decoration:none}
+.readlist a:hover{color:var(--el-blue);text-decoration:underline}
+.readlist .src{color:var(--el-muted);font-size:11px;white-space:nowrap}
+.risehead{padding:2px 14px 0;font-size:12px;color:var(--el-muted)}
+.risehead b{color:var(--pet)}

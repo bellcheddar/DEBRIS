@@ -110,3 +110,13 @@ def test_about_lists_verified_references_and_links_the_models(client):
     assert "https://doi.org/10.1126/science.aad6359" in html            # PETase
     assert "huggingface.co/Dellboy/debris-tagger-v1" in html
     assert 'data-tip=' in html
+
+
+def test_health_counts_only_papers_the_tagger_can_read():
+    from app.app import health_of
+
+    today = __import__("datetime").date.today().isoformat()
+    meta = {"verified_papers": 100, "taggable_papers": 90, "tagged_papers": 90,
+            "review_queue": 5, "last_ingest_date": today}
+    assert health_of(meta)["state"] == "ok"
+    assert health_of({**meta, "tagged_papers": 80})["state"] == "working"

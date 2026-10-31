@@ -30,14 +30,18 @@
       </nav>
     </div>
     <div class="statusbox">
-      <button type="button" class="pulse" data-state="{{ health.state }}"
-              aria-expanded="true" aria-controls="healthpanel" title="{{ health.detail }}">
-        <span class="dot" aria-hidden="true"></span>
-        <span class="pulse-label">{{ health.label }}</span>
-      </button>
-      <table id="healthpanel" class="healthtable">
-        <caption class="sr-only">Corpus figures</caption>
-        <tbody>
+      <table class="healthtable">
+        <caption class="sr-only">Corpus status and figures</caption>
+        <thead>
+          <tr><td colspan="4">
+            <button type="button" class="pulse" data-state="{{ health.state }}"
+                    aria-expanded="true" aria-controls="healthpanel" title="{{ health.detail }}">
+              <span class="dot" aria-hidden="true"></span>
+              <span class="pulse-label">{{ health.label }}</span>
+            </button>
+          </td></tr>
+        </thead>
+        <tbody id="healthpanel">
           <tr><th scope="row">Verified</th><td class="mono">{{ '{:,}'.format(meta.verified_papers or 0) }}</td>
               <th scope="row">Tagged</th><td class="mono">{{ '{:,}'.format(meta.tagged_papers or 0) }}</td></tr>
           <tr><th scope="row">On topic</th><td class="mono">{{ '{:,}'.format(meta.relevant_papers or 0) }}</td>

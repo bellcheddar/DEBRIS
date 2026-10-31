@@ -46,6 +46,9 @@ header.site{background:var(--el-card);border-bottom:1px solid var(--el-line)}
 .healthtable td{color:var(--el-ink);padding:3px 0;text-align:right;white-space:nowrap}
 .healthtable tr+tr th,.healthtable tr+tr td{border-top:1px solid var(--el-line)}
 .healthtable td[colspan]{text-align:right}
+/* The status chip heads the table and spans it; it still folds the figures away. */
+.healthtable thead td{padding:0 0 6px}
+.healthtable thead .pulse{width:100%;justify-content:center}
 .titleblock .strap{display:inline-block;margin:14px 0 0;background:var(--el-tint);
   border:1px solid var(--el-line);clip-path:var(--chamfer);padding:8px 18px;
   font-size:11.5px;letter-spacing:0.04em;color:var(--el-ink)}

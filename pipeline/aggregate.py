@@ -414,6 +414,10 @@ def meta_bundle(conn) -> dict:
         "last_ingest": stamp,
         "last_ingest_date": (stamp or "")[:10] or dt.date.today().isoformat(),
         "verified_papers": verified, "control_papers": controls,
+        # What the tagger can read: an abstract, and not given up on after a re-prompt.
+        "taggable_papers": conn.execute(f"""SELECT COUNT(*) FROM papers p WHERE {CORPUS}
+                                            AND p.abstract <> ''
+                                            AND COALESCE(p.status, '') NOT LIKE 'failed:%'""").fetchone()[0],
         "tagged_papers": tagged, "relevant_papers": relevant,
         "pet_papers": pet, "organ_systems_covered": organs, "new_this_week": new_this_week,
         "human_papers": conn.execute(f"""SELECT COUNT(DISTINCT r.pmid) FROM tag_rungs r

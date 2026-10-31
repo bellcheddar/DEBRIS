@@ -126,8 +126,9 @@ def health_of(meta: dict) -> dict:
         problems.append("review queue over a quarter of the tagged corpus")
     if age is None:
         working.append("awaiting the first completed ingest")
-    if verified and tagged < verified:
-        working.append(f"{verified - tagged:,} papers still to tag")
+    taggable = meta.get("taggable_papers", verified)
+    if taggable and tagged < taggable:
+        working.append(f"{taggable - tagged:,} papers still to tag")
     if meta.get("provisional_tags"):
         working.append("tags provisional until the tagger meets its floor")
 

@@ -120,10 +120,12 @@ nav.tabs a{
   font-weight:800;font-size:12.5px;letter-spacing:0.08em;text-transform:uppercase;
   color:var(--el-muted);border-bottom:3px solid transparent;clip-path:var(--chamfer);
 }
-/* On a phone the five tabs share the width evenly, so all of them fit without scrolling. */
+/* On a phone seven tabs cannot share one row legibly: they sit in two rows of four, each
+   label whole and centred, so none overlaps its neighbour. */
 @media (max-width:600px){
-  nav.tabs .wrap{gap:0;padding:0 8px;overflow-x:visible}
-  nav.tabs a{flex:1 1 0;min-width:0;padding:12px 2px 10px;font-size:10.5px;letter-spacing:0.04em}
+  nav.tabs .wrap{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:0;padding:0 8px;overflow-x:visible}
+  nav.tabs a{min-width:0;padding:9px 2px 7px;font-size:10.5px;letter-spacing:0.03em;
+    white-space:normal;text-align:center;line-height:1.2;clip-path:none}
 }
 nav.tabs a:hover{background:var(--el-tint);color:var(--el-ink);text-decoration:none}
 nav.tabs a[aria-current="page"]{color:var(--el-ink);background:var(--el-tint);

@@ -6,6 +6,10 @@
   const T = DEBRIS.T;
   const PET = T.pet;
   const PET_PALE = '#E9C99A';
+  // On a phone the category labels get less room so the bars keep some.
+  const narrow = () => window.matchMedia('(max-width:600px)').matches;
+  const left = (wide) => (narrow() ? Math.min(wide, 118) : wide);
+  const tick = () => ({ size: narrow() ? 9.5 : 11 });
 
   const setCard = DEBRIS.papersButton(document.getElementById('card-pet'));
   const panelSet = (name, qs, sel) => {
@@ -29,8 +33,8 @@
         type: 'bar', orientation: 'h', x: r.map((d) => d.n), y: r.map((d) => d.label),
         marker: { color: r.map((d) => (!pick || d.key === pick ? PET : PET_PALE)) },
         hovertemplate: '%{y}: %{x:,} PET papers<extra></extra>',
-      }], { margin: { l: 170, r: 24, t: 8, b: 34 }, hovermode: 'closest',
-        yaxis: { automargin: true, gridcolor: 'rgba(0,0,0,0)', tickfont: { size: 11 } },
+      }], { margin: { l: left(170), r: 18, t: 8, b: 34 }, hovermode: 'closest',
+        yaxis: { automargin: !narrow(), gridcolor: 'rgba(0,0,0,0)', tickfont: tick() },
         xaxis: { title: { text: 'Papers naming PET', font: { size: 11 } } } });
       if (el.removeAllListeners) el.removeAllListeners('plotly_click');
       el.on('plotly_click', (ev) => {
@@ -56,8 +60,8 @@
         y: keys.map((k) => LAB[k] || k),
         marker: { color: keys.map((k) => (pick && k !== pick ? PET_PALE : strong.has(k) ? T.ink : PET)) },
         hovertemplate: '%{y}: %{x:,} PET papers<extra></extra>',
-      }], { margin: { l: 190, r: 24, t: 8, b: 30 }, hovermode: 'closest',
-        yaxis: { automargin: true, gridcolor: 'rgba(0,0,0,0)', tickfont: { size: 11 } } });
+      }], { margin: { l: left(190), r: 18, t: 8, b: 30 }, hovermode: 'closest',
+        yaxis: { automargin: !narrow(), gridcolor: 'rgba(0,0,0,0)', tickfont: tick() } });
       if (el.removeAllListeners) el.removeAllListeners('plotly_click');
       el.on('plotly_click', (ev) => {
         const k = keys[ev.points[0].pointNumber];
@@ -92,7 +96,8 @@
     const rows = (B.rising || []).slice().reverse();
     const el = document.getElementById('pet-rising');
     if (!rows.length) { el.innerHTML = '<p class="empty">No data yet.</p>'; return; }
-    const y = rows.map((r) => `${r.label} <span style="color:${T.muted}">${r.kind === 'tissue' ? 'tissue' : 'mechanism'}</span>`);
+    const y = rows.map((r) => (narrow() ? r.label
+      : `${r.label} <span style="color:${T.muted}">${r.kind === 'tissue' ? 'tissue' : 'mechanism'}</span>`));
     let pick = null;   // {key, kind}
     const draw = () => {
       const on = (r) => !pick || (pick.key === r.key && pick.kind === r.kind);
@@ -105,9 +110,9 @@
         { type: 'scatter', mode: 'markers', name: 'Past 12 months', x: rows.map((r) => r.now), y,
           marker: { size: 12, color: rows.map((r) => (on(r) ? PET : PET_PALE)) },
           customdata: rows.map((r) => r.now), hovertemplate: '%{customdata} PET papers in the past 12 months<extra></extra>' },
-      ], { margin: { l: 210, r: 54, t: 8, b: 40 }, showlegend: false, hovermode: 'closest',
-        yaxis: { automargin: true, gridcolor: 'rgba(0,0,0,0)', tickfont: { size: 11 } },
-        xaxis: { rangemode: 'tozero', title: { text: 'PET papers, the year before (grey) and the past 12 months', font: { size: 11 } } },
+      ], { margin: { l: left(210), r: 44, t: 8, b: 40 }, showlegend: false, hovermode: 'closest',
+        yaxis: { automargin: !narrow(), gridcolor: 'rgba(0,0,0,0)', tickfont: tick() },
+        xaxis: { rangemode: 'tozero', title: { text: narrow() ? 'PET papers: year before (grey), past 12 months' : 'PET papers, the year before (grey) and the past 12 months', font: { size: narrow() ? 10 : 11 } } },
         annotations: rows.map((r, i) => ({ x: r.now, y: y[i], xanchor: 'left', xshift: 10, showarrow: false,
           text: `×${((r.now || 0) / Math.max(1, r.before)).toFixed(1)}`, font: { size: 10, color: T.muted } })) });
       if (el.removeAllListeners) el.removeAllListeners('plotly_click');

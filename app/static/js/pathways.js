@@ -1,39 +1,71 @@
-/* 03 Pathways: the Sankey hub, the per-category pathway radar and the new-edge list. */
+/* 03 Pathways: flows, the mechanism profile, disease and mechanism bars, and the new-edge list. */
 (() => {
   const B = window.PATHWAYS || {};
   const sankey = B.sankey || { labels: [], links: [] };
 
+  const hideOther = () => document.getElementById('hide-other').checked;
+
+  /* Fixed node positions: three columns, largest at the top, each "other" node last. */
+  function positions(links) {
+    const value = sankey.labels.map(() => 0);
+    const inflow = sankey.labels.map(() => 0);
+    links.forEach((l) => { value[l.source] += l.value; inflow[l.target] += l.value; });
+    inflow.forEach((v, i) => { value[i] = Math.max(value[i], v); });
+    const colX = { polymer: 0.001, pathway: 0.42, disease: 0.999 };
+    const x = [], y = [];
+    Object.keys(colX).forEach((kind) => {
+      const ids = sankey.labels.map((_, i) => i).filter((i) => sankey.kinds[i] === kind && value[i] > 0)
+        .sort((p, q) => (sankey.keys[p] === '_other') - (sankey.keys[q] === '_other') || value[q] - value[p]);
+      const total = ids.reduce((s, i) => s + value[i], 0) || 1;
+      let at = 0;
+      ids.forEach((i) => {
+        const share = value[i] / total;
+        x[i] = colX[kind];
+        y[i] = Math.min(0.999, Math.max(0.001, 0.02 + 0.92 * (at + share / 2)));
+        at += share;
+      });
+    });
+    return { x: sankey.labels.map((_, i) => x[i] ?? 0.5), y: sankey.labels.map((_, i) => y[i] ?? 0.5) };
+  }
+
   function drawSankey() {
     const el = document.getElementById('sankey');
-    if (!sankey.links.length) { el.innerHTML = '<p class="empty">No tagged papers yet.</p>'; return; }
-    const linkColour = (l) => l.pet ? 'rgba(200,135,43,0.45)' : 'rgba(56,80,152,0.22)';
+    const links = sankey.links.filter((l) => !(hideOther() && l.other));
+    if (!links.length) { el.innerHTML = '<p class="empty">No tagged papers yet.</p>'; return; }
+    const linkColour = (l) => l.other ? 'rgba(138,147,173,0.16)'
+      : l.pet ? 'rgba(200,135,43,0.5)' : 'rgba(56,80,152,0.24)';
+    const pos = positions(links);
     Plotly.newPlot(el, [{
       type: 'sankey', orientation: 'h', arrangement: 'snap',
       node: {
-        label: sankey.labels, color: sankey.colours, pad: 13, thickness: 15,
+        label: sankey.labels, color: sankey.colours, pad: 16, thickness: 16,
+        x: pos.x, y: pos.y,
         line: { color: '#fff', width: 1 },
         hovertemplate: '%{label}<br>%{value} papers<extra></extra>',
       },
       link: {
-        source: sankey.links.map((l) => l.source),
-        target: sankey.links.map((l) => l.target),
-        value: sankey.links.map((l) => l.value),
-        color: sankey.links.map(linkColour),
+        source: links.map((l) => l.source),
+        target: links.map((l) => l.target),
+        value: links.map((l) => l.value),
+        color: links.map(linkColour),
         hovertemplate: '%{source.label} to %{target.label}<br>%{value} papers<extra></extra>',
       },
     }], DEBRIS.layout({
-      margin: { l: 10, r: 10, t: 10, b: 10 },
-      font: { family: 'Montserrat, Helvetica, Arial, sans-serif', size: 11, color: DEBRIS.T.fg },
+      margin: { l: 8, r: 8, t: 8, b: 8 },
+      font: { family: 'Montserrat, Helvetica, Arial, sans-serif', size: 12, color: DEBRIS.T.fg },
     }), DEBRIS.config);
 
     el.on('plotly_click', (ev) => {
       const point = ev.points[0];
-      if (point.index === undefined || !sankey.links[point.index]) return;
-      const link = sankey.links[point.index];
+      if (point.index === undefined) return;
+      const shown = sankey.links.filter((l) => !(hideOther() && l.other));
+      const link = shown[point.index];
+      if (!link) return;
       const kindOf = (i) => sankey.kinds[i];
       const qs = new URLSearchParams();
       [link.source, link.target].forEach((i) => {
         const key = keyFor(i);
+        if (key === '_other') return;
         if (kindOf(i) === 'polymer') qs.set('polymer', key);
         if (kindOf(i) === 'pathway') qs.set('pathway', key);
         if (kindOf(i) === 'disease') qs.set('disease', key);
@@ -50,12 +82,13 @@
 
   /* --------------------------------------------------------------------- radar */
   const radar = B.radar || {};
-  const catKeys = Object.keys(radar);
+  // Largest disease first, so the profile opens on the most studied one.
+  const catKeys = Object.keys(radar).sort((p, q) =>
+    radar[q].all.reduce((s, v) => s + v, 0) - radar[p].all.reduce((s, v) => s + v, 0));
   const selA = document.getElementById('cat-a');
   const selB = document.getElementById('cat-b');
 
-  DEBRIS.papersButton(document.getElementById('card-sankey'));
-  const setRadar = DEBRIS.papersButton(document.getElementById('card-radar'));
+  const setRadar = (qs) => { document.querySelector('[data-open="radar"]').href = '/papers' + (qs ? '?' + qs : ''); };
   DEBRIS.papersButton(document.getElementById('card-new'))('novel=1&new=1');
 
   function fillSelects() {
@@ -70,8 +103,14 @@
     const el = document.getElementById('radar');
     setRadar(selA.value ? 'disease=' + encodeURIComponent(selA.value) : '');
     if (!catKeys.length) { el.innerHTML = '<p class="empty">No tagged papers yet.</p>'; return; }
-    const axes = (B.axis_labels || []).concat([(B.axis_labels || [])[0]]);
-    const close = (arr) => arr.concat([arr[0]]);
+    const order = (B.axes || []).map((k, i) => i);
+    const total = Object.fromEntries((B.pathways || []).map((p) => [p.key, p.n]));
+    const named = order.filter((i) => B.axes[i] !== 'other_pathway')
+      .sort((p, q) => (total[B.axes[q]] || 0) - (total[B.axes[p]] || 0)).slice(0, 10);
+    const otherIdx = order.filter((i) => B.axes[i] === 'other_pathway');
+    const pick = named.concat(hideOther() ? [] : otherIdx);
+    const axes = pick.map((i) => B.axis_labels[i]).concat([B.axis_labels[pick[0]]]);
+    const close = (arr) => pick.map((i) => arr[i]).concat([arr[pick[0]]]);
     const traces = [];
     const a = radar[selA.value];
     if (a) {
@@ -96,7 +135,7 @@
                       angle: 90, title: { text: 'Papers' } },
         angularaxis: { gridcolor: DEBRIS.T.line, tickfont: { size: 10, color: DEBRIS.T.muted } },
       },
-      margin: { l: 70, r: 70, t: 30, b: 50 },
+      margin: { l: 105, r: 105, t: 30, b: 50 },
       showlegend: true, legend: { orientation: 'h', y: -0.08, font: { size: 10 } },
     }), DEBRIS.config);
   }
@@ -118,10 +157,45 @@
       btn.addEventListener('click', () => DEBRIS.openPaper(btn.dataset.pmid)));
   }
 
+  /* ---------------------------------------------------------------- the bars */
+  // Horizontal bars, largest at the top: PET-specific papers in amber, the rest in blue,
+  // so each bar's length is its total. "Other mechanisms" goes last, in grey.
+  function bars(id, rows, param, catchAll) {
+    const el = document.getElementById(id);
+    if (!rows.length) { el.innerHTML = '<p class="empty">No tagged papers yet.</p>'; return; }
+    const ordered = rows.filter((r) => r.key !== catchAll).concat(rows.filter((r) => r.key === catchAll));
+    const y = ordered.map((r) => r.label);
+    const rest = ordered.map((r) => r.n - r.pet);
+    Plotly.newPlot(el, [
+      { type: 'bar', orientation: 'h', name: 'PET-specific', y, x: ordered.map((r) => r.pet),
+        marker: { color: DEBRIS.T.pet },
+        hovertemplate: '%{y}<br>%{x} PET-specific papers<extra></extra>' },
+      { type: 'bar', orientation: 'h', name: 'Other papers', y, x: rest,
+        marker: { color: ordered.map((r) => r.key === catchAll ? DEBRIS.T.muted : DEBRIS.T.blue) },
+        customdata: ordered.map((r) => r.n),
+        hovertemplate: '%{y}<br>%{customdata} papers in all<extra></extra>' },
+    ], DEBRIS.layout({
+      barmode: 'stack', bargap: 0.28,
+      margin: { l: 10, r: 16, t: 6, b: 40 },
+      yaxis: { autorange: 'reversed', automargin: true, tickfont: { size: 11, color: DEBRIS.T.fg } },
+      xaxis: { title: { text: 'Papers', font: { size: 11 } }, gridcolor: DEBRIS.T.line },
+      legend: { orientation: 'h', y: -0.14, font: { size: 10 } },
+    }), DEBRIS.config);
+    el.on('plotly_click', (ev) => {
+      const row = ordered[ev.points[0].pointIndex];
+      const qs = new URLSearchParams({ [param]: row.key });
+      if (ev.points[0].curveNumber === 0) qs.set('pet', '1');
+      window.location = '/papers?' + qs.toString();
+    });
+  }
+
   fillSelects();
   drawSankey();
+  bars('disease-bars', B.diseases || [], 'disease', null);
+  bars('pathway-bars', B.pathways || [], 'pathway', 'other_pathway');
   drawRadar();
   drawNewEdges();
   [selA, selB, document.getElementById('pet-trace')].forEach((el) =>
     el.addEventListener('change', drawRadar));
+  document.getElementById('hide-other').addEventListener('change', () => { drawSankey(); drawRadar(); });
 })();

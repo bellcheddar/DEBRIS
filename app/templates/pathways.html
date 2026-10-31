@@ -2,23 +2,55 @@
 {% block title %}03 Pathways{% endblock %}
 
 {% block content %}
-<section class="card" id="card-sankey">
-  <h2>Polymers, pathways and disease categories</h2>
-  <p class="sub">Ribbon width is the number of verified papers co-tagging the two terms. PET ribbons are drawn in the PET colour. Click a ribbon for those papers.</p>
-  <div id="sankey" class="plot" style="min-height:620px"></div>
-</section>
-
-<section class="card" id="card-radar">
-  <h2>Pathway profile by disease category</h2>
-  <p class="sub">Papers per pathway for one disease category, with the PET-specific subset drawn over it. Pick a second category to overlay.</p>
+<section class="card" id="card-pathways">
+  <h2>Polymers, mechanisms and diseases</h2>
+  <p class="sub">What the tagged papers report, four ways. Select anything in a panel to open those papers.</p>
   <div class="chiprow">
-    <select id="cat-a" aria-label="First disease category"></select>
-    <select id="cat-b" aria-label="Second disease category to overlay">
-      <option value="">No overlay</option>
-    </select>
-    <label class="switch"><input type="checkbox" id="pet-trace" checked> Show the PET-specific trace</label>
+    <label class="switch"><input type="checkbox" id="hide-other"> Hide the "other" groups</label>
   </div>
-  <div id="radar" class="plot" style="min-height:480px"></div>
+  <div class="panelgrid">
+    <figure class="panel" id="panel-sankey">
+      <div class="panelhead"><h3>Flows</h3><span class="pcount">ribbon width is papers</span>
+        <a class="panel-open" data-open="sankey" href="/papers">Open in Papers</a></div>
+      <div id="sankey" class="plot" style="min-height:660px"></div>
+      <figcaption>The eight most studied named polymers, the ten commonest mechanisms and the ten
+        commonest diseases, largest at the top. Everything else in a column, including unnamed
+        polymers and the rarely reported mechanisms, is gathered into its grey "other" node at
+        the bottom, so it is counted without drowning the named routes. Ribbons under five
+        papers are left out. PET ribbons are amber. Click a ribbon for those papers.</figcaption>
+    </figure>
+    <figure class="panel" id="panel-radar">
+      <div class="panelhead"><h3>Mechanism profile</h3><span class="pcount">by disease</span>
+        <a class="panel-open" data-open="radar" href="/papers">Open in Papers</a></div>
+      <div class="chiprow" style="padding:0 14px 6px">
+        <select id="cat-a" aria-label="First disease category"></select>
+        <select id="cat-b" aria-label="Second disease category to overlay">
+          <option value="">No overlay</option>
+        </select>
+        <label class="switch"><input type="checkbox" id="pet-trace" checked> PET-specific trace</label>
+      </div>
+      <div id="radar" class="plot" style="min-height:600px"></div>
+      <figcaption>Papers per mechanism for one disease, with the PET-specific subset drawn over
+        it: the ten most reported mechanisms, then "Other mechanisms" last. Pick a second
+        disease to compare.</figcaption>
+    </figure>
+    <figure class="panel" id="panel-diseases">
+      <div class="panelhead"><h3>Diseases</h3><span class="pcount">papers per disease</span>
+        <a class="panel-open" data-open="diseases" href="/papers">Open in Papers</a></div>
+      <div id="disease-bars" class="plot" style="min-height:480px"></div>
+      <figcaption>Relevant papers reporting each disease, with the PET-specific papers in amber.
+        Most papers report a mechanism without a disease endpoint, so they appear on the right
+        and not here. Click a bar for those papers.</figcaption>
+    </figure>
+    <figure class="panel" id="panel-mechanisms">
+      <div class="panelhead"><h3>Mechanisms</h3><span class="pcount">papers per mechanism</span>
+        <a class="panel-open" data-open="mechanisms" href="/papers">Open in Papers</a></div>
+      <div id="pathway-bars" class="plot" style="min-height:480px"></div>
+      <figcaption>Relevant papers reporting each mechanism, with the PET-specific papers in amber.
+        "Other mechanisms" gathers the rarely reported ones and is drawn last, in grey. Click a
+        bar for those papers.</figcaption>
+    </figure>
+  </div>
 </section>
 
 <section class="card" id="card-new">

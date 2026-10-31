@@ -131,6 +131,20 @@ def local_model_choice(model: str | None, adapter: str | None,
 
 # ------------------------------------------------------------------------ recipes
 
+def canon_polymers(values: list[str]) -> list[str]:
+    """Map other:<name> back to the vocabulary when the name is a known plastic or synonym."""
+    from pipeline import labels_v2 as L
+
+    synonyms = {**L.V1["synonyms"]["polymers"], **L.V2["synonyms"]["polymers"]}
+    out = []
+    for v in values:
+        if isinstance(v, str) and v.startswith("other:"):
+            v = L.canonical(v[6:], L.V2["polymers"], synonyms) or v
+        if v not in out:
+            out.append(v)
+    return out
+
+
 class Recipe:
     """What the tagger was trained to read and write. v1 is the original schema; v2 is the
     owner's adopted recipe (D50), exactly as the lab trained and scored it: the lab's
@@ -159,6 +173,8 @@ class Recipe:
         # The specific rare pathway the tagger named is kept as a note on the tag.
         tag["pathway_notes"] = [v for v in (raw.get("pathways") or [])
                                 if isinstance(v, str) and v.startswith("other:")]
+        # other:polystyrene is PS: a named plastic written as "other" is mapped back.
+        tag["polymers"] = canon_polymers(tag["polymers"])
         tag.setdefault("tissues", [])
         candidates = [(f, v) for f in ("polymers", "pathways", "tissues")
                       for v in tag.get(f) or [] if str(v).startswith("other:")]

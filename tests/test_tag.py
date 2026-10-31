@@ -302,3 +302,7 @@ def test_the_v2_recipe_keeps_tissues_groups_rare_pathways_and_stores_them(tmp_pa
     assert v2["pathway_notes"] == ["other:ferroptosis"]
     tag.store(conn, "1", v2, v2, problems, candidates, "debris_v2", "debris_v2")
     assert [r[0] for r in conn.execute("SELECT tissue FROM tag_tissues WHERE pmid='1'")] == ["liver"]
+
+
+def test_a_named_plastic_written_as_other_is_mapped_back():
+    assert tag.canon_polymers(["other:polystyrene", "PS", "other:abs", "other:pet"]) == ["PS", "other:abs", "PET"]

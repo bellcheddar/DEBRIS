@@ -270,8 +270,40 @@ def body_bundle(conn) -> dict:
             "max_count": max([n["count"] for n in nodes] or [0])}
 
 
+SANKEY_POLYMERS, SANKEY_PATHWAYS, SANKEY_DISEASES, SANKEY_MIN = 8, 10, 10, 5
+SANKEY_SHORT = {
+    "neuroinflammation_neurodegeneration": "Neurodegeneration", "atherosclerosis_mace": "Atherosclerosis",
+    "ibd_gut": "Gut inflammation", "immune_dysfunction": "Immune dysfunction",
+    "pregnancy_outcomes": "Pregnancy", "metabolic_syndrome": "Metabolic syndrome",
+    "copd_asthma": "COPD and asthma", "cancer_other": "Other cancers", "liver_disease": "Liver disease",
+    "kidney_disease": "Kidney disease", "nfkb_cytokine": "NF-kB and cytokines",
+    "apoptosis_ferroptosis": "Cell death", "inflammasome_il1b": "Inflammasome",
+    "mitochondrial_dysfunction": "Mitochondria", "immune_dysregulation": "Immune response",
+    "er_stress_autophagy": "ER stress", "dysbiosis": "Dysbiosis", "barrier_disruption": "Barrier disruption",
+    "lipid_metabolism": "Lipid metabolism", "oxidative_stress": "Oxidative stress",
+    "dna_damage_genotoxicity": "DNA damage", "endocrine_disruption": "Endocrine disruption",
+    "fibrosis_tgfb": "Fibrosis",
+}
+
+
+def counts_by(conn, table: str, column: str, labels: dict, exclude: set) -> list[dict]:
+    """Relevant papers per value of one tagged field, with the PET-specific share."""
+    rows = conn.execute(f"""
+        SELECT x.{column} AS k, COUNT(DISTINCT p.pmid) AS n,
+               COUNT(DISTINCT CASE WHEN t.pet_specific = 1 THEN p.pmid END) AS pet
+        FROM papers p JOIN tags t USING (pmid) JOIN {table} x ON x.pmid = p.pmid
+        WHERE {CORPUS} AND t.relevant = 1 GROUP BY x.{column}""").fetchall()
+    return sorted(({"key": r["k"], "label": labels.get(r["k"], r["k"]), "n": r["n"], "pet": r["pet"]}
+                   for r in rows if r["k"] not in exclude and not str(r["k"]).startswith("other:")),
+                  key=lambda r: -r["n"])
+
+
 def pathways_bundle(conn) -> dict:
     """Sankey polymers to pathways to disease categories, plus the per-category radar."""
+    # Legible by construction (owner, 2026-10-31, "tame them"): the busiest named values
+    # of each column keep their own node; everything else in that column (the catch-all,
+    # unspecified polymers, one-off names and the smaller named values) folds into one
+    # "Other" node that the page pins to the bottom in grey. No ribbon under SANKEY_MIN.
     poly_path = conn.execute(f"""
         SELECT pl.polymer AS a, pa.pathway AS b, COUNT(DISTINCT p.pmid) AS n
         FROM papers p JOIN tags t USING (pmid)
@@ -287,38 +319,65 @@ def pathways_bundle(conn) -> dict:
         WHERE {CORPUS} AND t.relevant=1 AND d.disease_category <> 'none'
         GROUP BY pa.pathway, d.disease_category HAVING n > 0""").fetchall()
 
+    def busiest(rows, side, allowed, k):
+        totals = collections.Counter()
+        for r in rows:
+            if r[side] in allowed:
+                totals[r[side]] += r["n"]
+        return {key for key, _ in totals.most_common(k)}
+
+    named_polymers = {p for p in V["polymers"] if p != "mixed_unspecified"}
+    named_pathways = {p for p in V["pathways"] if p != "other_pathway"}
+    top = {"polymer": busiest(poly_path, "a", named_polymers, SANKEY_POLYMERS),
+           "pathway": busiest(path_dis, "a", named_pathways, SANKEY_PATHWAYS),
+           "disease": busiest(path_dis, "b", set(V["disease_categories"]) - {"none"}, SANKEY_DISEASES)}
+    OTHER = "_other"
+    fold = lambda kind, key: key if key in top[kind] else OTHER
+
+    flows: collections.Counter = collections.Counter()
+    for r in poly_path:
+        flows[("polymer", fold("polymer", r["a"]), "pathway", fold("pathway", r["b"]))] += r["n"]
+    for r in path_dis:
+        flows[("pathway", fold("pathway", r["a"]), "disease", fold("disease", r["b"]))] += r["n"]
+
+    # Short names for the flows only: the panel is half the page wide, so the longest
+    # disease and mechanism names would run into each other.
+    label_of = {"polymer": {**V["polymer_labels"], **V.get("polymer_short", {})},
+                "pathway": {**V["pathway_labels"], **SANKEY_SHORT},
+                "disease": {**V["disease_labels"], **SANKEY_SHORT}}
+    other_label = {"polymer": "Other polymers", "pathway": "Other mechanisms",
+                   "disease": "Other diseases"}
     labels: list[str] = []
     index: dict[str, int] = {}
     colours: list[str] = []
     kinds: list[str] = []
     keys: list[str] = []
 
-    def node(key: str, label: str, kind: str, colour: str) -> int:
+    def node(key: str, kind: str) -> int:
         token = f"{kind}:{key}"
         if token not in index:
             index[token] = len(labels)
-            labels.append(label)
-            colours.append(colour)
+            labels.append(other_label[kind] if key == OTHER else label_of[kind].get(key, key))
+            colours.append("#B9BFD0" if key == OTHER else "#C8872B" if key == "PET"
+                           else {"polymer": "#385098", "pathway": "#2A3C78", "disease": "#5A6180"}[kind])
             kinds.append(kind)
             keys.append(key)
         return index[token]
 
-    PET_COLOUR = "#C8872B"
     links = []
-    for row in poly_path:
-        src = node(row["a"], V["polymer_labels"].get(row["a"], row["a"]), "polymer",
-                   PET_COLOUR if row["a"] == "PET" else "#385098")
-        dst = node(row["b"], V["pathway_labels"].get(row["b"], row["b"]), "pathway", "#2A3C78")
-        links.append({"source": src, "target": dst, "value": row["n"],
-                      "pet": row["a"] == "PET"})
-    for row in path_dis:
-        src = node(row["a"], V["pathway_labels"].get(row["a"], row["a"]), "pathway", "#2A3C78")
-        dst = node(row["b"], V["disease_labels"].get(row["b"], row["b"]), "disease", "#5A6180")
-        links.append({"source": src, "target": dst, "value": row["n"], "pet": False})
+    for (k1, a, k2, b), n in sorted(flows.items(), key=lambda kv: -kv[1]):
+        if n < SANKEY_MIN:
+            continue
+        links.append({"source": node(a, k1), "target": node(b, k2), "value": n,
+                      "pet": a == "PET", "other": OTHER in (a, b)})
 
     radar: dict[str, dict] = {}
     axes = V["pathways"]
-    for cat in V["disease_categories"]:
+    by_size = conn.execute(f"""SELECT d.disease_category, COUNT(DISTINCT p.pmid) AS n
+                               FROM papers p JOIN tags t USING (pmid) JOIN tag_diseases d ON d.pmid = p.pmid
+                               WHERE {CORPUS} AND t.relevant = 1 GROUP BY 1""").fetchall()
+    size = {r[0]: r[1] for r in by_size}
+    for cat in sorted(V["disease_categories"], key=lambda k: -size.get(k, 0)):
         if cat == "none":
             continue
         all_counts, pet_counts = [], []
@@ -348,8 +407,10 @@ def pathways_bundle(conn) -> dict:
             new_edges.append(dict(row))
     return {"sankey": {"labels": labels, "keys": keys, "colours": colours,
                        "kinds": kinds, "links": links},
-            "radar": radar, "axis_labels": [V["pathway_labels"].get(a, a) for a in axes],
-            "axes": axes, "new_edges": new_edges}
+            "radar": radar, "axis_labels": [SANKEY_SHORT.get(a) or V["pathway_labels"].get(a, a) for a in axes],
+            "axes": axes, "new_edges": new_edges,
+            "diseases": counts_by(conn, "tag_diseases", "disease_category", V["disease_labels"], {"none"}),
+            "pathways": counts_by(conn, "tag_pathways", "pathway", V["pathway_labels"], set())}
 
 
 def feed_bundle(conn) -> dict:

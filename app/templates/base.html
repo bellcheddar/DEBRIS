@@ -85,13 +85,6 @@
       <a href="https://mdeller.com">mdeller.com</a> ·
       <a href="https://eloratherapeutics.com">eloratherapeutics.com</a>
     </div>
-    <div class="mono">
-      {{ '{:,}'.format(meta.verified_papers or 0) }} verified ·
-      {{ '{:,}'.format(meta.tagged_papers or 0) }} tagged ·
-      tagger {{ meta.model_version or 'pending' }} ·
-      {% if meta.drift_f1 is not none and meta.drift_f1 %}drift F1 {{ '%.2f'|format(meta.drift_f1) }}{% else %}drift pending{% endif %}
-      {% if meta.inference_path %} · {{ meta.inference_path }}{% endif %}
-    </div>
   </div>
 </footer>
 

@@ -584,3 +584,11 @@
 - 2026-10-31 01:41 aggregate: wrote 5 bundles, 168 kB total; verified 9323, tagged 8983
 - 2026-10-31 01:42 qc ui: pass, 10 page renders, 0 serious or critical axe violations, 0 console errors, 0 failed requests
 - 2026-10-31 01:42 Body tab: 'Organs' panel; four panels two by two (Organs with the tissue detail, Ranked with Polymer profile); new outline with human proportions and the organ drawings scaled into the torso (matrix 0.9 x 0.8 about the neck), pin anchors moved by the same mapping; 760 x 960 stage for a half-width panel. QC passes on every tab.
+- 2026-10-31 01:59 aggregate: wrote 5 bundles, 136 kB total; verified 9323, tagged 8983
+- 2026-10-31 02:03 normalise polymers: 32 papers had a named plastic written as other:
+- 2026-10-31 02:03 aggregate: wrote 5 bundles, 140 kB total; verified 9323, tagged 8983
+- 2026-10-31 02:04 aggregate: wrote 5 bundles, 140 kB total; verified 9323, tagged 8983
+- 2026-10-31 02:04 aggregate: wrote 5 bundles, 140 kB total; verified 9323, tagged 8983
+- 2026-10-31 02:05 aggregate: wrote 5 bundles, 140 kB total; verified 9323, tagged 8983
+- 2026-10-31 02:05 qc ui: pass, 10 page renders, 0 serious or critical axe violations, 0 console errors, 0 failed requests
+- 2026-10-31 02:05 Pathways tab two by two with Diseases and Mechanisms bars; Sankey and radar catch-alls tamed (D57); 32 papers' plastics mapped back from other:; footer figures removed.

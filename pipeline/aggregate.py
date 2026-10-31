@@ -443,19 +443,23 @@ def pathways_bundle(conn) -> dict:
             "pathways": counts_by(conn, "tag_pathways", "pathway", V["pathway_labels"], set())}
 
 
+# "New this month" (owner, 2026-10-31): papers PubMed entered within a month either side
+# of today, the same window the Papers tab's new=1 filter uses.
+NEW_WINDOW = ("substr(p.edat, 1, 10) BETWEEN date('now', '-1 month') AND date('now', '+1 month')"
+              " AND (p.status <> 'no_abstract' OR p.abstract <> '')")   # as /api/papers lists
+
+
 def feed_bundle(conn) -> dict:
     run = latest_run(conn)
-    rows = []
-    if run:
-        rows = conn.execute(f"""
-            SELECT p.pmid, p.title, p.journal, p.year, p.doi, p.retracted, t.summary,
-                   (SELECT GROUP_CONCAT(polymer) FROM tag_polymers WHERE pmid=p.pmid) AS polymers,
-                   (SELECT GROUP_CONCAT(rung) FROM tag_rungs WHERE pmid=p.pmid) AS rungs,
-                   (SELECT COUNT(*) FROM novelty_events WHERE pmid=p.pmid AND ingest_run=?) AS novel
-            FROM papers p LEFT JOIN tags t USING (pmid)
-            WHERE p.ingest_run = ? AND {CORPUS}
-              AND (t.relevant IS NULL OR t.relevant=1)
-            ORDER BY novel DESC, p.year DESC LIMIT 36""", (run, run)).fetchall()
+    rows = conn.execute(f"""
+        SELECT p.pmid, p.title, p.journal, p.year, p.doi, p.retracted, t.summary,
+               (SELECT GROUP_CONCAT(polymer) FROM tag_polymers WHERE pmid=p.pmid) AS polymers,
+               (SELECT GROUP_CONCAT(rung) FROM tag_rungs WHERE pmid=p.pmid) AS rungs,
+               (SELECT COUNT(*) FROM novelty_events WHERE pmid=p.pmid) AS novel
+        FROM papers p LEFT JOIN tags t USING (pmid)
+        WHERE {NEW_WINDOW} AND {CORPUS}
+          AND (t.relevant IS NULL OR t.relevant=1)
+        ORDER BY novel DESC, p.edat DESC LIMIT 36""").fetchall()
     feed = []
     for r in rows:
         feed.append({"pmid": r["pmid"], "title": r["title"], "journal": r["journal"],
@@ -464,7 +468,7 @@ def feed_bundle(conn) -> dict:
                      "polymers": sorted(set((r["polymers"] or "").split(","))) if r["polymers"] else [],
                      "rungs": sorted({int(x) for x in (r["rungs"] or "").split(",") if x}),
                      "novel": bool(r["novel"])})
-    return {"new_this_week": feed, "ingest_run": run,
+    return {"new_this_month": feed, "ingest_run": run,
             "polymer_class": {"PET": "pet", "PS": "ps", "PE": "pepp", "PP": "pepp", "PVC": "pvc"}}
 
 
@@ -486,8 +490,9 @@ def meta_bundle(conn) -> dict:
     organs = conn.execute(f"""SELECT COUNT(DISTINCT organ_system) FROM tag_organs
                              WHERE pmid IN (SELECT pmid FROM papers
                              WHERE {CORPUS_ANY})""").fetchone()[0]
-    new_this_week = conn.execute(f"""SELECT COUNT(*) FROM papers WHERE ingest_run=?
-                                    AND {CORPUS_ANY}""", (run,)).fetchone()[0] if run else 0
+    new_this_month = conn.execute(f"""SELECT COUNT(*) FROM papers p LEFT JOIN tags t USING (pmid)
+                                     WHERE {NEW_WINDOW} AND {CORPUS}
+                                       AND (t.relevant IS NULL OR t.relevant = 1)""").fetchone()[0]
     novel = conn.execute("SELECT COUNT(DISTINCT pmid) FROM novelty_events WHERE ingest_run=?",
                          (run,)).fetchone()[0] if run else 0
     queued = conn.execute("SELECT COUNT(*) FROM review_queue WHERE resolved_at IS NULL").fetchone()[0]
@@ -510,7 +515,7 @@ def meta_bundle(conn) -> dict:
                                             AND p.abstract <> ''
                                             AND COALESCE(p.status, '') NOT LIKE 'failed:%'""").fetchone()[0],
         "tagged_papers": tagged, "relevant_papers": relevant,
-        "pet_papers": pet, "organ_systems_covered": organs, "new_this_week": new_this_week,
+        "pet_papers": pet, "organ_systems_covered": organs, "new_this_month": new_this_month,
         "human_papers": conn.execute(f"""SELECT COUNT(DISTINCT r.pmid) FROM tag_rungs r
                                          JOIN tags t USING (pmid) JOIN papers p USING (pmid)
                                          WHERE {CORPUS} AND t.relevant = 1 AND r.rung IN (1, 2)""").fetchone()[0],

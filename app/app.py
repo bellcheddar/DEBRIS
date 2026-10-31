@@ -266,7 +266,8 @@ def paper_filters(args) -> tuple[str, list]:
     if args.get("review", "0") in ("1", "true"):
         clauses.append("p.pmid IN (SELECT pmid FROM review_queue WHERE resolved_at IS NULL)")
     if args.get("new", "0") in ("1", "true"):
-        clauses.append("p.ingest_run = (SELECT run_id FROM ingest_runs ORDER BY started_at DESC LIMIT 1)")
+        # New this month: entered in PubMed within a month either side of today.
+        clauses.append("substr(p.edat, 1, 10) BETWEEN date('now', '-1 month') AND date('now', '+1 month')")
     if args.get("novel", "0") in ("1", "true"):
         clauses.append("p.pmid IN (SELECT pmid FROM novelty_events)")
     if search := (args.get("q") or "").strip():

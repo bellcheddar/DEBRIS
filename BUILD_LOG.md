@@ -632,3 +632,16 @@
 - 2026-10-31 03:35 train: /Users/dellboy/Documents/Vibe_Coding/debris/.pixi/envs/default/bin/python /Users/dellboy/Documents/Vibe_Coding/debris/pipeline/mlx_capped.py mlx_lm.lora --model Qwen/Qwen2.5-1.5B-Instruct --train ...
 - 2026-10-31 03:41 qc ui: pass, 10 page renders, 0 serious or critical axe violations, 0 console errors, 0 failed requests
 - 2026-10-31 03:41 pathways: hide-other and PET-trace switches removed; mechanism profile draws every disease, one box highlights a disease in amber (owner).
+- 2026-10-31 03:46 qc ui: pass, 10 page renders, 0 serious or critical axe violations, 0 console errors, 0 failed requests
+- 2026-10-31 03:48 qc ui: pass, 10 page renders, 0 serious or critical axe violations, 0 console errors, 0 failed requests
+- 2026-10-31 03:51 qc ui: pass, 10 page renders, 0 serious or critical axe violations, 0 console errors, 0 failed requests
+- 2026-10-31 03:56 aggregate: wrote 5 bundles, 156 kB total; verified 9323, tagged 8983
+- 2026-10-31 03:56 lab phase3-b f0 s42: training 600 iterations
+- 2026-10-31 03:56 train: /Users/dellboy/Documents/Vibe_Coding/debris/.pixi/envs/default/bin/python /Users/dellboy/Documents/Vibe_Coding/debris/pipeline/mlx_capped.py mlx_lm.lora --model Qwen/Qwen2.5-1.5B-Instruct --train ...
+- 2026-10-31 03:56 qc ui: pass, 10 page renders, 0 serious or critical axe violations, 0 console errors, 0 failed requests
+- 2026-10-31 03:57 lab phase3-b f0 s42: training 600 iterations
+- 2026-10-31 03:57 train: /Users/dellboy/Documents/Vibe_Coding/debris/.pixi/envs/default/bin/python /Users/dellboy/Documents/Vibe_Coding/debris/pipeline/mlx_capped.py mlx_lm.lora --model Qwen/Qwen2.5-1.5B-Instruct --train ...
+- 2026-10-31 04:04 aggregate: wrote 5 bundles, 171 kB total; verified 9323, tagged 8983
+- 2026-10-31 04:04 aggregate: wrote 5 bundles, 172 kB total; verified 9323, tagged 8983
+- 2026-10-31 04:05 qc ui: pass, 10 page renders, 0 serious or critical axe violations, 0 console errors, 0 failed requests
+- 2026-10-31 04:05 app: 'New this week' becomes 'New this month': papers PubMed entered within a month either side of today, the same window in the header count, the Papers card and the new=1 filter (114 now).

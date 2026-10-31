@@ -92,19 +92,20 @@ header.site{background:var(--el-card);border-bottom:1px solid var(--el-line)}
 .workshop .wrap{display:flex;gap:14px;justify-content:space-between;flex-wrap:wrap}
 
 nav.tabs{background:var(--el-card);border-bottom:1px solid var(--el-line);position:sticky;top:0;z-index:40}
-nav.tabs .wrap{display:flex;gap:6px;overflow-x:auto;scrollbar-width:thin}
+nav.tabs .wrap{display:flex;gap:4px;overflow-x:auto;scrollbar-width:thin}
 nav.tabs a{
-  display:flex;align-items:baseline;gap:8px;padding:13px 20px 11px;white-space:nowrap;
+  display:flex;align-items:center;justify-content:center;padding:13px 22px 11px;white-space:nowrap;
   font-weight:800;font-size:12.5px;letter-spacing:0.08em;text-transform:uppercase;
   color:var(--el-muted);border-bottom:3px solid transparent;clip-path:var(--chamfer);
 }
-/* --other is a polymer colour and stays as it is; the nav numerals use the
-   muted ink instead so they clear 4.5:1 on white. */
-nav.tabs a .num{font-family:var(--mono);font-weight:400;font-size:11px;color:var(--el-muted)}
+/* On a phone the five tabs share the width evenly, so all of them fit without scrolling. */
+@media (max-width:600px){
+  nav.tabs .wrap{gap:0;padding:0 8px;overflow-x:visible}
+  nav.tabs a{flex:1 1 0;min-width:0;padding:12px 2px 10px;font-size:10.5px;letter-spacing:0.04em}
+}
 nav.tabs a:hover{background:var(--el-tint);color:var(--el-ink);text-decoration:none}
 nav.tabs a[aria-current="page"]{color:var(--el-ink);background:var(--el-tint);
   border-bottom-color:var(--el-blue)}
-nav.tabs a[aria-current="page"] .num{color:var(--el-blue)}
 
 main{padding:26px 0 60px}
 .card{background:var(--el-card);border:1px solid var(--el-line);clip-path:var(--chamfer);

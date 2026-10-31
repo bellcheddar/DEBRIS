@@ -55,7 +55,7 @@
 <nav class="tabs" aria-label="Sections">
   <div class="wrap">
     {% for num, label, href in tabs %}
-    <a href="{{ href }}" {% if active == href %}aria-current="page"{% endif %}><span class="num">{{ num }}</span>{{ label }}</a>
+    <a href="{{ href }}" {% if active == href %}aria-current="page"{% endif %}>{{ label }}</a>
     {% endfor %}
   </div>
 </nav>

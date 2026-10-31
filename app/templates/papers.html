@@ -6,10 +6,10 @@
 
 {% block content %}
 <section class="card" id="card-newweek">
-  <h2>New this month</h2>
-  {% if bundle.new_this_month %}
+  <h2>New this week</h2>
+  {% if bundle.new_this_week %}
   <div class="feed">
-    {% for p in bundle.new_this_month %}
+    {% for p in bundle.new_this_week %}
     <article class="paper{% if p.retracted %} retracted{% endif %}">
       <div class="meta">
         <span class="mono">{{ p.journal }} {{ p.year }}</span>
@@ -32,7 +32,7 @@
     {% endfor %}
   </div>
   {% else %}
-  <p class="empty">No papers entered in PubMed in the past month.</p>
+  <p class="empty">No papers entered in PubMed in the past week.</p>
   {% endif %}
 </section>
 

@@ -22,7 +22,7 @@
   const LINKED = ['pet', 'novel', 'new', 'disease', 'pathway', 'polymers', 'not_polymers', 'organs',
                   'rungs', 'tissue', 'model_type', 'entered_from', 'entered_to',
                   'polymer_notin', 'pathway_notin', 'disease_notin'];
-  const NAMES = { pet: 'PET specific', novel: 'novel', new: 'new this month', disease: 'disease', pathway: 'pathway',
+  const NAMES = { pet: 'PET specific', novel: 'novel', new: 'new this week', disease: 'disease', pathway: 'pathway',
                   polymers: 'polymers', not_polymers: 'without', organs: 'organs', rungs: 'evidence',
                   tissue: 'tissue', model_type: 'study type', polymer_notin: 'polymers other than',
                   pathway_notin: 'mechanisms other than', disease_notin: 'diseases other than', entered_from: 'entered after',

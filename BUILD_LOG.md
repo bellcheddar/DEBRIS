@@ -645,3 +645,6 @@
 - 2026-10-31 04:04 aggregate: wrote 5 bundles, 172 kB total; verified 9323, tagged 8983
 - 2026-10-31 04:05 qc ui: pass, 10 page renders, 0 serious or critical axe violations, 0 console errors, 0 failed requests
 - 2026-10-31 04:05 app: 'New this week' becomes 'New this month': papers PubMed entered within a month either side of today, the same window in the header count, the Papers card and the new=1 filter (114 now).
+- 2026-10-31 04:08 aggregate: wrote 5 bundles, 166 kB total; verified 9323, tagged 8983
+- 2026-10-31 04:09 qc ui: pass, 10 page renders, 0 serious or critical axe violations, 0 console errors, 0 failed requests
+- 2026-10-31 04:09 app: back to 'New this week', now the last seven days by PubMed entry date (owner); 23 papers, same in header, card and filter.

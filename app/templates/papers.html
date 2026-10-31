@@ -22,7 +22,7 @@
       {% if p.summary %}<p class="summary">{{ p.summary }}</p>{% endif %}
       <div class="tags">
         {% for poly in p.polymers %}<span class="tag {{ bundle.polymer_class.get(poly, 'other') }}">{{ poly }}</span>{% endfor %}
-        {% for r in p.rungs %}<span class="tag rung">Rung {{ r }}</span>{% endfor %}
+        {% for r in p.rungs %}<span class="tag rung">{{ vocab.evidence_labels[r|string] }}</span>{% endfor %}
       </div>
       <div class="meta">
         <a class="mono" href="https://pubmed.ncbi.nlm.nih.gov/{{ p.pmid }}/">PMID {{ p.pmid }}</a>
@@ -51,15 +51,16 @@
       <option value="">All organ systems</option>
       {% for o in vocab.organ_systems %}<option value="{{ o }}">{{ vocab.organ_labels.get(o, o) }}</option>{% endfor %}
     </select>
-    <select id="rung" aria-label="Filter by evidence rung">
-      <option value="">All rungs</option>
-      {% for r in vocab.rungs %}<option value="{{ r.rung }}">Rung {{ r.rung }}: {{ r.label }}</option>{% endfor %}
+    <select id="rung" aria-label="Filter by evidence">
+      <option value="">All evidence</option>
+      {% for r in vocab.rungs %}<option value="{{ r.rung }}">{{ vocab.evidence_labels[r.rung|string] }}</option>{% endfor %}
     </select>
     <label class="switch"><input type="checkbox" id="pet"> PET-specific only</label>
     <label class="switch"><input type="checkbox" id="review"> Needs review</label>
     <label class="switch"><input type="checkbox" id="unverified"> Include unverified DOI</label>
     <button class="btn ghost" type="button" id="export">Export CSV</button>
     <a class="btn ghost" id="download" href="/download/debris_latest.csv">Full CSV</a>
+    <span class="tablecount mono" id="tablecount" role="status" aria-live="polite"></span>
   </div>
   <div id="papers-table"></div>
 </section>

@@ -575,3 +575,5 @@
 - 2026-10-31 00:57 qc ui: fail, 10 page renders, 2 serious or critical axe violations, 0 console errors, 0 failed requests
 - 2026-10-31 01:16 qc ui: fail, 10 page renders, 2 serious or critical axe violations, 0 console errors, 0 failed requests
 - 2026-10-31 01:16 app: Open in Papers on every panel and KPI card, reflecting each panel's state; Papers honours every linked filter (polymers, organs, rungs, tissue, study type, entry-date window) and names them in a banner; year chart points open their twelve months; status table adds human evidence.
+- 2026-10-31 01:28 aggregate: wrote 5 bundles, 168 kB total; verified 9323, tagged 8983
+- 2026-10-31 01:31 app: evidence levels in plain words, no rung numbers (owner); every Papers column sorts with empty values last (Model sort had fallen back to year); matching-paper count beside the CSV buttons.

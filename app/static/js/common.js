@@ -79,7 +79,7 @@ const DEBRIS = (() => {
         <dt>Organs</dt><dd>${chipsHtml(p.organ_systems) || 'none'}</dd>
         ${(p.tissues || []).length ? `<dt>Tissues</dt><dd>${chipsHtml(p.tissues)}</dd>` : ''}
         <dt>Pathways</dt><dd>${chipsHtml(p.pathways) || 'none'}</dd>
-        <dt>Rungs</dt><dd>${(p.rungs || []).map((r) => `<span class="tag rung">${r}</span>`).join(' ') || 'none'}</dd>
+        <dt>Evidence</dt><dd>${(p.rungs || []).map((r) => `<span class="tag rung">${esc(evidence(r))}</span>`).join(' ') || 'none'}</dd>
         <dt>Model</dt><dd>${esc(p.model_type || 'unknown')} · ${esc(p.size_class || 'unknown')}</dd>
         <dt>Confidence</dt><dd class="mono">${p.confidence !== null && p.confidence !== undefined ? p.confidence.toFixed(2) : 'not scored'} · self-consistency ${p.self_consistency !== null && p.self_consistency !== undefined ? p.self_consistency.toFixed(2) : 'not scored'}</dd>
         <dt>Tag source</dt><dd>${esc(p.tag_source || 'untagged')} ${p.model_version ? '· ' + esc(p.model_version) : ''}</dd>
@@ -140,6 +140,9 @@ const DEBRIS = (() => {
     };
   }
 
-  return { T, colourFor, layout, config, plot, fmt, chips, openPaper, esc, label, polymerTagClass,
+  // An evidence level in words; the site never shows the numbers.
+  const evidence = (r) => (window.EVIDENCE || {})[String(r)] || '';
+
+  return { T, colourFor, layout, config, plot, fmt, chips, openPaper, esc, label, polymerTagClass, evidence,
            papersButton };
 })();

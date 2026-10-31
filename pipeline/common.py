@@ -75,6 +75,8 @@ def vocab() -> dict:
 V2_PATHWAYS = {"lipid_metabolism": "Lipid metabolism", "er_stress_autophagy": "ER stress and autophagy",
                "endocrine_disruption": "Endocrine disruption", "other_pathway": "Other mechanisms"}
 V2_FAMILIES = {"PA6": "Engineering", "PA66": "Engineering", "PBAT": "Polyesters"}
+# The evidence levels as the site names them (owner, 2026-10-31: no "rungs" on the site).
+EVIDENCE_LABELS = {"1": "Found in people", "2": "Linked to outcomes in people", "3": "Shown in animals", "4": "Mechanism in cells or tissue", "5": "Dose-response", "6": "Reversible"}
 
 
 def display_vocab() -> dict:
@@ -95,6 +97,7 @@ def display_vocab() -> dict:
                               "cell_free": "Cell-free (simulated fluids)"}
     for key in ("tissues", "tissue_labels", "tissue_system", "tissue_parent"):
         v[key] = v2.get(key, {} if key != "tissues" else [])
+    v["evidence_labels"] = dict(EVIDENCE_LABELS)
     return v
 
 

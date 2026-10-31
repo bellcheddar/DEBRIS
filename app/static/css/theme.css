@@ -443,3 +443,4 @@ a.kpi:hover,a.kpi:focus-visible{border-color:var(--el-blue);background:var(--el-
   .card.has-open>h2{padding-right:0}
   .card>.open-papers{position:static;display:inline-block;margin-bottom:10px}
 }
+.tablecount{font-size:12.5px;color:var(--el-ink);font-weight:500;align-self:center;white-space:nowrap}

@@ -132,3 +132,10 @@ def test_click_through_filters_reach_the_api(client):
     for qs in ("rungs=1,2", "tissue=liver", "model_type=cell_line",
                "entered_from=2024-01-01&entered_to=2025-01-01", "polymers=PS,PE"):
         assert client.get("/api/papers?" + qs).status_code == 200, qs
+
+
+def test_every_papers_column_sorts(client):
+    for col in ("pmid", "year", "title", "journal", "polymers", "organ_systems", "rungs",
+                "model_type", "confidence"):
+        for d in ("asc", "desc"):
+            assert client.get(f"/api/papers?sort={col}&dir={d}").status_code == 200, (col, d)

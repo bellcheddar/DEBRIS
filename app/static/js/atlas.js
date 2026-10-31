@@ -546,10 +546,10 @@
     const rungColour = (r) => r === 6 ? T.pet
       : ['#C7D0E8', '#9FADD4', '#7589BE', '#4F67A8', '#2A3C78'][r - 1];
     const traces = [1, 2, 3, 4, 5, 6].map((r) => ({
-      type: 'bar', orientation: 'h', name: 'Rung ' + r,
+      type: 'bar', orientation: 'h', name: rungLabels[r] || '',
       y: data.map((d) => d.label), x: data.map((d) => d.rungs[r - 1] || 0),
       marker: { color: rungColour(r), line: { color: '#fff', width: 1 } },
-      hovertemplate: `%{y}<br>Rung ${r}: ${DEBRIS.esc(rungLabels[r] || '')}<br>%{x} papers<extra></extra>`,
+      hovertemplate: `%{y}<br>${DEBRIS.esc(rungLabels[r] || '')}<br>%{x} papers<extra></extra>`,
     }));
     DEBRIS.plot('ladder', traces, {
       barmode: 'stack', bargap: 0.28,
@@ -559,8 +559,8 @@
       legend: { orientation: 'h', y: -0.1, font: { size: 10 } },
     });
     document.getElementById('ladder-legend').innerHTML = [1, 2, 3, 4, 5, 6].map((r) =>
-      `<span><i style="background:${rungColour(r)}"></i>${r}: ${DEBRIS.esc(rungLabels[r] || '')}</span>`)
-      .join('') + '<span style="color:#8A5A14">Rung 6 is the rung an enzyme therapeutic can test.</span>';
+      `<span><i style="background:${rungColour(r)}"></i>${DEBRIS.esc(rungLabels[r] || '')}</span>`)
+      .join('') + '<span style="color:#8A5A14">Reversible is the evidence an enzyme therapeutic can test.</span>';
     setLadder(ladderScope === 'pet' ? 'pet=1' : '');
     const el = document.getElementById('ladder');
     el.removeAllListeners && el.removeAllListeners('plotly_click');

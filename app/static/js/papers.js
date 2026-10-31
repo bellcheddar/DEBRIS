@@ -25,7 +25,7 @@
   const LINKED = ['novel', 'new', 'disease', 'pathway', 'polymers', 'not_polymers', 'organs',
                   'rungs', 'tissue', 'model_type', 'entered_from', 'entered_to'];
   const NAMES = { novel: 'novel', new: 'new this week', disease: 'disease', pathway: 'pathway',
-                  polymers: 'polymers', not_polymers: 'without', organs: 'organs', rungs: 'rungs',
+                  polymers: 'polymers', not_polymers: 'without', organs: 'organs', rungs: 'evidence',
                   tissue: 'tissue', model_type: 'study type', entered_from: 'entered after',
                   entered_to: 'entered up to' };
   DEBRIS.papersButton(document.getElementById('card-newweek'), 'Show in the table')('new=1');
@@ -33,7 +33,8 @@
   const banner = document.getElementById('linkfilters');
   if (banner && linked.length) {
     banner.innerHTML = '<span>Opened from another tab: '
-      + linked.map((k) => `<b>${DEBRIS.esc(NAMES[k])}</b> ${DEBRIS.esc(params.get(k).replace(/\|/g, ' and ').replace(/,/g, ', '))}`).join(' · ')
+      + linked.map((k) => `<b>${DEBRIS.esc(NAMES[k])}</b> ${DEBRIS.esc(k === 'rungs'
+        ? params.get(k).split(',').map(DEBRIS.evidence).join(' or ') : params.get(k).replace(/\|/g, ' and ').replace(/,/g, ', '))}`).join(' · ')
       + '</span><a class="btn ghost" href="/papers">Clear</a>';
     banner.hidden = false;
   }
@@ -64,6 +65,13 @@
       }));
       return url + '?' + qs.toString();
     },
+    // The server's count of every paper the current filters match, shown beside the
+    // download buttons so the export size is never a surprise.
+    ajaxResponse: (url, params, response) => {
+      const el = document.getElementById('tablecount');
+      if (el) el.textContent = `${DEBRIS.fmt(response.last_row || 0)} papers`;
+      return response;
+    },
     pagination: true,
     paginationMode: 'remote',
     paginationSize: 50,
@@ -80,12 +88,13 @@
           return row.retracted ? `<span class="retracted">${title}</span>` : title;
         } },
       { title: 'Journal', field: 'journal', width: 150 },
-      { title: 'Polymers', field: 'polymers', headerSort: false, width: 170,
+      { title: 'Polymers', field: 'polymers', width: 170,
         formatter: (cell) => tagList(cell, 'poly') },
-      { title: 'Organs', field: 'organ_systems', headerSort: false, width: 160,
+      { title: 'Organs', field: 'organ_systems', width: 160,
         formatter: (cell) => tagList(cell) },
-      { title: 'Rungs', field: 'rungs', headerSort: false, width: 110,
-        formatter: (cell) => tagList(cell, 'rung') },
+      { title: 'Evidence', field: 'rungs', width: 200,
+        formatter: (cell) => (cell.getValue() || [])
+          .map((r) => `<span class="tag rung">${DEBRIS.esc(DEBRIS.evidence(r))}</span>`).join(' ') },
       { title: 'Model', field: 'model_type', width: 120 },
       { title: 'Conf', field: 'confidence', width: 70, cssClass: 'mono', hozAlign: 'right',
         formatter: (cell) => cell.getValue() === null || cell.getValue() === undefined

@@ -86,6 +86,8 @@ def vocab() -> dict:
     v["model_type_labels"] = {**v.get("model_type_labels", {}), "cell_free": "Cell-free (simulated fluids)"}
     for key in ("tissues", "tissue_labels", "tissue_system", "tissue_parent"):
         v[key] = v2.get(key, [] if key == "tissues" else {})
+    # The evidence levels in plain words; the site never shows rung numbers.
+    v["evidence_labels"] = {"1": "Found in people", "2": "Linked to outcomes in people", "3": "Shown in animals", "4": "Mechanism in cells or tissue", "5": "Dose-response", "6": "Reversible"}
     return v
 
 
@@ -272,15 +274,21 @@ def api_papers():
     size = min(200, max(1, int(request.args.get("size", 50))))
     sort = request.args.get("sort", "year")
     order = "ASC" if request.args.get("dir", "desc").lower() == "asc" else "DESC"
+    # Every column sorts. List columns sort by their first value; evidence by the most
+    # direct level the paper reaches (found in people first when ascending).
     sort_column = {"year": "p.year", "pmid": "p.pmid", "journal": "p.journal",
-                   "title": "p.title", "confidence": "t.confidence"}.get(sort, "p.year")
+                   "title": "p.title", "confidence": "t.confidence",
+                   "model_type": "t.model_type",
+                   "polymers": "(SELECT MIN(polymer) FROM tag_polymers WHERE pmid = p.pmid)",
+                   "organ_systems": "(SELECT MIN(organ_system) FROM tag_organs WHERE pmid = p.pmid)",
+                   "rungs": "(SELECT MIN(rung) FROM tag_rungs WHERE pmid = p.pmid)"}.get(sort, "p.year")
 
     conn = db()
     total = conn.execute(f"SELECT COUNT(*) FROM papers p LEFT JOIN tags t USING (pmid) "
                          f"WHERE {where}", params).fetchone()[0]
     rows = conn.execute(
         f"""SELECT {PAPER_COLUMNS} FROM papers p LEFT JOIN tags t USING (pmid)
-            WHERE {where} ORDER BY {sort_column} {order}, p.pmid DESC LIMIT ? OFFSET ?""",
+            WHERE {where} ORDER BY {sort_column} IS NULL, {sort_column} {order}, p.pmid DESC LIMIT ? OFFSET ?""",
         params + [size, (page - 1) * size]).fetchall()
     pmids = [r["pmid"] for r in rows]
     polymers = organs = rungs = {}

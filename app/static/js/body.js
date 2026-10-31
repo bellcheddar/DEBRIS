@@ -73,7 +73,7 @@
       `<span class="what"><i style="background:${pinColour(node)}"></i>${DEBRIS.esc(node.label)}</span>`
       + `<span class="howmany">${DEBRIS.fmt(node.count)} papers · `
       + `${Math.round(node.petShare * 100)}% name PET`
-      + `${node.max_rung ? ' · highest rung ' + node.max_rung : ''}</span>`
+      + `${node.max_rung ? ' · ' + DEBRIS.esc(DEBRIS.evidence(node.max_rung).toLowerCase()) : ''}</span>`
       + '<span class="spacer"></span>'
       + `<a class="btn ghost" href="/papers?${query(node)}">Open in Papers</a>`
       + '<button class="chip" type="button" id="clearsel">Clear</button>';
@@ -214,7 +214,7 @@
     const value = (n) => railMode === 'count' ? n.count
       : railMode === 'pet' ? n.petShare : (n.max_rung || 0);
     const shown = (n) => railMode === 'count' ? DEBRIS.fmt(n.count)
-      : railMode === 'pet' ? Math.round(n.petShare * 100) + '%' : (n.max_rung || '—');
+      : railMode === 'pet' ? Math.round(n.petShare * 100) + '%' : (DEBRIS.evidence(n.max_rung) || '—');
 
     function build() {
       const data = [...nodes].sort((a, b) => value(b) - value(a));
@@ -332,7 +332,7 @@
     if (!node) {
       title.textContent = 'Select a tissue';
       sub.textContent = 'Pick a pin, a rail row or a card for the polymers reported there, '
-        + 'the pathways most often co-tagged and the strongest papers by evidence rung.';
+        + 'the pathways most often co-tagged and the papers with the most direct evidence.';
       body.innerHTML = '';
       return;
     }
@@ -340,7 +340,7 @@
     const share = node.count ? Math.round((node.pet_count / node.count) * 100) : 0;
     sub.innerHTML = `<span class="mono">${DEBRIS.fmt(node.count)}</span> verified papers · `
       + `<span class="mono" style="color:var(--pet)">${share}%</span> name PET`
-      + (node.max_rung ? ` · highest rung reached <span class="mono">${node.max_rung}</span>` : '');
+      + (node.max_rung ? ` · evidence reaches <b>${DEBRIS.esc(DEBRIS.evidence(node.max_rung).toLowerCase())}</b>` : '');
 
     const heading = (text) => `<h3 style="font-size:9.5px;letter-spacing:0.3em;`
       + `text-transform:uppercase;color:var(--el-muted);margin:16px 0 7px">${text}</h3>`;
@@ -355,7 +355,7 @@
     const papers = (node.papers || []).map((p) => `
       <article class="paper" style="padding:11px 12px">
         <div class="meta"><span class="mono">${DEBRIS.esc(p.journal || '')} ${p.year || ''}</span>
-          ${p.max_rung ? `<span class="tag rung">Rung ${p.max_rung}</span>` : ''}</div>
+          ${p.max_rung ? `<span class="tag rung">${DEBRIS.esc(DEBRIS.evidence(p.max_rung))}</span>` : ''}</div>
         <h3 style="font-size:13px">${DEBRIS.esc(p.title || '')}</h3>
         ${p.summary ? `<p class="summary" style="font-size:12px">${DEBRIS.esc(p.summary)}</p>` : ''}
         <div class="meta"><button class="chip" type="button" data-pmid="${p.pmid}">Detail</button></div>

@@ -11,7 +11,7 @@
     <div class="foot">PET specifically studied or detected</div></a>
   <a class="kpi" id="kpilink-human" href="/papers"><div class="label">Human evidence</div>
     <div class="value" id="kpi-human">{{ '{:,}'.format(meta.human_papers or 0) }}</div>
-    <div class="foot">found in people, or tied to an outcome in them</div></a>
+    <div class="foot">found in people, or linked to outcomes in them</div></a>
   <a class="kpi" id="kpilink-polymers" href="/papers"><div class="label">Polymers</div>
     <div class="value" id="kpi-polymers">0</div>
     <div class="foot">of {{ vocab.polymers|length }} in the vocabulary</div></a>
@@ -97,8 +97,8 @@
 </section>
 
 <section class="card" id="card-ladder">
-  <h2>Evidence ladder</h2>
-  <p class="sub">Papers per disease category by evidence rung. Rung 6 is drawn whether or not it is occupied: it is the rung an enzyme therapeutic can test.</p>
+  <h2>Evidence</h2>
+  <p class="sub">Papers per disease category by the kind of evidence they report, from particles found in people to effects that reverse when the particles are removed. Reversible is drawn whether or not any paper reaches it: it is the evidence an enzyme therapeutic can test.</p>
   <div class="chiprow" role="group" aria-label="Ladder scope">
     <button class="chip ladder-chip" type="button" data-value="all" aria-pressed="true">All polymers</button>
     <button class="chip ladder-chip" type="button" data-value="pet" aria-pressed="false">PET only</button>

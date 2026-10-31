@@ -65,20 +65,20 @@ computer with no paid service behind them.
 
 A tag is a reading of one paper, not a verdict on the science. For each abstract it records
 the plastics named, the particle size, the organs and tissues involved, the disease, the
-biological mechanisms, the kind of study, and how far up the evidence ladder the paper gets.
+biological mechanisms, the kind of study, and the kind of evidence the paper reports.
 
-| Rung | Meaning |
+| Evidence | Meaning |
 |---|---|
-| 1 | Detected in human tissue or fluid |
-| 2 | Associated with an outcome in a group of people |
-| 3 | Reproduced in a living animal |
-| 4 | Mechanism shown in cells or tissue samples |
-| 5 | Effect grows with dose |
-| 6 | Effect reverses when the particles are removed |
+| Found in people | Particles detected in human tissue or fluid |
+| Linked to outcomes in people | Associated with an outcome in a group of people |
+| Shown in animals | Reproduced in a living animal |
+| Mechanism in cells or tissue | A mechanism shown in cells or tissue samples |
+| Dose-response | The effect grows with the dose |
+| Reversible | The effect reverses when the particles are removed |
 
-The rungs are not a ranking of journals or authors. They say how far a claim sits from a
-human outcome, so a reader can see the shape of the evidence without taking anyone's word
-for it. Reviews carry no rungs.
+These are not a ranking of journals or authors. They say how close a claim sits to a human
+outcome, so a reader can see the shape of the evidence without taking anyone's word for it.
+Reviews report none of their own.
 
 ## The four tabs
 

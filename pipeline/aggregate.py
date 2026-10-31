@@ -182,7 +182,7 @@ def atlas_bundle(conn) -> dict:
         "polymer_short": V["polymer_short"],
         "polymer_families": V["polymer_families"],
         "ladder": {"all": ladder_rows(conn, False), "pet": ladder_rows(conn, True)},
-        "rung_labels": {str(r["rung"]): r["label"] for r in V["rungs"]},
+        "rung_labels": dict(V["evidence_labels"]),
         "trend": trailing_year(entered),
     }
 

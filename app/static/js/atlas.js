@@ -274,10 +274,17 @@
       mark.select('.pinsub').text((d) => DEBRIS.fmt(d.n));
       selectable(mark, (e, d) => select(d.k, null),
         (d) => `${labelOf(d.k)}: ${DEBRIS.fmt(d.n)} papers`);
+      // The layout wakes only once the pointer actually moves: waking it on press shifted
+      // the circle under the pointer, so a click on its label never landed as a click.
       mark.call(d3.drag()
-        .on('start', (e, d) => { sim.alphaTarget(0.3).restart(); d.fx = d.x; d.fy = d.y; })
-        .on('drag', (e, d) => { d.fx = e.x; d.fy = e.y; })
-        .on('end', (e, d) => { sim.alphaTarget(0); d.fx = null; d.fy = null; }));
+        .on('drag', (e, d) => {
+          if (!d.dragging) { d.dragging = true; sim.alphaTarget(0.3).restart(); }
+          d.fx = e.x; d.fy = e.y;
+        })
+        .on('end', (e, d) => {
+          if (!d.dragging) return;
+          d.dragging = false; sim.alphaTarget(0); d.fx = null; d.fy = null;
+        }));
       paint();
     }
 

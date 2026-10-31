@@ -624,3 +624,5 @@
 - 2026-10-31 03:29 aggregate: wrote 5 bundles, 156 kB total; verified 9323, tagged 8983
 - 2026-10-31 03:30 qc ui: pass, 10 page renders, 0 serious or critical axe violations, 0 console errors, 0 failed requests
 - 2026-10-31 03:30 body: tissue pins for placenta, semen, colon, faeces and artery (owner), counted by tissue beside the organ-system pins; skin already has its pin.
+- 2026-10-31 03:31 qc ui: pass, 10 page renders, 0 serious or critical axe violations, 0 console errors, 0 failed requests
+- 2026-10-31 03:31 body: tissue pins for placenta, semen, colon, faeces and artery (owner), counted by tissue; atlas: cluster labels select on click (the layout no longer wakes on press).

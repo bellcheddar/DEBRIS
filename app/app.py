@@ -194,7 +194,9 @@ PAPER_COLUMNS = """p.pmid, p.doi, p.doi_status, p.retracted, p.title, p.journal,
 
 def paper_filters(args) -> tuple[str, list]:
     """WHERE clause shared by /api/papers and the CSV download."""
-    clauses = ["p.status <> 'no_abstract' OR p.abstract <> ''"]
+    # Papers with no abstract are listed only when asked for (the header's Verified box).
+    clauses = [] if args.get("with_no_abstract", "0") in ("1", "true") \
+        else ["p.status <> 'no_abstract' OR p.abstract <> ''"]
     params: list = []
     # Papers found only by the negative-control strategy are harvested on purpose as hard
     # negatives for the tagger (PET imaging, CT, Dacron grafts) and are never corpus, so
@@ -273,6 +275,11 @@ def paper_filters(args) -> tuple[str, list]:
     if rung := args.get("rung"):
         clauses.append("p.pmid IN (SELECT pmid FROM tag_rungs WHERE rung = ?)")
         params.append(int(rung))
+    # The header's Tagged and On topic boxes.
+    if args.get("tagged", "0") in ("1", "true"):
+        clauses.append("t.pmid IS NOT NULL")
+    if args.get("relevant", "0") in ("1", "true"):
+        clauses.append("t.relevant = 1")
     if args.get("pet", "0") in ("1", "true"):
         clauses.append("t.pet_specific = 1")
     if args.get("review", "0") in ("1", "true"):

@@ -43,16 +43,16 @@
           </td></tr>
         </thead>
         <tbody id="healthpanel">
-          <tr><th scope="row" class="hbox" data-box="verified" data-href="/papers">Verified</th><td class="mono hbox" data-box="verified" data-href="/papers"><a href="/papers">{{ '{:,}'.format(meta.verified_papers or 0) }}</a></td>
-              <th scope="row" class="hbox" data-box="tagged" data-href="/papers">Tagged</th><td class="mono hbox" data-box="tagged" data-href="/papers"><a href="/papers">{{ '{:,}'.format(meta.tagged_papers or 0) }}</a></td></tr>
-          <tr><th scope="row" class="hbox" data-box="ontopic" data-href="/papers">On topic</th><td class="mono hbox" data-box="ontopic" data-href="/papers"><a href="/papers">{{ '{:,}'.format(meta.relevant_papers or 0) }}</a></td>
+          <tr><th scope="row" class="hbox" data-box="verified" data-href="/papers?include_irrelevant=1&amp;with_no_abstract=1">Verified</th><td class="mono hbox" data-box="verified" data-href="/papers?include_irrelevant=1&amp;with_no_abstract=1"><a href="/papers?include_irrelevant=1&amp;with_no_abstract=1">{{ '{:,}'.format(meta.verified_papers or 0) }}</a></td>
+              <th scope="row" class="hbox" data-box="tagged" data-href="/papers?include_irrelevant=1&amp;with_no_abstract=1&amp;tagged=1">Tagged</th><td class="mono hbox" data-box="tagged" data-href="/papers?include_irrelevant=1&amp;with_no_abstract=1&amp;tagged=1"><a href="/papers?include_irrelevant=1&amp;with_no_abstract=1&amp;tagged=1">{{ '{:,}'.format(meta.tagged_papers or 0) }}</a></td></tr>
+          <tr><th scope="row" class="hbox" data-box="ontopic" data-href="/papers?relevant=1">On topic</th><td class="mono hbox" data-box="ontopic" data-href="/papers?relevant=1"><a href="/papers?relevant=1">{{ '{:,}'.format(meta.relevant_papers or 0) }}</a></td>
               <th scope="row" class="hbox" data-box="pet" data-href="/papers?pet=1">PET specific</th><td class="mono hbox" data-box="pet" data-href="/papers?pet=1"><a href="/papers?pet=1">{{ '{:,}'.format(meta.pet_papers or 0) }}</a></td></tr>
           <tr><th scope="row" class="hbox" data-box="new" data-href="/papers?new=1">New this week</th><td class="mono hbox" data-box="new" data-href="/papers?new=1"><a href="/papers?new=1">{{ '{:,}'.format(meta.new_this_week or 0) }}</a></td>
               <th scope="row" class="hbox" data-box="novel" data-href="/papers?novel=1">Novel</th><td class="mono hbox" data-box="novel" data-href="/papers?novel=1"><a href="/papers?novel=1">{{ '{:,}'.format(meta.novel_this_week or 0) }}</a></td></tr>
-          <tr><th scope="row" class="hbox" data-box="review" data-href="/papers?review=1">For review</th><td class="mono hbox" data-box="review" data-href="/papers?review=1"><a href="/papers?review=1">{{ '{:,}'.format(meta.review_queue or 0) }}</a></td>
+          <tr><th scope="row" class="hbox" data-box="review" data-href="/papers?review=1&amp;include_irrelevant=1">For review</th><td class="mono hbox" data-box="review" data-href="/papers?review=1&amp;include_irrelevant=1"><a href="/papers?review=1&amp;include_irrelevant=1">{{ '{:,}'.format(meta.review_queue or 0) }}</a></td>
               <th scope="row" class="hbox" data-box="updated" data-href="/about">Updated</th><td class="mono hbox" data-box="updated" data-href="/about"><a href="/about">{{ meta.last_ingest_date or 'pending' }}</a></td></tr>
           <tr><th scope="row" class="hbox" data-box="tagger" data-href="/about">Tagger</th><td class="mono txt hbox" data-box="tagger" data-href="/about"><a href="/about">{{ meta.model_version or 'pending' }}</a></td>
-              <th scope="row" class="hbox" data-box="human" data-href="/papers?rungs=1,2">Human evidence</th><td class="mono hbox" data-box="human" data-href="/papers?rungs=1,2"><a href="/papers?rungs=1,2">{{ '{:,}'.format(meta.human_papers or 0) }}</a></td></tr>
+              <th scope="row" class="hbox" data-box="human" data-href="/papers?rungs=1,2&amp;relevant=1">Human evidence</th><td class="mono hbox" data-box="human" data-href="/papers?rungs=1,2&amp;relevant=1"><a href="/papers?rungs=1,2&amp;relevant=1">{{ '{:,}'.format(meta.human_papers or 0) }}</a></td></tr>
         </tbody>
       </table>
     </div>

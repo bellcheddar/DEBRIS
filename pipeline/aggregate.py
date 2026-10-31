@@ -493,7 +493,8 @@ def meta_bundle(conn) -> dict:
                                        AND (t.relevant IS NULL OR t.relevant = 1)""").fetchone()[0]
     novel = conn.execute("SELECT COUNT(DISTINCT pmid) FROM novelty_events WHERE ingest_run=?",
                          (novelty.WINDOW_RUN,)).fetchone()[0]
-    queued = conn.execute("SELECT COUNT(*) FROM review_queue WHERE resolved_at IS NULL").fetchone()[0]
+    queued = conn.execute(f"""SELECT COUNT(DISTINCT q.pmid) FROM review_queue q JOIN papers p USING (pmid)
+                              WHERE q.resolved_at IS NULL AND {CORPUS}""").fetchone()[0]
     first_year = conn.execute(f"""SELECT MIN(year) FROM papers WHERE {CORPUS_ANY}
                                  AND year IS NOT NULL""").fetchone()[0]
     row = conn.execute("""SELECT model_version, inference_path, finished_at, started_at

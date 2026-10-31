@@ -23,6 +23,7 @@ import json
 import math
 import re
 import time
+from pathlib import Path
 
 from pipeline import common as c
 from pipeline import schema
@@ -496,6 +497,9 @@ def main() -> int:
     todo = [dict(r) for r in rows if r["pmid"] not in done]
     recipe = getattr(tagger, "recipe", Recipe("v1"))
     version = recipe.model_version
+    # A named adapter (data/adapters/debris_v3) names the tags it writes.
+    if not args.remote and adapter and Path(adapter).name.startswith("debris_v"):
+        version = Path(adapter).name
     source = version if not args.remote else f"{version}_space"
     started = time.monotonic()
     counts = {"tagged": 0, "queued": 0, "failed": 0}

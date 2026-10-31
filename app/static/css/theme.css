@@ -33,12 +33,13 @@ header.site{background:var(--el-card);border-bottom:1px solid var(--el-line)}
    the health panel outside the column every other element lines up on. */
 .brandrow{display:flex;align-items:flex-end;gap:28px;flex-wrap:wrap;padding:22px 24px 16px}
 .elora{display:block;font-weight:800;font-size:26px;letter-spacing:0.1em;color:var(--el-ink);
-  text-transform:uppercase;line-height:1;align-self:center;flex:0 0 auto}
+  text-transform:uppercase;line-height:1;align-self:flex-start;flex:0 0 auto}
 .elora:hover{text-decoration:none;color:var(--el-blue)}
 .elora .eyebrow{display:block;font-weight:600;font-size:11px;letter-spacing:0.38em;
   color:var(--el-muted);margin-top:6px}
-.titleblock{flex:1 1 420px;min-width:0}
-.titleblock h1{font-weight:800;font-size:clamp(28px,4.2vw,44px);letter-spacing:0.08em;
+.titleblock{flex:1 1 420px;min-width:0;align-self:flex-start}
+/* The title is set exactly as the Elora wordmark beside it: same face, weight, size and tracking. */
+.titleblock h1{font-weight:800;font-size:26px;letter-spacing:0.1em;
   text-transform:uppercase;color:var(--el-ink);line-height:1}
 .titleblock .expand{display:block;color:var(--el-muted);font-size:12px;letter-spacing:0.04em;
   margin-top:7px}
@@ -247,7 +248,7 @@ footer.site .mono{font-size:11px}
   .elora{font-size:22px}
   .healthrow{gap:6px 12px}
   .brandlinks{justify-content:flex-start}
-  .titleblock h1{letter-spacing:0.06em}
+  .titleblock h1{font-size:22px}
   .kpi .value{font-size:25px}
   .drawer{width:100vw}
 }
@@ -382,6 +383,7 @@ footer.site .mono{font-size:11px}
 .reftable .muted{color:var(--el-muted)}
 
 /* ---------------------------------------------------------- backronym */
+.titleblock .expand .w{white-space:nowrap}
 .titleblock .expand .ac{display:inline-block;font-weight:800;color:var(--el-blue);
   transform-origin:50% 85%;position:relative}
 .titleblock .expand .ac::after{content:"";position:absolute;left:-1px;right:-1px;bottom:-1px;

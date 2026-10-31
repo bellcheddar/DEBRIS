@@ -69,9 +69,13 @@
     const keys = named.slice(0, 12);
     const tpeak = Math.max(...total, 1);
     let picked = null;
+    const end = x[x.length - 1].slice(0, 10);
+    const start = new Date(end + 'T00:00:00Z');
+    start.setUTCDate(start.getUTCDate() - 365);
+    const lastYear = { from: start.toISOString().slice(0, 10), to: end };
     box.innerHTML = keys.map((k) => `<div class="tile" role="button" tabindex="0" data-k="${k}"
         aria-pressed="false" title="${DEBRIS.esc(labelOf(k))}">
-        <div class="tilehead"><b>${DEBRIS.esc(shortOf(k))}</b><span class="mono">${DEBRIS.fmt(latest(k))}</span></div>
+        <div class="tilehead"><b>${DEBRIS.esc(shortOf(k))}</b><span class="mono" title="papers in the past 12 months">${DEBRIS.fmt(latest(k))} past year</span></div>
         <div class="tileplot" id="tile-${k}"></div></div>`).join('');
     keys.forEach((k) => {
       const y = series(k);
@@ -89,7 +93,9 @@
     const choose = (k) => {
       picked = picked === k ? null : k;
       tiles.forEach((t) => t.setAttribute('aria-pressed', t.dataset.k === picked ? 'true' : 'false'));
-      panelSet('multiples', picked ? 'polymers=' + picked : '', !!picked);
+      // The tile's number is the latest twelve months, so the link opens the same window.
+      panelSet('multiples', picked ? new URLSearchParams({ polymers: picked,
+        entered_from: lastYear.from, entered_to: lastYear.to }).toString() : '', !!picked);
     };
     tiles.forEach((t) => {
       t.addEventListener('click', () => choose(t.dataset.k));

@@ -348,7 +348,8 @@ mixed_unspecified = "Mixed"
 
 # One entry per anatomical site on the body map. `organs` are the organ_systems whose
 # papers the site counts, so several systems can share a site and a system can appear at
-# more than one. `x` and `y` are the anatomical anchor on the 360 x 720 figure, `art` the
+# more than one. `x` and `y` are the anatomical anchor on the 360 x 720 figure (the organs' own
+# drawing scaled into the torso, see _anatomy.html), `art` the
 # organ drawing to light up, and `region` the grouping the tissue cards sort by. Adding a
 # tissue is an entry here: no code changes anywhere.
 [[body_nodes]]
@@ -358,7 +359,7 @@ organs = ["neurological", "sleep"]
 region = "Head"
 art = "brain"
 x = 180
-y = 54
+y = 66.4
 [[body_nodes]]
 key = "thyroid"
 label = "Thyroid"
@@ -366,55 +367,55 @@ organs = ["endocrine_metabolic"]
 region = "Neck"
 art = "thyroid"
 x = 180
-y = 124
+y = 122.4
 [[body_nodes]]
 key = "lung"
 label = "Lung"
 organs = ["respiratory"]
 region = "Thorax"
 art = "lungs"
-x = 146
-y = 208
+x = 149.4
+y = 189.6
 [[body_nodes]]
 key = "heart"
 label = "Heart"
 organs = ["cardiovascular"]
 region = "Thorax"
 art = "heart"
-x = 196
-y = 228
+x = 194.4
+y = 205.6
 [[body_nodes]]
 key = "lymph"
 label = "Lymph and immune"
 organs = ["immune"]
 region = "Thorax"
 art = "lymph"
-x = 126
-y = 186
+x = 131.4
+y = 172
 [[body_nodes]]
 key = "liver"
 label = "Liver"
 organs = ["hepatic"]
 region = "Abdomen"
 art = "liver"
-x = 150
-y = 296
+x = 153
+y = 260
 [[body_nodes]]
 key = "stomach"
 label = "Stomach"
 organs = ["gastrointestinal"]
 region = "Abdomen"
 art = "stomach"
-x = 208
-y = 284
+x = 205.2
+y = 250.4
 [[body_nodes]]
 key = "kidney"
 label = "Kidney"
 organs = ["renal"]
 region = "Abdomen"
 art = "kidneys"
-x = 214
-y = 330
+x = 210.6
+y = 287.2
 [[body_nodes]]
 key = "colon"
 label = "Gut and colon"
@@ -422,15 +423,15 @@ organs = ["gastrointestinal"]
 region = "Abdomen"
 art = "intestine"
 x = 180
-y = 364
+y = 314.4
 [[body_nodes]]
 key = "blood"
 label = "Blood"
 organs = ["hematologic"]
 region = "Systemic"
 art = "vessels"
-x = 272
-y = 292
+x = 262.8
+y = 256.8
 [[body_nodes]]
 key = "placenta"
 label = "Reproductive and placental"
@@ -438,15 +439,15 @@ organs = ["reproductive_placental"]
 region = "Pelvis"
 art = "placenta"
 x = 180
-y = 418
+y = 357.6
 [[body_nodes]]
 key = "skin"
 label = "Skin"
 organs = ["dermal"]
 region = "Systemic"
 art = "skin"
-x = 146
-y = 470
+x = 149.4
+y = 399.2
 # Papers reporting a whole-body or multi-system effect have no one site. They get a node
 # all the same, drawn against the whole figure, because leaving them off the map made
 # them invisible rather than making them absent.
@@ -456,5 +457,5 @@ label = "Systemic and multi-organ"
 organs = ["systemic"]
 region = "Systemic"
 art = "whole"
-x = 268
-y = 430
+x = 259.2
+y = 367.2

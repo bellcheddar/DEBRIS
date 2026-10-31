@@ -355,8 +355,8 @@ footer.site .mono{font-size:11px}
 .pin .halo{color:var(--el-blue)}
 .pin .core{stroke:var(--el-card);stroke-width:1.5}
 .pin.on .core{stroke:var(--el-ink);stroke-width:2.5}
-.pinlabel{font-size:11.5px;font-weight:600;fill:var(--el-fg)}
-.pinsub{font-size:10px;fill:var(--el-muted);font-family:var(--mono)}
+.pinlabel{font-size:15px;font-weight:600;fill:var(--el-fg)}
+.pinsub{font-size:13px;fill:var(--el-muted);font-family:var(--mono)}
 .leaderline{fill:none;stroke:var(--el-line);stroke-width:1.2}
 .leaderline.on{stroke:var(--el-ink);stroke-width:1.8}
 
@@ -444,3 +444,4 @@ a.kpi:hover,a.kpi:focus-visible{border-color:var(--el-blue);background:var(--el-
   .card>.open-papers{position:static;display:inline-block;margin-bottom:10px}
 }
 .tablecount{font-size:12.5px;color:var(--el-ink);font-weight:500;align-self:center;white-space:nowrap}
+.panel .panelbody{padding:6px 16px 16px;overflow:auto;max-height:960px}

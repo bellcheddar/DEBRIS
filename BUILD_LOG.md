@@ -577,3 +577,10 @@
 - 2026-10-31 01:16 app: Open in Papers on every panel and KPI card, reflecting each panel's state; Papers honours every linked filter (polymers, organs, rungs, tissue, study type, entry-date window) and names them in a banner; year chart points open their twelve months; status table adds human evidence.
 - 2026-10-31 01:28 aggregate: wrote 5 bundles, 168 kB total; verified 9323, tagged 8983
 - 2026-10-31 01:31 app: evidence levels in plain words, no rung numbers (owner); every Papers column sorts with empty values last (Model sort had fallen back to year); matching-paper count beside the CSV buttons.
+- 2026-10-31 01:34 lab phase3-a f0 s42: trained in 40.6 min
+- 2026-10-31 01:38 lab phase3-a f0 s42 @ 600: relevant_f1 0.8809, polymers_f1 0.8108, organ_systems_f1 0.7057, pathways_f1 0.7007, rungs_exact 0.7875, rungs_within_one 0.8375, model_type_accuracy 0.7385, valid_json 1.0, 0.51 s/paper
+- 2026-10-31 01:38 lab phase3-a f1 s42: training 600 iterations
+- 2026-10-31 01:38 train: /Users/dellboy/Documents/Vibe_Coding/debris/.pixi/envs/default/bin/python /Users/dellboy/Documents/Vibe_Coding/debris/pipeline/mlx_capped.py mlx_lm.lora --model Qwen/Qwen2.5-1.5B-Instruct --train ...
+- 2026-10-31 01:41 aggregate: wrote 5 bundles, 168 kB total; verified 9323, tagged 8983
+- 2026-10-31 01:42 qc ui: pass, 10 page renders, 0 serious or critical axe violations, 0 console errors, 0 failed requests
+- 2026-10-31 01:42 Body tab: 'Organs' panel; four panels two by two (Organs with the tissue detail, Ranked with Polymer profile); new outline with human proportions and the organ drawings scaled into the torso (matrix 0.9 x 0.8 about the neck), pin anchors moved by the same mapping; 760 x 960 stage for a half-width panel. QC passes on every tab.

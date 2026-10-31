@@ -1,11 +1,11 @@
 {
-  "base": "http://127.0.0.1:65004",
+  "base": "http://127.0.0.1:55959",
   "pages": [
     {
       "page": "atlas",
       "viewport": "desktop",
       "status": 200,
-      "seconds": 0.586,
+      "seconds": 0.594,
       "screenshot": "qc/atlas-desktop.png",
       "violations": 0,
       "serious_or_critical": 0
@@ -14,7 +14,7 @@
       "page": "body",
       "viewport": "desktop",
       "status": 200,
-      "seconds": 0.584,
+      "seconds": 0.6,
       "screenshot": "qc/body-desktop.png",
       "violations": 0,
       "serious_or_critical": 0
@@ -23,7 +23,7 @@
       "page": "pathways",
       "viewport": "desktop",
       "status": 200,
-      "seconds": 0.543,
+      "seconds": 0.542,
       "screenshot": "qc/pathways-desktop.png",
       "violations": 0,
       "serious_or_critical": 0
@@ -32,8 +32,17 @@
       "page": "papers",
       "viewport": "desktop",
       "status": 200,
-      "seconds": 0.593,
+      "seconds": 0.832,
       "screenshot": "qc/papers-desktop.png",
+      "violations": 0,
+      "serious_or_critical": 0
+    },
+    {
+      "page": "about",
+      "viewport": "desktop",
+      "status": 200,
+      "seconds": 0.616,
+      "screenshot": "qc/about-desktop.png",
       "violations": 0,
       "serious_or_critical": 0
     },
@@ -50,7 +59,7 @@
       "page": "body",
       "viewport": "mobile",
       "status": 200,
-      "seconds": 0.591,
+      "seconds": 0.581,
       "screenshot": "qc/body-mobile.png",
       "violations": 0,
       "serious_or_critical": 0
@@ -59,7 +68,7 @@
       "page": "pathways",
       "viewport": "mobile",
       "status": 200,
-      "seconds": 0.536,
+      "seconds": 0.609,
       "screenshot": "qc/pathways-mobile.png",
       "violations": 0,
       "serious_or_critical": 0
@@ -68,8 +77,17 @@
       "page": "papers",
       "viewport": "mobile",
       "status": 200,
-      "seconds": 0.624,
+      "seconds": 0.615,
       "screenshot": "qc/papers-mobile.png",
+      "violations": 0,
+      "serious_or_critical": 0
+    },
+    {
+      "page": "about",
+      "viewport": "mobile",
+      "status": 200,
+      "seconds": 0.563,
+      "screenshot": "qc/about-mobile.png",
       "violations": 0,
       "serious_or_critical": 0
     }

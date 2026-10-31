@@ -18,12 +18,12 @@
   const labelOf = (k) => LABELS[k] || k;
 
   // The anatomy is drawn on its own 360 x 720 space. One transform places it on the
-  // 1000-wide stage, and the pins use the same numbers, so the drawing and the pins
-  // cannot drift apart however the figure is scaled or moved.
-  const FIG_X = 268, FIG_Y = -22, FIG_S = 1.26;
-  // The columns sit just clear of the arms. The anatomy only fills the middle 220 of
-  // its own 360-wide box, so columns placed at the box edge leave a dead gap.
-  const LEFT_COL = 306, RIGHT_COL = 694;
+  // 760 x 960 stage (a half-width panel), and the pins use the same numbers, so the
+  // drawing and the pins cannot drift apart however the figure is scaled or moved.
+  const STAGE_H = 960;
+  const FIG_S = 1.3, FIG_X = 380 - 180 * 1.3, FIG_Y = -12;
+  // The label columns sit just clear of the arms (x 74 to 286 in the drawing).
+  const LEFT_COL = 236, RIGHT_COL = 524;
   const place = (x, y) => [FIG_X + x * FIG_S, FIG_Y + y * FIG_S];
   const MID = FIG_X + 180 * FIG_S;
   const maxCount = Math.max(1, B.max_count || 1);
@@ -122,8 +122,8 @@
       nodes.forEach((n) => { n.ly = n.py; n.side = n.px < MID ? 'left' : 'right'; });
       const left = nodes.filter((n) => n.side === 'left');
       const right = nodes.filter((n) => n.side === 'right');
-      relax(left, 44, 32, 636);
-      relax(right, 44, 32, 636);
+      relax(left, 52, 32, STAGE_H - 24);
+      relax(right, 52, 32, STAGE_H - 24);
 
       leaders.selectAll('path').data(nodes, (d) => d.key).join('path')
         .attr('class', 'leaderline')
@@ -147,7 +147,7 @@
       pin.call(d3.drag()
         .on('drag', (e, d) => {
           d.px = Math.max(FIG_X - 30, Math.min(FIG_X + 360 * FIG_S + 30, e.x));
-          d.py = Math.max(22, Math.min(640, e.y));
+          d.py = Math.max(22, Math.min(STAGE_H - 20, e.y));
           draw();
         }));
 

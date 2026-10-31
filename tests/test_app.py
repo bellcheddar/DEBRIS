@@ -144,3 +144,8 @@ def test_every_papers_column_sorts(client):
 def test_the_sankey_other_nodes_filter(client):
     for qs in ("disease_notin=liver_disease", "pathway_notin=oxidative_stress", "polymer_notin=PS,PE"):
         assert client.get("/api/papers?" + qs).status_code == 200, qs
+
+
+def test_new_this_week_shows_only_on_the_plain_papers_tab(client):
+    assert 'id="card-newweek"' in client.get("/papers").get_data(as_text=True)
+    assert 'id="card-newweek"' not in client.get("/papers?polymer=PET").get_data(as_text=True)

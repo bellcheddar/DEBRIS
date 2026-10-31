@@ -5,6 +5,8 @@
 {% endblock %}
 
 {% block content %}
+{# Only when Papers is opened from its own tab: a click-through carries a filter. #}
+{% if not request.args %}
 <section class="card" id="card-newweek">
   <h2>New this week</h2>
   {% if bundle.new_this_week %}
@@ -35,6 +37,7 @@
   <p class="empty">No papers entered in PubMed in the past week.</p>
   {% endif %}
 </section>
+{% endif %}
 
 <section class="card">
   <h2>Every verified paper</h2>

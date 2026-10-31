@@ -5,6 +5,16 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>{% block title %}DEBRIS{% endblock %} | DEBRIS</title>
 <meta name="description" content="DEBRIS indexes every DOI-verified PubMed article implicating micro and nanoplastics in human disease, tagged by polymer, organ system, tissue, pathway and kind of evidence.">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="DEBRIS">
+<meta property="og:title" content="DEBRIS: micro and nanoplastics in human disease">
+<meta property="og:description" content="Every DOI-verified paper on micro and nanoplastics in human disease, read by a fine-tuned model and mapped by polymer, tissue, mechanism and strength of evidence. Refreshed weekly.">
+<meta property="og:url" content="https://debris.mdeller.com{{ request.path }}">
+<meta property="og:image" content="https://debris.mdeller.com/static/img/debris_card.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="627">
+<meta property="og:image:alt" content="DEBRIS: papers per year on micro and nanoplastics in human disease, by polymer">
+<meta name="twitter:card" content="summary_large_image">
 <link rel="icon" href="{{ url_for('static', filename='favicon.ico') }}" sizes="any">
 <link rel="icon" type="image/svg+xml" href="{{ url_for('static', filename='favicon.svg') }}">
 <link rel="apple-touch-icon" href="{{ url_for('static', filename='apple-touch-icon.png') }}">

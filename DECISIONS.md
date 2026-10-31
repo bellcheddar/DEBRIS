@@ -1228,3 +1228,11 @@ So the Phase 3a loss was not the labels. Comparing errors, phase3-a turned relev
 **Decision:** phase6-7b sets grad_checkpoint = true (lab.py passes --grad-checkpoint); tools/wandb_live.py streams a running unit's loss curve into the run log_unit later resumes.
 **Why:** without checkpointing the 7B peaks at 116 GB of 128 and died twice on ordinary load beside it, each time losing its checkpoints. Checkpointing gives the same gradients for less memory at some speed cost. The lab logs to wandb only after scoring, so a five-hour run was invisible until the end.
 **Reverse:** drop grad_checkpoint from the config; stop the streamer.
+
+## D63 Encoder arm: BioClinical-ModernBERT does not replace the generative tagger (2026-10-31)
+
+**Owner:** cancel the 7B (Phase 6, at step ~60) and try BioClinical-ModernBERT first.
+**Setup:** pipeline/encoder.py, 150M encoder with one head per fixed-vocabulary field, trained on the phase5-enrich-b papers (1,476 train, 164 for thresholds and best epoch, epoch 3 kept), scored once on the frozen test split (config/lab/encoder-mbert.toml). Torch lives in a separate pixi environment, encoder.
+**Result vs debris_v2:** floor mean 0.831 vs 0.902, -0.071 [-0.096, -0.043] real. Relevance level (0.972 vs 0.971); polymers -0.163, pathways -0.239, tissues -0.137 and polymer families -0.146, all real; study type -0.057 and organs -0.044 not significant. Trained in 22 minutes, overfitting after epoch 3.
+**Decision:** keep the generative tagger. The encoder matches it only on relevance, where it could serve as a fast pre-screen if speed ever matters.
+**Reverse:** n/a (an experiment; nothing in production changed).

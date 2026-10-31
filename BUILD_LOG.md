@@ -689,3 +689,13 @@
 - 2026-10-31 12:53 Front end: Corpus by year redrawn as design D (total as a strip, polymers on a log axis with a focus legend); new Polymers tab after Pathways (particle size by year, each polymer's rolling year, share of the corpus, evidence gap map shaded by share of papers with evidence in people); size_class and year filters. Tests pass; browser QC and deploy held until the 7B run ends (no browser beside a 7B run).
 - 2026-10-31 14:07 aggregate: wrote 6 bundles, 206 kB total; verified 9323, tagged 8983
 - 2026-10-31 14:07 Novel now scored over the last 7 days at every aggregate (D61): 2 novel of 23 new this week.
+- 2026-10-31 14:08 lab phase6-7b f0 s42: training 1600 iterations
+- 2026-10-31 14:08 train: /Users/dellboy/Documents/Vibe_Coding/debris/.pixi/envs/default/bin/python /Users/dellboy/Documents/Vibe_Coding/debris/pipeline/mlx_capped.py mlx_lm.lora --model Qwen/Qwen2.5-7B-Instruct --train ...
+- 2026-10-31 14:12 aggregate: wrote 6 bundles, 206 kB total; verified 9323, tagged 8983
+- 2026-10-31 14:32 lab phase6-7b f0 s42: training 1600 iterations
+- 2026-10-31 14:32 train: /Users/dellboy/Documents/Vibe_Coding/debris/.pixi/envs/default/bin/python /Users/dellboy/Documents/Vibe_Coding/debris/pipeline/mlx_capped.py mlx_lm.lora --model Qwen/Qwen2.5-7B-Instruct --train ...
+- 2026-10-31 14:36 wandb live: phase6-7b f0 s42 -> https://forge.coreweave.com/wandb/dellboy-none/debris/runs/bef8f9ab
+- 2026-10-31 15:13 encoder: thomas-sounack/BioClinical-ModernBERT-base trained on 1476 papers in 22.1 min; 162 test papers predicted
+- 2026-10-31 15:13 lab encoder-mbert: imported 162 predictions from data/lab/encoder/predictions.jsonl
+- 2026-10-31 15:13 lab report: 23 experiments written to LAB_REPORT.md
+- 2026-10-31 15:13 Encoder arm (BioClinical-ModernBERT): floor mean 0.831 vs debris_v2 0.902, -0.071 real; relevance level, polymers/pathways/tissues far behind (D63). 7B Phase 6 cancelled by owner beforehand.

@@ -1,11 +1,12 @@
 # DEBRIS lab report
 
-Generated 2026-10-31T12:04:13+00:00 by `pixi run lab report` from the predictions under `data/lab/`. The plan and the rules for adopting an idea are in LAB_PLAN.md. Every interval is a 95 % paired bootstrap over papers (2000 resamples); `floor_mean` is the plain mean of the eight floor metrics.
+Generated 2026-10-31T19:13:17+00:00 by `pixi run lab report` from the predictions under `data/lab/`. The plan and the rules for adopting an idea are in LAB_PLAN.md. Every interval is a 95 % paired bootstrap over papers (2000 resamples); `floor_mean` is the plain mean of the eight floor metrics.
 
 ## Experiments
 
 | experiment | round | papers | relevant_f1 | polymers_f1 | organ_systems_f1 | pathways_f1 | rungs_exact | rungs_within_one | model_type_accuracy | valid_json | floor_mean |
 |---|---|---|---|---|---|---|---|---|---|---|---|
+| encoder-mbert |  | 162 | 0.972 ±0.025 | 0.778 ±0.074 | 0.751 ±0.058 | 0.558 ±0.052 | 0.840 ±0.056 | 0.877 ±0.049 | 0.875 ±0.070 | 1.000 ±0.000 | 0.831 ±0.025 |
 | phase0-baseline | round07 | 1438 | 0.876 ±0.018 | 0.769 ±0.027 | 0.671 ±0.023 | 0.556 ±0.024 | 0.743 ±0.023 | 0.809 ±0.021 | 0.727 ±0.032 | 1.000 ±0.000 | 0.769 ±0.014 |
 | phase1-c1 | round07 | 1438 | 0.876 ±0.018 | 0.769 ±0.027 | 0.671 ±0.023 | 0.556 ±0.024 | 0.743 ±0.023 | 0.809 ±0.021 | 0.727 ±0.032 | 1.000 ±0.000 | 0.769 ±0.014 |
 | phase1-c2 | round09 | 1438 | 0.912 ±0.015 | 0.802 ±0.027 | 0.707 ±0.021 | 0.609 ±0.022 | 0.767 ±0.022 | 0.830 ±0.020 | 0.801 ±0.028 | 1.000 ±0.000 | 0.803 ±0.011 |
@@ -60,6 +61,7 @@ Effect of each experiment over its reference. **real** marks an interval that ex
 
 | comparison | relevant_f1 | polymers_f1 | organ_systems_f1 | pathways_f1 | rungs_exact | rungs_within_one | model_type_accuracy | valid_json | floor_mean |
 |---|---|---|---|---|---|---|---|---|---|
+| encoder-mbert vs phase5-recipe | +0.000 [-0.027, +0.029] | -0.163 [-0.236, -0.088] **real** | -0.044 [-0.103, +0.017] | -0.239 [-0.301, -0.183] **real** | -0.031 [-0.093, +0.031] | -0.031 [-0.086, +0.025] | -0.057 [-0.124, +0.010] | +0.000 [+0.000, +0.000] | -0.071 [-0.096, -0.043] **real** |
 | phase1-c2 vs phase1-c1 | +0.037 [+0.023, +0.050] **real** | +0.033 [+0.016, +0.051] **real** | +0.036 [+0.016, +0.054] **real** | +0.053 [+0.034, +0.071] **real** | +0.024 [+0.009, +0.041] **real** | +0.020 [+0.004, +0.036] **real** | +0.074 [+0.051, +0.099] **real** | +0.000 [+0.000, +0.000] | +0.035 [+0.025, +0.044] **real** |
 | phase1-c3 vs phase1-c1 | -0.004 [-0.014, +0.006] | -0.001 [-0.016, +0.012] | -0.010 [-0.023, +0.004] | -0.004 [-0.018, +0.010] | +0.005 [-0.008, +0.017] | +0.004 [-0.008, +0.017] | -0.001 [-0.020, +0.018] | +0.000 [+0.000, +0.000] | -0.001 [-0.009, +0.006] |
 | phase1-c4 vs phase1-c1 | +0.039 [+0.026, +0.052] **real** | +0.034 [+0.016, +0.053] **real** | +0.032 [+0.012, +0.051] **real** | +0.047 [+0.028, +0.066] **real** | +0.027 [+0.012, +0.043] **real** | +0.024 [+0.010, +0.039] **real** | +0.071 [+0.046, +0.095] **real** | +0.000 [+0.000, +0.000] | +0.034 [+0.025, +0.044] **real** |
@@ -95,6 +97,7 @@ Scored against v2 gold. Organ systems three ways: tagged directly (the floor met
 
 | experiment | tissues_f1 | tissues_parent_f1 | polymers_parent_f1 | organ_systems_derived_f1 | organ_systems_union_f1 | organ_systems_literal_f1 |
 |---|---|---|---|---|---|---|
+| encoder-mbert | 0.669 | 0.672 | 0.778 | 0.574 | 0.727 | 0.752 |
 | phase2-a | 0.000 | 0.000 | 0.727 | 0.000 | 0.714 | 0.000 |
 | phase2-all | 0.728 | 0.734 | 0.853 | 0.566 | 0.708 | 0.836 |
 | phase2-b | 0.000 | 0.000 | 0.735 | 0.000 | 0.710 | 0.000 |
@@ -109,6 +112,7 @@ Scored against v2 gold. Organ systems three ways: tagged directly (the floor met
 
 | comparison | tissues_f1 | tissues_parent_f1 | polymers_parent_f1 | organ_systems_derived_f1 | organ_systems_union_f1 | organ_systems_literal_f1 |
 |---|---|---|---|---|---|---|
+| encoder-mbert vs phase5-recipe | -0.137 [-0.230, -0.044] **real** | -0.146 [-0.251, -0.047] **real** | -0.163 [-0.236, -0.088] **real** | +0.019 [-0.044, +0.083] | -0.041 [-0.103, +0.026] | -0.142 [-0.217, -0.065] **real** |
 | phase2-a vs phase2-base | +0.000 [+0.000, +0.000] | +0.000 [+0.000, +0.000] | -0.002 [-0.010, +0.007] | +0.000 [+0.000, +0.000] | +0.005 [-0.004, +0.014] | +0.000 [+0.000, +0.000] |
 | phase2-all vs phase2-base | +0.728 [+0.700, +0.756] **real** | +0.734 [+0.705, +0.761] **real** | +0.124 [+0.091, +0.158] **real** | +0.566 [+0.537, +0.592] **real** | -0.001 [-0.017, +0.017] | +0.836 [+0.811, +0.859] **real** |
 | phase2-b vs phase2-base | +0.000 [+0.000, +0.000] | +0.000 [+0.000, +0.000] | +0.006 [-0.006, +0.019] | +0.000 [+0.000, +0.000] | +0.001 [-0.012, +0.014] | +0.000 [+0.000, +0.000] |
@@ -118,6 +122,29 @@ Scored against v2 gold. Organ systems three ways: tagged directly (the floor met
 | phase3-b vs phase2-all | +0.018 [-0.006, +0.042] | +0.017 [-0.007, +0.041] | +0.022 [+0.003, +0.040] **real** | +0.007 [-0.007, +0.022] | -0.001 [-0.017, +0.016] | +0.008 [-0.014, +0.029] |
 | phase5-enrich-b vs phase5-recipe | +0.065 [+0.026, +0.111] **real** | +0.054 [+0.009, +0.105] **real** | -0.007 [-0.036, +0.014] | -0.001 [-0.025, +0.020] | -0.016 [-0.050, +0.016] | +0.023 [-0.002, +0.054] |
 | phase5-recipe vs phase5-round04 | +0.806 [+0.737, +0.862] **real** | +0.818 [+0.748, +0.877] **real** | +0.209 [+0.119, +0.306] **real** | +0.554 [+0.477, +0.629] **real** | -0.037 [-0.095, +0.021] | +0.894 [+0.838, +0.938] **real** |
+
+### Per tissue, encoder-mbert
+
+| tissue | support | recall |
+|---|---|---|
+| blood | 14 | 0.643 |
+| adrenal | 0 | None |
+| thyroid | 1 | 1.0 |
+| pancreas | 1 | 0.0 |
+| frontal_lobe | 0 | None |
+| medulla_oblongata | 0 | None |
+| kidney | 5 | 0.6 |
+| liver | 15 | 0.933 |
+| lung | 5 | 0.8 |
+| spleen | 1 | 0.0 |
+| stomach | 2 | 0.0 |
+| small_intestine | 4 | 0.25 |
+| myocardium | 6 | 0.833 |
+| skeletal_muscle | 2 | 0.5 |
+| adipose | 0 | None |
+| testis | 2 | 1.0 |
+| ovary | 2 | 0.5 |
+| uterus | 1 | 0.0 |
 
 ### Per tissue, phase2-all
 

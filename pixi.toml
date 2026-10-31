@@ -58,3 +58,16 @@ test = "pytest tests -q"
 [activation.env]
 TOKENIZERS_PARALLELISM = "false"
 PYTHONPATH = "$PIXI_PROJECT_ROOT"
+
+# The encoder arm (D63): BioClinical-ModernBERT as a multi-label classifier, on torch's
+# MPS backend. Its own environment, so the default one stays as the tagger needs it.
+[feature.encoder.pypi-dependencies]
+torch = "*"
+
+# torch's wheel brings its own libomp beside conda's llvm-openmp; the heavy work runs on
+# MPS, so the duplicate CPU runtime is tolerated rather than rebuilt.
+[feature.encoder.activation.env]
+KMP_DUPLICATE_LIB_OK = "TRUE"
+
+[environments]
+encoder = ["encoder"]

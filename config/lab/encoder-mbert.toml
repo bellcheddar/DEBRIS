@@ -1,0 +1,17 @@
+description = "Encoder arm (D63): BioClinical-ModernBERT (150M) as a multi-label classifier, trained on the same papers as phase5-enrich-b, scored once on the frozen test split"
+model = "thomas-sounack/BioClinical-ModernBERT-base"
+predictions = "data/lab/encoder/predictions.jsonl"
+iters = 1
+folds = [0]
+seeds = [42]
+gold = "v2"
+final = true
+compare_to = "phase5-recipe"
+
+[switches]
+mask_prompt = true
+model_type_v2 = true
+pathways_v2 = true
+polymers_v2 = true
+tissues = true
+enrich = "relevant"

@@ -266,6 +266,11 @@ def validate(tag: dict | None) -> tuple[dict | None, list[str], list[tuple[str, 
         out["disease_categories"] = ["none"]
         out["evidence_rungs"] = []
         out["pet_specific"] = False
+    # PET-specific is a subset of naming PET (D66): a flag on a paper that does not list
+    # PET is a tagging slip, usually a PVC, PS or polyester fibre study, and is dropped.
+    if out["pet_specific"] and "PET" not in out["polymers"]:
+        out["pet_specific"] = False
+        problems.append("pet_specific without PET in polymers; flag dropped")
 
     return out, problems, candidates
 

@@ -598,11 +598,18 @@ def tissue_label(key: str) -> str:
 
 
 def pet_bundle(conn) -> dict:
-    """PET Watch: papers naming PET by tissue, mechanism and kind of evidence, the short
-    list of dose-response and reversibility papers, and what is rising within PET (the
-    past twelve months by PubMed entry date against the twelve before)."""
+    """PET Watch in its two scopes (D66): every paper naming PET, and the PET-specific
+    subset, the header's count."""
+    return {"named": pet_scope(conn, False), "specific": pet_scope(conn, True)}
+
+
+def pet_scope(conn, specific: bool) -> dict:
+    """Papers naming PET (or only the PET-specific ones) by tissue, mechanism and kind of
+    evidence, the short list of dose-response and reversibility papers, and what is rising
+    within PET (the past twelve months by PubMed entry date against the twelve before)."""
+    only = "AND t.pet_specific = 1" if specific else ""
     pet = f"""FROM papers p JOIN tags t USING (pmid)
-              WHERE {CORPUS} AND t.relevant = 1
+              WHERE {CORPUS} AND t.relevant = 1 {only}
                 AND p.pmid IN (SELECT pmid FROM tag_polymers WHERE polymer = 'PET')"""
     total = conn.execute(f"SELECT COUNT(*) {pet}").fetchone()[0]
 
@@ -615,7 +622,7 @@ def pet_bundle(conn) -> dict:
                                         AND substr(p.edat, 1, 10) > date('now', '-24 months')
                                        THEN p.pmid END) AS before
             FROM papers p JOIN tags t USING (pmid) JOIN {table} x ON x.pmid = p.pmid
-            WHERE {CORPUS} AND t.relevant = 1
+            WHERE {CORPUS} AND t.relevant = 1 {only}
               AND p.pmid IN (SELECT pmid FROM tag_polymers WHERE polymer = 'PET')
             GROUP BY x.{column}""").fetchall()
         return sorted(({"key": r["k"], "label": label(r["k"]), "n": r["n"], "now": r["now"],
@@ -626,7 +633,7 @@ def pet_bundle(conn) -> dict:
     rungs = {str(r["rung"]): r["n"] for r in conn.execute(f"""
         SELECT r.rung AS rung, COUNT(DISTINCT p.pmid) AS n
         FROM papers p JOIN tags t USING (pmid) JOIN tag_rungs r ON r.pmid = p.pmid
-        WHERE {CORPUS} AND t.relevant = 1
+        WHERE {CORPUS} AND t.relevant = 1 {only}
           AND p.pmid IN (SELECT pmid FROM tag_polymers WHERE polymer = 'PET')
         GROUP BY r.rung""")}
     reading = [dict(r) | {"rungs": sorted(int(x) for x in r["rungs"].split(","))}
@@ -634,7 +641,7 @@ def pet_bundle(conn) -> dict:
         SELECT p.pmid, p.title, p.journal, p.year,
                (SELECT GROUP_CONCAT(rung) FROM tag_rungs WHERE pmid = p.pmid) AS rungs
         FROM papers p JOIN tags t USING (pmid)
-        WHERE {CORPUS} AND t.relevant = 1
+        WHERE {CORPUS} AND t.relevant = 1 {only}
           AND p.pmid IN (SELECT pmid FROM tag_polymers WHERE polymer = 'PET')
           AND p.pmid IN (SELECT pmid FROM tag_rungs WHERE rung IN (5, 6))
         ORDER BY (SELECT MAX(rung) FROM tag_rungs WHERE pmid = p.pmid) DESC, p.year DESC""")]

@@ -1,8 +1,11 @@
 /* 05 PET Watch: papers naming PET by tissue, mechanism and kind of evidence, the
    dose-response and reversibility reading list, and what is rising within PET. Every
-   panel's pick drives its own Open in Papers link and the card's header button. */
+   panel's pick drives its own Open in Papers link and the card's header button. The
+   chips switch every panel between all papers naming PET and the PET-specific subset. */
 (() => {
-  const B = window.PET || {};
+  const SCOPES = window.PET || {};
+  let scope = 'named';
+  let B = SCOPES.named || {};
   const T = DEBRIS.T;
   const PET = T.pet;
   const PET_PALE = '#E9C99A';
@@ -12,15 +15,14 @@
   const tick = () => ({ size: narrow() ? 9.5 : 11 });
 
   const setCard = DEBRIS.papersButton(document.getElementById('card-pet'));
+  // Every link carries the scope: PET named, plus the PET-specific flag in that scope.
+  const base = () => (scope === 'specific' ? 'polymers=PET&pet=1' : 'polymers=PET');
   const panelSet = (name, qs, sel) => {
     const q = new URLSearchParams(qs);
-    q.set('polymers', 'PET');
+    new URLSearchParams(base()).forEach((v, k) => q.set(k, v));
     DEBRIS.setOpen(document.querySelector(`[data-open="${name}"]`), q.toString(), sel);
-    setCard(sel ? q.toString() : 'polymers=PET', true);
+    setCard(sel ? q.toString() : base(), true);
   };
-  setCard('polymers=PET', true);
-  ['tissues', 'mechanisms', 'evidence', 'rising'].forEach((n) =>
-    DEBRIS.setOpen(document.querySelector(`[data-open="${n}"]`), 'polymers=PET', true));
 
   /* A horizontal bar panel whose bars each open a filter, toggled by a second click. */
   function bars(id, name, rows, param) {
@@ -35,7 +37,7 @@
         hovertemplate: '%{y}: %{x:,} PET papers<extra></extra>',
       }], { margin: { l: left(170), r: 18, t: 8, b: 34 }, hovermode: 'closest',
         yaxis: { automargin: !narrow(), gridcolor: 'rgba(0,0,0,0)', tickfont: tick() },
-        xaxis: { title: { text: 'Papers naming PET', font: { size: 11 } } } });
+        xaxis: { title: { text: scope === 'specific' ? 'PET-specific papers' : 'Papers naming PET', font: { size: 11 } } } });
       if (el.removeAllListeners) el.removeAllListeners('plotly_click');
       el.on('plotly_click', (ev) => {
         const d = r[ev.points[0].pointNumber];
@@ -78,20 +80,20 @@
         <span><a href="/papers?q=${p.pmid}" data-pmid="${p.pmid}">${DEBRIS.esc(p.title)}</a>
         <span class="src">${DEBRIS.esc(p.journal || '')} ${p.year || ''}</span></span></li>`;
     }).join('');
-    list.addEventListener('click', (e) => {
-      const a = e.target.closest('a[data-pmid]');
-      if (!a) return;
-      e.preventDefault();
-      DEBRIS.openPaper(a.dataset.pmid);
-    });
   }
+  document.getElementById('pet-reading').addEventListener('click', (e) => {
+    const a = e.target.closest('a[data-pmid]');
+    if (!a) return;
+    e.preventDefault();
+    DEBRIS.openPaper(a.dataset.pmid);
+  });
 
   /* ---------------------------------------------------------- rising within PET */
   function rising() {
     const W = B.windows || {};
     const share = (n, d) => (d ? ((100 * n) / d).toFixed(1) : '0');
     document.getElementById('pet-rise-head').innerHTML =
-      `PET papers, past 12 months: <b>${DEBRIS.fmt(W.pet_now)}</b> (${share(W.pet_now, W.corpus_now)}% of the corpus), `
+      `${scope === 'specific' ? 'PET-specific' : 'PET'} papers, past 12 months: <b>${DEBRIS.fmt(W.pet_now)}</b> (${share(W.pet_now, W.corpus_now)}% of the corpus), `
       + `against ${DEBRIS.fmt(W.pet_before)} (${share(W.pet_before, W.corpus_before)}%) the year before`;
     const rows = (B.rising || []).slice().reverse();
     const el = document.getElementById('pet-rising');
@@ -131,8 +133,27 @@
     draw();
   }
 
-  bars('pet-tissues', 'tissues', B.tissues || [], 'tissue');
-  bars('pet-mechanisms', 'mechanisms', B.pathways || [], 'pathway');
-  evidence();
-  rising();
+  function render() {
+    B = SCOPES[scope] || {};
+    const named = (SCOPES.named || {}).total || 0;
+    const specific = (SCOPES.specific || {}).total || 0;
+    document.getElementById('pet-scope').textContent =
+      `${DEBRIS.fmt(named)} papers name PET; ${DEBRIS.fmt(specific)} of them are PET specific`;
+    setCard(base(), true);
+    ['tissues', 'mechanisms', 'evidence', 'rising'].forEach((n) =>
+      DEBRIS.setOpen(document.querySelector(`[data-open="${n}"]`), base(), true));
+    bars('pet-tissues', 'tissues', B.tissues || [], 'tissue');
+    bars('pet-mechanisms', 'mechanisms', B.pathways || [], 'pathway');
+    evidence();
+    rising();
+  }
+
+  document.querySelectorAll('.pet-chip').forEach((b) => b.addEventListener('click', () => {
+    if (b.dataset.value === scope) return;
+    scope = b.dataset.value;
+    document.querySelectorAll('.pet-chip').forEach((x) =>
+      x.setAttribute('aria-pressed', String(x === b)));
+    render();
+  }));
+  render();
 })();

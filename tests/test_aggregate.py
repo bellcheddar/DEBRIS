@@ -172,7 +172,9 @@ def test_gap_map_counts_papers_with_evidence_in_people(corpus):
 def test_pet_watch_counts_papers_naming_pet(corpus):
     """1001 and 1002 name PET (the fixture default and an explicit pair); the controls and
     the irrelevant paper never count."""
-    pet = aggregate.pet_bundle(c.connect())
+    both = aggregate.pet_bundle(c.connect())
+    pet = both["named"]
+    assert both["specific"]["total"] <= pet["total"]
     assert pet["total"] == 2
     assert pet["rungs"] == {"1": 2, "2": 1, "4": 1}
     assert {r["key"] for r in pet["pathways"]} == {"oxidative_stress"}

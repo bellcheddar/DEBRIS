@@ -138,3 +138,15 @@ def test_relevant_paper_keeps_its_design_and_rungs():
         "pet_specific": False, "summary": "Reported in mice.", "confidence": 0.8})
     assert tag["model_type"] == "animal_in_vivo"
     assert tag["evidence_rungs"] == [3, 5]
+
+
+def test_pet_specific_needs_pet_named():
+    """PET-specific is a subset of naming PET (DECISIONS.md D66): the flag on a paper that
+    lists only other polymers is dropped; with PET listed it stands."""
+    base = {"relevant": True, "size_class": "micro", "organ_systems": ["hepatic"],
+            "model_type": "in_vivo_rodent", "pet_specific": True}
+    tag, problems, _ = schema.validate(base | {"polymers": ["PVC"]})
+    assert tag["pet_specific"] is False
+    assert any("pet_specific" in p for p in problems)
+    tag, _, _ = schema.validate(base | {"polymers": ["PET", "PS"]})
+    assert tag["pet_specific"] is True

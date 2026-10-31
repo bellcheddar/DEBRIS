@@ -4,6 +4,11 @@
 {% block content %}
 <section class="card" id="card-pet">
   <h2>PET Watch</h2>
+  <div class="chiprow" role="group" aria-label="PET scope">
+    <button class="chip pet-chip" type="button" data-value="named" aria-pressed="true">Naming PET</button>
+    <button class="chip pet-chip" type="button" data-value="specific" aria-pressed="false">PET specific</button>
+    <span class="petscope mono" id="pet-scope"></span>
+  </div>
   <div class="panelgrid">
     <figure class="panel" id="panel-tissues">
       <div class="panelhead"><h3>By tissue</h3>

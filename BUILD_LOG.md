@@ -710,3 +710,4 @@
 - 2026-10-31 16:09 train: /Users/dellboy/Documents/Vibe_Coding/debris/.pixi/envs/default/bin/python /Users/dellboy/Documents/Vibe_Coding/debris/pipeline/mlx_capped.py mlx_lm.lora --model Qwen/Qwen3-4B-Instruct-2507 --train ...
 - 2026-10-31 17:54 aggregate: wrote 7 bundles, 213 kB total; verified 9323, tagged 8983
 - 2026-10-31 17:54 PET Watch tab (owner): papers naming PET by tissue, mechanism and evidence with the dose-response and reversibility reading list, and a Rising panel folding in trends (past 12 months against the 12 before, within PET).
+- 2026-10-31T23:22Z D66: pet_specific made a subset of naming PET (13 flags cleared, 1 polymer added); PET Watch gains Naming PET / PET specific scope chips.

@@ -1249,3 +1249,10 @@ So the Phase 3a loss was not the labels. Comparing errors, phase3-a turned relev
 **Decision:** run the same recipe on Qwen3-4B-Instruct-2507 (standard attention, 36 layers, a non-thinking instruct model; its prompt format matches Qwen2.5's), in the default environment (config/lab/phase7-qwen3-4b.toml).
 **Also:** mlx-lm 0.32 writes a new training-log format that train.parse_training_log, the hang watchdog and tools/wandb_live.py do not read; the next environment needs that adapter before any full run there.
 **Reverse:** retry Qwen3.5 when MLX's linear-attention training is fixed.
+
+## D66 PET specific is a subset of naming PET; PET Watch shows both scopes (2026-10-31)
+- **Found:** PET Watch counted 273 papers naming PET; the header's PET specific counted 204. 190 were both, 83 named PET among other polymers, and 14 carried the PET-specific flag without listing PET. Of those 14, 12 were PVC, PS, tyre wear, polyester fibre or unspecified studies (flag wrong); one (PMID 41896875, a PET review) had an empty polymer list; one (39417247) mentions no PET at all.
+- **Decision:** `schema.validate` now drops `pet_specific` when PET is not in the polymer list. The 13 stored flags were cleared and PET added to 41896875's polymers (database backed up first). Result: 274 papers name PET, 191 are PET specific, all within the 274.
+- **PET Watch:** keeps "naming PET" as the default scope (mixed-polymer tissue studies are still PET evidence) and adds chips to switch every panel to the PET-specific subset, with the two counts shown beside them. Links in the specific scope add `pet=1`.
+- **Alternatives:** switch PET Watch to PET specific only (loses the 83 mixed studies); add PET wherever the flag was set (wrong for 12 of 14).
+- **Reverse:** remove the rule at the end of `schema.validate` and restore the backup's `tags`/`tag_polymers` rows.

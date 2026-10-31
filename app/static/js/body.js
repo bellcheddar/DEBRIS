@@ -260,13 +260,15 @@
 
   /* --------------------------------------------------------------- panel 3: cards */
   const cards = (() => {
-    const W = 620, H = 560;
+    const W = 620;
     const root = d3.select('#cards');
     const layer = root.append('g').attr('transform', 'translate(10,12)');
     const COLS = 3, CW = 200;
-    // Row height follows the roster: 13 tissues need five rows, 18 will need six, and a
-    // card that does not fit is a tissue the reader never sees.
-    const CH = Math.min(108, (H - 20) / Math.ceil(nodes.length / COLS));
+    // Every card keeps the height its three lines and the band need, with room under the
+    // last line; the figure grows a row at a time as tissues are added instead.
+    const CH = 96;
+    const H = Math.ceil(nodes.length / COLS) * CH + 16;
+    root.attr('viewBox', `0 0 ${W} ${H}`);
     const REGIONS = B.regions || [];
 
     function build() {
@@ -285,12 +287,12 @@
       });
       card.attr('transform', (d, i) => `translate(${(i % COLS) * CW},${Math.floor(i / COLS) * CH})`);
       card.select('.frame').attr('x', 0).attr('y', 0).attr('width', CW - 12)
-        .attr('height', CH - 12).attr('fill', T.card);
+        .attr('height', CH - 10).attr('fill', T.card);
       card.select('.nm').attr('x', 10).attr('y', 20)
         .text((d) => d.label.length > 20 ? d.label.slice(0, 19) + '…' : d.label);
       card.select('.ct').attr('x', 10).attr('y', 35).attr('fill', T.muted)
         .text((d) => d.count ? `${DEBRIS.fmt(d.count)} papers` : 'no papers yet');
-      card.select('.rg').attr('x', 10).attr('y', CH - 22).attr('fill', T.muted)
+      card.select('.rg').attr('x', 10).attr('y', CH - 22).attr('fill', T.muted)   // 12px clear of the frame
         .text((d) => d.mix.length ? `${d.region} · mostly ${shortOf(d.mix[0].k)}` : d.region);
 
       card.select('.bands').selectAll('rect').data((d) => {
@@ -301,7 +303,7 @@
           return seg;
         });
       }).join('rect')
-        .attr('x', (s) => 10 + s.x).attr('y', 44).attr('height', 20)
+        .attr('x', (s) => 10 + s.x).attr('y', 44).attr('height', 18)
         .attr('width', (s) => Math.max(1, s.w - 1))
         .attr('fill', (s) => DEBRIS.colourFor(s.k));
       card.select('.bands').selectAll('rect').selectAll('title').data((s) => [s])

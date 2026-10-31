@@ -156,6 +156,7 @@
     const axes = pick.map((i) => B.axis_labels[i]).concat([B.axis_labels[pick[0]]]);
     const close = (arr) => pick.map((i) => arr[i]).concat([arr[pick[0]]]);
     const hi = overlay.value;
+    const traceKeys = catKeys.filter((k) => k !== hi).concat(hi && radar[hi] ? [hi] : []);
     const traces = catKeys.filter((k) => k !== hi).map((k) => ({
       type: 'scatterpolar', mode: 'lines', name: radar[k].label, theta: axes, r: close(radar[k].all),
       line: { color: hi ? 'rgba(138,147,173,0.35)' : 'rgba(56,80,152,0.45)', width: 1.2 },
@@ -176,12 +177,28 @@
         angularaxis: { gridcolor: DEBRIS.T.line, tickfont: { size: 10, color: DEBRIS.T.muted } },
       },
       margin: { l: 105, r: 105, t: 30, b: 30 },
-      showlegend: false,
+      showlegend: false, hovermode: 'closest',
     }), DEBRIS.config);
-    el.removeAllListeners && el.removeAllListeners('plotly_click');
+    // Hovering a line brings that disease forward; clicking it highlights it, as the box does.
+    const base = traces.map((t) => ({ color: t.line.color, width: t.line.width }));
+    const lift = (i) => Plotly.restyle(el, {
+      'line.color': base.map((b, j) => (i === null || j === i ? (j === i && traceKeys[j] !== hi
+        ? 'rgba(200,135,43,0.85)' : b.color) : 'rgba(138,147,173,0.18)')),
+      'line.width': base.map((b, j) => (j === i ? Math.max(b.width, 3) : b.width)),
+    });
+    ['plotly_click', 'plotly_hover', 'plotly_unhover'].forEach((n) =>
+      el.removeAllListeners && el.removeAllListeners(n));
+    let lit = null;
+    el.on('plotly_hover', (ev) => {
+      const i = ev.points[0].curveNumber;
+      if (i !== lit) { lit = i; lift(i); }
+    });
+    el.on('plotly_unhover', () => { lit = null; lift(null); });
     el.on('plotly_click', (ev) => {
-      const key = B.axes[pick[ev.points[0].pointNumber % pick.length]];
-      radarPick = radarPick === key ? null : key;
+      const key = traceKeys[ev.points[0].curveNumber];
+      overlay.value = overlay.value === key ? '' : key;
+      radarPick = null;
+      drawRadar();
       setRadar(true);
     });
   }

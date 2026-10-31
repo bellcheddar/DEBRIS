@@ -3,7 +3,7 @@
   const B = window.PATHWAYS || {};
   const sankey = B.sankey || { labels: [], links: [] };
 
-  const hideOther = () => document.getElementById('hide-other').checked;
+  const hideOther = () => false;   // the catch-all nodes are always drawn (owner)
   // The card's header button shows whichever panel was picked in last.
   const setCard = DEBRIS.papersButton(document.getElementById('card-pathways'));
   const panelSet = (name, qs, sel) => {
@@ -124,27 +124,23 @@
   // Largest disease first, so the profile opens on the most studied one.
   const catKeys = Object.keys(radar).sort((p, q) =>
     radar[q].all.reduce((s, v) => s + v, 0) - radar[p].all.reduce((s, v) => s + v, 0));
-  const selA = document.getElementById('cat-a');
-  const selB = document.getElementById('cat-b');
+  const overlay = document.getElementById('overlay');
 
   let radarPick = null;   // a mechanism picked on the radar, or null
-  // The panel always shows the chosen disease's count; the card follows only a choice
-  // the reader made, not the default on load.
+  // Every disease's profile is drawn; the overlay box highlights one. The links count the
+  // highlighted disease (and a picked mechanism); with nothing highlighted, a mechanism.
   const setRadar = (byReader) => {
     const qs = new URLSearchParams();
-    if (selA.value) qs.set('disease', selA.value);
+    if (overlay.value) qs.set('disease', overlay.value);
     if (radarPick) qs.set('pathway', radarPick);
-    DEBRIS.setOpen(document.querySelector('[data-open="radar"]'), qs.toString(), !!selA.value);
-    if (byReader) setCard(qs.toString(), true);
+    const chosen = !!(overlay.value || radarPick);
+    DEBRIS.setOpen(document.querySelector('[data-open="radar"]'), qs.toString(), chosen);
+    if (byReader) setCard(chosen ? qs.toString() : '', chosen);
   };
   DEBRIS.papersButton(document.getElementById('card-new'))('novel=1&new=1');
 
   function fillSelects() {
-    catKeys.forEach((key) => {
-      selA.add(new Option(radar[key].label, key));
-      selB.add(new Option(radar[key].label, key));
-    });
-    if (catKeys.length) selA.value = catKeys[0];
+    catKeys.forEach((key) => overlay.add(new Option(radar[key].label, key)));
   }
 
   function drawRadar() {
@@ -156,25 +152,21 @@
     const named = order.filter((i) => B.axes[i] !== 'other_pathway')
       .sort((p, q) => (total[B.axes[q]] || 0) - (total[B.axes[p]] || 0)).slice(0, 10);
     const otherIdx = order.filter((i) => B.axes[i] === 'other_pathway');
-    const pick = named.concat(hideOther() ? [] : otherIdx);
+    const pick = named.concat(otherIdx);
     const axes = pick.map((i) => B.axis_labels[i]).concat([B.axis_labels[pick[0]]]);
     const close = (arr) => pick.map((i) => arr[i]).concat([arr[pick[0]]]);
-    const traces = [];
-    const a = radar[selA.value];
-    if (a) {
-      traces.push({ type: 'scatterpolar', mode: 'lines+markers', name: a.label,
-        theta: axes, r: close(a.all), fill: 'toself',
-        line: { color: DEBRIS.T.blue, width: 2 }, fillcolor: 'rgba(56,80,152,0.14)' });
-      if (document.getElementById('pet-trace').checked) {
-        traces.push({ type: 'scatterpolar', mode: 'lines+markers', name: a.label + ' (PET only)',
-          theta: axes, r: close(a.pet), line: { color: DEBRIS.T.pet, width: 2, dash: 'dot' } });
-      }
-    }
-    const b = radar[selB.value];
-    if (b) {
-      traces.push({ type: 'scatterpolar', mode: 'lines+markers', name: b.label,
-        theta: axes, r: close(b.all), fill: 'toself',
-        line: { color: DEBRIS.T.pvc, width: 2 }, fillcolor: 'rgba(110,91,166,0.12)' });
+    const hi = overlay.value;
+    const traces = catKeys.filter((k) => k !== hi).map((k) => ({
+      type: 'scatterpolar', mode: 'lines', name: radar[k].label, theta: axes, r: close(radar[k].all),
+      line: { color: hi ? 'rgba(138,147,173,0.35)' : 'rgba(56,80,152,0.45)', width: 1.2 },
+      hovertemplate: `${DEBRIS.esc(radar[k].label)}<br>%{theta}: %{r} papers<extra></extra>`,
+    }));
+    if (hi && radar[hi]) {
+      traces.push({ type: 'scatterpolar', mode: 'lines+markers', name: radar[hi].label,
+        theta: axes, r: close(radar[hi].all), fill: 'toself',
+        line: { color: DEBRIS.T.pet, width: 3 }, marker: { size: 6, color: DEBRIS.T.pet },
+        fillcolor: 'rgba(200,135,43,0.18)',
+        hovertemplate: `${DEBRIS.esc(radar[hi].label)}<br>%{theta}: %{r} papers<extra></extra>` });
     }
     Plotly.newPlot(el, traces, DEBRIS.layout({
       polar: {
@@ -183,8 +175,8 @@
                       angle: 90, title: { text: 'Papers' } },
         angularaxis: { gridcolor: DEBRIS.T.line, tickfont: { size: 10, color: DEBRIS.T.muted } },
       },
-      margin: { l: 105, r: 105, t: 30, b: 50 },
-      showlegend: true, legend: { orientation: 'h', y: -0.08, font: { size: 10 } },
+      margin: { l: 105, r: 105, t: 30, b: 30 },
+      showlegend: false,
     }), DEBRIS.config);
     el.removeAllListeners && el.removeAllListeners('plotly_click');
     el.on('plotly_click', (ev) => {
@@ -252,8 +244,5 @@
   bars('pathway-bars', B.pathways || [], 'pathway', 'other_pathway', 'mechanisms');
   drawRadar();
   drawNewEdges();
-  [selA, selB, document.getElementById('pet-trace')].forEach((el) =>
-    el.addEventListener('change', drawRadar));
-  selA.addEventListener('change', () => setRadar(true));
-  document.getElementById('hide-other').addEventListener('change', () => { drawSankey(); drawRadar(); });
+  overlay.addEventListener('change', () => { drawRadar(); setRadar(true); });
 })();

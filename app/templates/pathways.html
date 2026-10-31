@@ -4,9 +4,6 @@
 {% block content %}
 <section class="card" id="card-pathways">
   <h2>Polymers, mechanisms and diseases</h2>
-  <div class="chiprow">
-    <label class="switch"><input type="checkbox" id="hide-other"> Hide the "other" groups</label>
-  </div>
   <div class="panelgrid">
     <figure class="panel" id="panel-sankey">
       <div class="panelhead"><h3>Flows</h3>
@@ -17,11 +14,9 @@
       <div class="panelhead"><h3>Mechanism profile</h3>
         <a class="panel-open" data-open="radar" href="/papers">Open in Papers</a></div>
       <div class="chiprow" style="padding:0 14px 6px">
-        <select id="cat-a" aria-label="First disease category"></select>
-        <select id="cat-b" aria-label="Second disease category to overlay">
-          <option value="">No overlay</option>
+        <select id="overlay" aria-label="Disease to highlight">
+          <option value="">Highlight a disease</option>
         </select>
-        <label class="switch"><input type="checkbox" id="pet-trace" checked> PET-specific trace</label>
       </div>
       <div id="radar" class="plot" style="min-height:600px"></div>
     </figure>

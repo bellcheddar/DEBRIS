@@ -626,3 +626,9 @@
 - 2026-10-31 03:30 body: tissue pins for placenta, semen, colon, faeces and artery (owner), counted by tissue beside the organ-system pins; skin already has its pin.
 - 2026-10-31 03:31 qc ui: pass, 10 page renders, 0 serious or critical axe violations, 0 console errors, 0 failed requests
 - 2026-10-31 03:31 body: tissue pins for placenta, semen, colon, faeces and artery (owner), counted by tissue; atlas: cluster labels select on click (the layout no longer wakes on press).
+- 2026-10-31 03:33 predict enrich: 314 papers read by debris_v2
+- 2026-10-31 03:34 enrich: merged 314 of 314 (202 relevant), 53 with problems
+- 2026-10-31 03:35 lab phase3-b f0 s42: training 600 iterations
+- 2026-10-31 03:35 train: /Users/dellboy/Documents/Vibe_Coding/debris/.pixi/envs/default/bin/python /Users/dellboy/Documents/Vibe_Coding/debris/pipeline/mlx_capped.py mlx_lm.lora --model Qwen/Qwen2.5-1.5B-Instruct --train ...
+- 2026-10-31 03:41 qc ui: pass, 10 page renders, 0 serious or critical axe violations, 0 console errors, 0 failed requests
+- 2026-10-31 03:41 pathways: hide-other and PET-trace switches removed; mechanism profile draws every disease, one box highlights a disease in amber (owner).

@@ -253,6 +253,10 @@ def train_unit(cfg: dict, fold: int, seed: int, records: list[dict],
            "--steps-per-eval", "100", "--steps-per-report", "20", "--val-batches", "16"]
     if cfg["switches"].get("mask_prompt"):
         cmd.append("--mask-prompt")
+    # Recomputes activations in the backward pass: same gradients, a fraction of the
+    # memory. The 7B peaks at 116 GB of 128 without it and dies on any other load (D62).
+    if cfg.get("grad_checkpoint"):
+        cmd.append("--grad-checkpoint")
     c.log(f"lab {cfg['name']} f{fold} s{seed}: training {cfg['iters']} iterations")
     started = time.monotonic()
     production.run(cmd, home / "train.log")

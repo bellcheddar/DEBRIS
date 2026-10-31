@@ -1,6 +1,7 @@
 description = "Phase 6: the Phase 3b recipe (adopted recipe plus the relevant enrichment papers) on the 7B, scored once on the frozen test split against debris_v2"
 model = "Qwen/Qwen2.5-7B-Instruct"
 num_layers = 28
+grad_checkpoint = true
 iters = 1600
 save_every = 400
 folds = [0]

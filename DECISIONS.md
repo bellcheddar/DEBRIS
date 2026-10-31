@@ -1222,3 +1222,9 @@ So the Phase 3a loss was not the labels. Comparing errors, phase3-a turned relev
 **Decision (owner):** "Novel" in the header, the NOVEL badges, the novel=1 filter and Pathways' "New combinations this week" count papers PubMed entered in the last seven days that bring a polymer, organ and mechanism triple or a polymer and disease pair no earlier paper had. novelty.score_window rewrites these events (ingest_run "last-7-days") every time aggregate runs.
 **Why:** novelty was per ingest run and had never run; the only run was the initial build, against which every combination is new. The window matches New this week.
 **Reverse:** drop the score_window call in aggregate.main and point the four readers back at latest_run.
+
+## D62 The 7B trains with gradient checkpointing and streams to wandb live (2026-10-31)
+
+**Decision:** phase6-7b sets grad_checkpoint = true (lab.py passes --grad-checkpoint); tools/wandb_live.py streams a running unit's loss curve into the run log_unit later resumes.
+**Why:** without checkpointing the 7B peaks at 116 GB of 128 and died twice on ordinary load beside it, each time losing its checkpoints. Checkpointing gives the same gradients for less memory at some speed cost. The lab logs to wandb only after scoring, so a five-hour run was invisible until the end.
+**Reverse:** drop grad_checkpoint from the config; stop the streamer.

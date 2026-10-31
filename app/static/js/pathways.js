@@ -4,6 +4,7 @@
   const sankey = B.sankey || { labels: [], links: [] };
 
   const hideOther = () => document.getElementById('hide-other').checked;
+  let sankeySel = null;
 
   /* Fixed node positions: three columns, largest at the top, each "other" node last. */
   function positions(links) {
@@ -55,22 +56,29 @@
       font: { family: 'Montserrat, Helvetica, Arial, sans-serif', size: 12, color: DEBRIS.T.fg },
     }), DEBRIS.config);
 
+    // A ribbon selects its two ends, a node selects itself; the same again clears it.
+    el.removeAllListeners && el.removeAllListeners('plotly_click');
     el.on('plotly_click', (ev) => {
       const point = ev.points[0];
-      if (point.index === undefined) return;
-      const shown = sankey.links.filter((l) => !(hideOther() && l.other));
-      const link = shown[point.index];
-      if (!link) return;
-      const kindOf = (i) => sankey.kinds[i];
+      const ends = [];
+      if (point.source && point.target) {
+        const shown = sankey.links.filter((l) => !(hideOther() && l.other));
+        const link = shown[point.index];
+        if (link) ends.push(link.source, link.target);
+      } else if (point.pointNumber !== undefined) {
+        ends.push(point.pointNumber);
+      }
       const qs = new URLSearchParams();
-      [link.source, link.target].forEach((i) => {
+      ends.forEach((i) => {
         const key = keyFor(i);
         if (key === '_other') return;
-        if (kindOf(i) === 'polymer') qs.set('polymer', key);
-        if (kindOf(i) === 'pathway') qs.set('pathway', key);
-        if (kindOf(i) === 'disease') qs.set('disease', key);
+        if (sankey.kinds[i] === 'polymer') qs.set('polymer', key);
+        if (sankey.kinds[i] === 'pathway') qs.set('pathway', key);
+        if (sankey.kinds[i] === 'disease') qs.set('disease', key);
       });
-      if (qs.toString()) window.location = '/papers?' + qs.toString();
+      const s = qs.toString();
+      sankeySel = !s || s === sankeySel ? null : s;
+      DEBRIS.setOpen(document.querySelector('[data-open="sankey"]'), sankeySel || '', !!sankeySel);
     });
   }
 
@@ -88,7 +96,13 @@
   const selA = document.getElementById('cat-a');
   const selB = document.getElementById('cat-b');
 
-  const setRadar = (qs) => { document.querySelector('[data-open="radar"]').href = '/papers' + (qs ? '?' + qs : ''); };
+  let radarPick = null;   // a mechanism picked on the radar, or null
+  const setRadar = () => {
+    const qs = new URLSearchParams();
+    if (selA.value) qs.set('disease', selA.value);
+    if (radarPick) qs.set('pathway', radarPick);
+    DEBRIS.setOpen(document.querySelector('[data-open="radar"]'), qs.toString(), !!selA.value);
+  };
   DEBRIS.papersButton(document.getElementById('card-new'))('novel=1&new=1');
 
   function fillSelects() {
@@ -101,7 +115,7 @@
 
   function drawRadar() {
     const el = document.getElementById('radar');
-    setRadar(selA.value ? 'disease=' + encodeURIComponent(selA.value) : '');
+    setRadar();
     if (!catKeys.length) { el.innerHTML = '<p class="empty">No tagged papers yet.</p>'; return; }
     const order = (B.axes || []).map((k, i) => i);
     const total = Object.fromEntries((B.pathways || []).map((p) => [p.key, p.n]));
@@ -138,6 +152,12 @@
       margin: { l: 105, r: 105, t: 30, b: 50 },
       showlegend: true, legend: { orientation: 'h', y: -0.08, font: { size: 10 } },
     }), DEBRIS.config);
+    el.removeAllListeners && el.removeAllListeners('plotly_click');
+    el.on('plotly_click', (ev) => {
+      const key = B.axes[pick[ev.points[0].pointNumber % pick.length]];
+      radarPick = radarPick === key ? null : key;
+      setRadar();
+    });
   }
 
   /* ----------------------------------------------------------------- new edges */
@@ -160,7 +180,7 @@
   /* ---------------------------------------------------------------- the bars */
   // Horizontal bars, largest at the top: PET-specific papers in amber, the rest in blue,
   // so each bar's length is its total. "Other mechanisms" goes last, in grey.
-  function bars(id, rows, param, catchAll) {
+  function bars(id, rows, param, catchAll, linkName) {
     const el = document.getElementById(id);
     if (!rows.length) { el.innerHTML = '<p class="empty">No tagged papers yet.</p>'; return; }
     const ordered = rows.filter((r) => r.key !== catchAll).concat(rows.filter((r) => r.key === catchAll));
@@ -181,18 +201,21 @@
       xaxis: { title: { text: 'Papers', font: { size: 11 } }, gridcolor: DEBRIS.T.line },
       legend: { orientation: 'h', y: -0.14, font: { size: 10 } },
     }), DEBRIS.config);
+    const link = document.querySelector(`[data-open="${linkName}"]`);
+    let picked = '';
     el.on('plotly_click', (ev) => {
       const row = ordered[ev.points[0].pointIndex];
       const qs = new URLSearchParams({ [param]: row.key });
       if (ev.points[0].curveNumber === 0) qs.set('pet', '1');
-      window.location = '/papers?' + qs.toString();
+      picked = qs.toString() === picked ? '' : qs.toString();
+      DEBRIS.setOpen(link, picked, !!picked);
     });
   }
 
   fillSelects();
   drawSankey();
-  bars('disease-bars', B.diseases || [], 'disease', null);
-  bars('pathway-bars', B.pathways || [], 'pathway', 'other_pathway');
+  bars('disease-bars', B.diseases || [], 'disease', null, 'diseases');
+  bars('pathway-bars', B.pathways || [], 'pathway', 'other_pathway', 'mechanisms');
   drawRadar();
   drawNewEdges();
   [selA, selB, document.getElementById('pet-trace')].forEach((el) =>

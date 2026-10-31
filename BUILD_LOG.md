@@ -592,3 +592,5 @@
 - 2026-10-31 02:05 aggregate: wrote 5 bundles, 140 kB total; verified 9323, tagged 8983
 - 2026-10-31 02:05 qc ui: pass, 10 page renders, 0 serious or critical axe violations, 0 console errors, 0 failed requests
 - 2026-10-31 02:05 Pathways tab two by two with Diseases and Mechanisms bars; Sankey and radar catch-alls tamed (D57); 32 papers' plastics mapped back from other:; footer figures removed.
+- 2026-10-31 02:17 qc ui: pass, 10 page renders, 0 serious or critical axe violations, 0 console errors, 0 failed requests
+- 2026-10-31 02:17 app: selecting in any panel now selects instead of navigating; that panel's Open in Papers fills in blue with the selection's count (from /api/papers), and the same click again clears it.

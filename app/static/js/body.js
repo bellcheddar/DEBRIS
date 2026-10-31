@@ -78,6 +78,7 @@
       + `<a class="btn ghost" href="/papers?${query(node)}">Open in Papers</a>`
       + '<button class="chip" type="button" id="clearsel">Clear</button>';
     document.getElementById('clearsel').onclick = () => { selected = null; paintAll(); detail(); };
+    DEBRIS.setOpen(el.querySelector('.btn'), query(node), true);
   }
 
   function selectable(sel, onPick, nameOf) {
@@ -89,7 +90,7 @@
   }
 
   function paintAll() {
-    { const node = nodes.find((n) => n.key === selected); setBody(node ? query(node) : ''); }
+    { const node = nodes.find((n) => n.key === selected); setBody(node ? query(node) : '', !!node); }
     figure.paint(); rail.paint(); cards.paint(); selbar();
     ['panel-figure', 'panel-rail', 'panel-cards'].forEach((id) =>
       document.getElementById(id).classList.toggle('lit', !!selected));
@@ -370,6 +371,8 @@
       + `See all ${DEBRIS.fmt(node.count)} papers</a></p>`;
     body.querySelectorAll('[data-pmid]').forEach((btn) =>
       btn.addEventListener('click', () => DEBRIS.openPaper(btn.dataset.pmid)));
+    const all = body.querySelector('p .btn');
+    if (all) { all.dataset.label = 'Open in Papers'; DEBRIS.setOpen(all, query(node), true); }
   }
 
   document.getElementById('pet-only').addEventListener('change', (e) => {

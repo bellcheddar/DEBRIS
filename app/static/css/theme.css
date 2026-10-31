@@ -445,3 +445,7 @@ a.kpi:hover,a.kpi:focus-visible{border-color:var(--el-blue);background:var(--el-
 }
 .tablecount{font-size:12.5px;color:var(--el-ink);font-weight:500;align-self:center;white-space:nowrap}
 .panel .panelbody{padding:6px 16px 16px;overflow:auto;max-height:960px}
+/* An Open in Papers link with a selection behind it: filled, bold, with the count. */
+.btn.is-selected,.panel-open.is-selected{background:var(--el-blue);border-color:var(--el-blue);color:#fff;font-weight:800}
+.panel-open.is-selected{padding:3px 8px;border-bottom-color:var(--el-blue)}
+.btn.is-selected:hover,.panel-open.is-selected:hover{background:var(--el-ink);color:#fff}

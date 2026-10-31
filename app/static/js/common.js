@@ -126,6 +126,27 @@ const DEBRIS = (() => {
   document.addEventListener('DOMContentLoaded', wireHealth);
   /* Every panel carries the same "Open in Papers" button, top right of its card. It is
      handed a query string (or a URLSearchParams) whenever the panel's state changes. */
+  /* Point an Open in Papers link at a query. With a selection behind it the link fills in
+     and carries the count, from the same query the Papers table runs, so they agree. */
+  const counts = {};
+  function setOpen(a, qs, selected) {
+    if (!a) return;
+    const s = (qs || '').toString();
+    a.href = '/papers' + (s ? '?' + s : '');
+    if (!a.dataset.label) a.dataset.label = a.textContent.trim();
+    const base = a.dataset.label;
+    a.classList.toggle('is-selected', !!selected);
+    if (!selected) { a.textContent = base; return; }
+    const stamp = String(Math.random());
+    a.dataset.stamp = stamp;
+    const show = (n) => { if (a.dataset.stamp === stamp) a.textContent = `${base} (${fmt(n)})`; };
+    if (counts[s] !== undefined) { show(counts[s]); return; }
+    a.textContent = `${base} (…)`;
+    fetch('/api/papers?' + (s ? s + '&' : '') + 'size=1')
+      .then((r) => r.json()).then((j) => { counts[s] = j.last_row || 0; show(counts[s]); })
+      .catch(() => { if (a.dataset.stamp === stamp) a.textContent = base; });
+  }
+
   function papersButton(section, label = 'Open in Papers') {
     if (!section) return () => {};
     const a = document.createElement('a');
@@ -134,15 +155,12 @@ const DEBRIS = (() => {
     a.href = '/papers';
     section.classList.add('has-open');
     section.insertBefore(a, section.firstChild);
-    return (qs) => {
-      const s = (qs || '').toString();
-      a.href = '/papers' + (s ? '?' + s : '');
-    };
+    return (qs, selected) => setOpen(a, qs, selected);
   }
 
   // An evidence level in words; the site never shows the numbers.
   const evidence = (r) => (window.EVIDENCE || {})[String(r)] || '';
 
   return { T, colourFor, layout, config, plot, fmt, chips, openPaper, esc, label, polymerTagClass, evidence,
-           papersButton };
+           papersButton, setOpen };
 })();

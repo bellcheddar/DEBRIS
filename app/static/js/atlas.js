@@ -18,6 +18,8 @@
   let petOnly = false;
   let ladderScope = 'all';
   let focus = null;   // a polymer key, or null
+  let ladderSel = null; // {disease, rung} picked on the evidence chart, or null
+  let yearSel = null;   // {from, to, polymer} picked on the year chart, or null
   let pair = null;    // [a, b] sorted, or null
 
   const ORDER = B.polymer_order || [];
@@ -106,10 +108,11 @@
 
   function links() {
     const q = query();
-    setField(q);
-    document.querySelectorAll('#card-field [data-open]').forEach((a) => {
-      a.href = '/papers' + (q ? '?' + q : '');
-    });
+    const chosen = !!(focus || pair);
+    setField(q, chosen);
+    document.querySelectorAll('#card-field [data-open]').forEach((a) => DEBRIS.setOpen(a, q, chosen));
+    const bar = document.querySelector('#selbar .btn');
+    if (bar) DEBRIS.setOpen(bar, q, chosen);
     const kpi = (id, extra) => {
       const a = document.getElementById('kpilink-' + id);
       if (!a) return;
@@ -561,16 +564,21 @@
     document.getElementById('ladder-legend').innerHTML = [1, 2, 3, 4, 5, 6].map((r) =>
       `<span><i style="background:${rungColour(r)}"></i>${DEBRIS.esc(rungLabels[r] || '')}</span>`)
       .join('') + '<span style="color:#8A5A14">Reversible is the evidence an enzyme therapeutic can test.</span>';
-    setLadder(ladderScope === 'pet' ? 'pet=1' : '');
+    const ladderLink = () => {
+      const qs = new URLSearchParams(ladderSel || {});
+      if (ladderScope === 'pet') qs.set('pet', '1');
+      setLadder(qs.toString(), !!ladderSel);
+    };
+    ladderLink();
     const el = document.getElementById('ladder');
     el.removeAllListeners && el.removeAllListeners('plotly_click');
     el.on && el.on('plotly_click', (ev) => {
       const point = ev.points[0];
       const row = data[point.pointIndex];
-      const rung = point.curveNumber + 1;
-      const qs = new URLSearchParams({ disease: row.key, rung: String(rung) });
-      if (ladderScope === 'pet') qs.set('pet', '1');
-      window.location = '/papers?' + qs.toString();
+      const rung = String(point.curveNumber + 1);
+      const same = ladderSel && ladderSel.disease === row.key && ladderSel.rung === rung;
+      ladderSel = same ? null : { disease: row.key, rung };
+      ladderLink();
     });
   }
 
@@ -612,8 +620,15 @@
     // polymers on show (any of them).
     let touched = false;
     const sync = () => {
+      if (yearSel) {
+        const qs = new URLSearchParams({ entered_from: yearSel.from, entered_to: yearSel.to });
+        if (yearSel.polymer) qs.set('polymer', yearSel.polymer);
+        setYears(qs.toString(), true);
+        return;
+      }
       const keys = shown();
-      setYears(touched && keys.length && keys.length < named.length ? 'polymers=' + keys.join(',') : '');
+      const picked = touched && keys.length && keys.length < named.length;
+      setYears(picked ? 'polymers=' + keys.join(',') : '', picked);
     };
     sync();
     if (el.on) {
@@ -623,9 +638,11 @@
         const end = point.x.slice(0, 10);
         const start = new Date(end + 'T00:00:00Z');
         start.setUTCDate(start.getUTCDate() - 365);
-        const qs = new URLSearchParams({ entered_from: start.toISOString().slice(0, 10), entered_to: end });
-        if (point.curveNumber > 0) qs.set('polymer', named[point.curveNumber - 1]);
-        window.location = '/papers?' + qs.toString();
+        const pick = { from: start.toISOString().slice(0, 10), to: end,
+                       polymer: point.curveNumber > 0 ? named[point.curveNumber - 1] : '' };
+        const same = yearSel && yearSel.to === pick.to && yearSel.polymer === pick.polymer;
+        yearSel = same ? null : pick;
+        sync();
       });
     }
   }

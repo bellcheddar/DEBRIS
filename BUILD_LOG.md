@@ -550,3 +550,12 @@
 - 2026-10-30 20:36 qc ui: pass, 10 page renders, 0 serious or critical axe violations, 0 console errors, 0 failed requests
 - 2026-10-30 20:43 aggregate: wrote 5 bundles, 21 kB total; verified 9323, tagged 0
 - 2026-10-30 20:45 D55: v2 recipe in tag.py, tag_tissues table, display vocabulary; controller queues Phase 5 -> gate -> tag corpus with debris_v2 -> deploy -> Phase 3a.
+- 2026-10-30 21:23 qc ui: pass, 10 page renders, 0 serious or critical axe violations, 0 console errors, 0 failed requests
+- 2026-10-30 21:27 qc ui: pass, 10 page renders, 0 serious or critical axe violations, 0 console errors, 0 failed requests
+- 2026-10-30 21:35 qc ui: pass, 10 page renders, 0 serious or critical axe violations, 0 console errors, 0 failed requests
+- 2026-10-30 22:23 lab phase5-recipe f0 s42: trained in 143.7 min
+- 2026-10-30 22:25 lab phase5-recipe f0 s42 @ 1600: relevant_f1 0.9714, polymers_f1 0.9419, organ_systems_f1 0.7947, pathways_f1 0.7978, rungs_exact 0.8704, rungs_within_one 0.9074, model_type_accuracy 0.9318, valid_json 1.0, 0.98 s/paper
+- 2026-10-30 22:25 lab phase5-recipe: done
+- 2026-10-30 22:26 lab report: 19 experiments written to LAB_REPORT.md
+- 2026-10-30 22:26 tag: 9346 papers, Qwen/Qwen2.5-3B-Instruct+data/adapters/debris_v2, path studio_mlx
+- 2026-10-30 22:28 Phase 5: floor mean 0.902, +0.087 [+0.058, +0.117] vs round 04, seven of eight floors (D56). Corpus tagging with debris_v2 started 22:26.

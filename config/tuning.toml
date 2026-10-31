@@ -29,3 +29,7 @@ status = "verified against gold 2026-10-30 by tools/tag_verify.py, see data/mani
 sampled_fraction = 0.33
 confidence = "hybrid: mean token probability for all, sampled pass on the least confident third (owner, D45)"
 projected_hours_hybrid = 3.5
+recipe = "v2"
+model = "Qwen/Qwen2.5-3B-Instruct"
+adapter = "data/adapters/debris_v2"
+recipe_status = "owner chose option C 2026-10-30, adopted recipe from Phase 5 (D55)"

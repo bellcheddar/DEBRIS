@@ -1171,3 +1171,23 @@ The owner chose option C: no interim tagging with the round 05 tagger; the first
 - **Gate**: tagging starts automatically only if the paired floor-mean difference against round 04 on the frozen test split has a lower bound above zero. Otherwise it stops and asks. Then the Phase 5 adapter is copied to `data/adapters/debris_v2`, `[tag]` points at it (Qwen2.5-3B-Instruct plus adapter, hybrid confidence as D45), the corpus is tagged, novelty and the bundles are rebuilt, and the site is deployed.
 
 **Owner's change (2026-10-30, 21:00): no pause.** "Go with the round that you think is best... need the first tagged results in the morning, we can always refine and redo later." The gate no longer stops: the corpus is tagged tonight with debris_v2 unless Phase 5 shows it clearly behind round 04 (the whole floor-mean interval below zero), in which case the current production tagger (round 05, 7B) tags it. The new tagger is preferred on a tie because it also carries tissues and the adopted definitions. If debris_v2 cannot run at all, the production tagger tags instead, so the site is never left empty. `tools/set_tag_recipe.py` points `[tag]` at the adapter.
+
+## D56 Phase 5: the adopted recipe beats round 04 by 8.7 points and clears seven of eight floors
+
+The adopted recipe (D50) on the 3B, 32 layers, 1,600 iterations, trained on all 1,438 cross-validation papers and scored once on the frozen 162-paper test split against v2 test gold, paired against round 04's saved predictions on the same gold:
+
+| field | phase5-recipe | vs round 04 | floor |
+|---|---|---|---|
+| relevant | 0.971 | +0.000 [-0.027, +0.028] | 0.95 met |
+| polymers | 0.942 | +0.209 [+0.119, +0.306] real | 0.85 met |
+| organ systems | 0.795 | -0.010 [-0.066, +0.044] | 0.85 missed |
+| pathways | 0.798 | +0.304 [+0.235, +0.375] real | 0.75 met |
+| rungs exact | 0.870 | +0.019 [-0.037, +0.074] | 0.70 met |
+| rungs within one | 0.907 | +0.037 [-0.012, +0.093] | 0.90 met |
+| model type | 0.932 | +0.136 [+0.060, +0.220] real | 0.90 met |
+| valid JSON | 1.000 | +0.000 | 0.98 met |
+| floor mean | 0.902 | +0.087 [+0.058, +0.117] real | |
+
+Seven of eight floors, against four for round 04 and round 05. Organ systems is the one short field, and the Phase 0 ceiling put it down as a definition limit (D38). The small rung cost seen on the 1.5B (D54) does not appear on the 3B. Round 04 is scored on the relabelled gold, which the owner's rule 5 anticipates: the old numbers stand beside these in MODEL_CARD.md, not replaced by them.
+
+Under the owner's no-pause instruction the controller chose debris_v2 and started tagging the corpus at 22:26 (9,346 papers, Qwen2.5-3B-Instruct plus `data/adapters/debris_v2`).

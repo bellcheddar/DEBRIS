@@ -1242,3 +1242,10 @@ So the Phase 3a loss was not the labels. Comparing errors, phase3-a turned relev
 **Owner:** option 1 after D63, try a newer, smaller generation before the 7B.
 **Setup:** config/lab/phase7-qwen35-4b.toml (all 32 layers, 1,600 steps at batch 4, the 1,640 papers of phase5-enrich-b), scored once on the frozen test split against debris_v2. Qwen3.5 needs mlx-lm 0.32 and transformers 5, so it runs in a separate pixi environment, next; the default environment keeps the production pins. lab.generate_batch passes enable_thinking=False (Qwen3.5 otherwise opens a reasoning block; the Qwen2.5 prompt is byte for byte unchanged, checked) and accepts transformers 5's BatchEncoding.
 **Adoption:** reported only; switching the production tagger is the owner's call.
+
+## D65 Qwen3.5-4B cannot train at full length on MLX; Qwen3-4B-Instruct-2507 instead (2026-10-31)
+
+**Finding:** Qwen3.5-4B (mlx-lm 0.32.2, mlx 0.32.4) fails with Metal "Insufficient Memory" on the first training step at full paper length, even at batch 1 with gradient checkpointing and 42 % of memory free; it trains at 256 and 512 tokens, and 768 stalled for over ten minutes. Its linear-attention layers' training path on Metal is the likely cause; Qwen2.5 trains normally in the same environment. Truncating papers would not be a fair test against debris_v2.
+**Decision:** run the same recipe on Qwen3-4B-Instruct-2507 (standard attention, 36 layers, a non-thinking instruct model; its prompt format matches Qwen2.5's), in the default environment (config/lab/phase7-qwen3-4b.toml).
+**Also:** mlx-lm 0.32 writes a new training-log format that train.parse_training_log, the hang watchdog and tools/wandb_live.py do not read; the next environment needs that adapter before any full run there.
+**Reverse:** retry Qwen3.5 when MLX's linear-attention training is fixed.

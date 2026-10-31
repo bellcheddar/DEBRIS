@@ -71,3 +71,31 @@ KMP_DUPLICATE_LIB_OK = "TRUE"
 
 [environments]
 encoder = ["encoder"]
+next = { features = ["next"], no-default-feature = true }
+
+# Newer-model arm (D64): Qwen3.5 needs mlx-lm 0.32, which needs transformers 5. The
+# default environment stays on the pins the production tagger was trained and verified
+# with; this one carries the same packages on the newer line.
+[feature.next.dependencies]
+python = "3.12.*"
+requests = "*"
+tenacity = "*"
+pandas = "*"
+pyarrow = "*"
+python-duckdb = "*"
+pydantic = "*"
+rapidfuzz = "*"
+tqdm = "*"
+tomli-w = "*"
+pytest = "*"
+lxml = "*"
+
+# mlx 0.32 ships wheels for macOS 14 and later only.
+[feature.next.system-requirements]
+macos = "15.0"
+
+[feature.next.pypi-dependencies]
+mlx-lm = "==0.32.2"
+transformers = ">=5.7,<6"
+wandb = "*"
+huggingface-hub = "*"

@@ -1,0 +1,18 @@
+description = "Phase 7 (D64): the Phase 3b recipe on Qwen3.5-4B, a newer generation, scored once on the frozen test split against debris_v2"
+model = "Qwen/Qwen3.5-4B"
+num_layers = 32
+iters = 1600
+save_every = 400
+folds = [0]
+seeds = [42]
+gold = "v2"
+final = true
+compare_to = "phase5-recipe"
+
+[switches]
+mask_prompt = true
+model_type_v2 = true
+pathways_v2 = true
+polymers_v2 = true
+tissues = true
+enrich = "relevant"

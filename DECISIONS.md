@@ -1236,3 +1236,9 @@ So the Phase 3a loss was not the labels. Comparing errors, phase3-a turned relev
 **Result vs debris_v2:** floor mean 0.831 vs 0.902, -0.071 [-0.096, -0.043] real. Relevance level (0.972 vs 0.971); polymers -0.163, pathways -0.239, tissues -0.137 and polymer families -0.146, all real; study type -0.057 and organs -0.044 not significant. Trained in 22 minutes, overfitting after epoch 3.
 **Decision:** keep the generative tagger. The encoder matches it only on relevance, where it could serve as a fast pre-screen if speed ever matters.
 **Reverse:** n/a (an experiment; nothing in production changed).
+
+## D64 Phase 7: the Phase 3b recipe on Qwen3.5-4B (2026-10-31)
+
+**Owner:** option 1 after D63, try a newer, smaller generation before the 7B.
+**Setup:** config/lab/phase7-qwen35-4b.toml (all 32 layers, 1,600 steps at batch 4, the 1,640 papers of phase5-enrich-b), scored once on the frozen test split against debris_v2. Qwen3.5 needs mlx-lm 0.32 and transformers 5, so it runs in a separate pixi environment, next; the default environment keeps the production pins. lab.generate_batch passes enable_thinking=False (Qwen3.5 otherwise opens a reasoning block; the Qwen2.5 prompt is byte for byte unchanged, checked) and accepts transformers 5's BatchEncoding.
+**Adoption:** reported only; switching the production tagger is the owner's call.

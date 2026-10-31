@@ -283,9 +283,15 @@ def generate_batch(model, tokenizer, prompts: list[str], system: str | None = No
     """Greedy answers for a batch of papers, in the order given."""
     from mlx_lm import batch_generate
 
-    tokens = [tokenizer.apply_chat_template(
-        [{"role": "system", "content": system or schema.SYSTEM_PROMPT},
-         {"role": "user", "content": p}], add_generation_prompt=True) for p in prompts]
+    # enable_thinking=False: a Qwen3.5 template otherwise opens a reasoning block; the
+    # Qwen2.5 template has no such variable and renders byte for byte as before. Under
+    # transformers 5 the call returns a BatchEncoding rather than a list of ids.
+    def ids(p):
+        out = tokenizer.apply_chat_template(
+            [{"role": "system", "content": system or schema.SYSTEM_PROMPT},
+             {"role": "user", "content": p}], add_generation_prompt=True, enable_thinking=False)
+        return list(out["input_ids"]) if hasattr(out, "keys") else out
+    tokens = [ids(p) for p in prompts]
     # Similar lengths batch together with less padding; the answers are put back in order.
     order = sorted(range(len(tokens)), key=lambda i: len(tokens[i]))
     answers: list[str] = [""] * len(tokens)

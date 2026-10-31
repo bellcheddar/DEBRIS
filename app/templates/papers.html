@@ -10,22 +10,22 @@
   {% if bundle.new_this_week %}
   <div class="feed five">
     {% for p in bundle.new_this_week %}
-    <article class="paper{% if p.retracted %} retracted{% endif %}">
-      <div class="meta">
-        <span class="mono">{{ p.journal }} {{ p.year }}</span>
-        <span class="badge-new">New</span>
+    <article class="paper mini{% if p.retracted %} retracted{% endif %}" title="{{ p.title }}{% if p.summary %} | {{ p.summary }}{% endif %}">
+      <div class="top">
+        <span class="src">{{ p.journal }} {{ p.year }}</span>
         {% if p.novel %}<span class="badge-novel">Novel</span>{% endif %}
         {% if p.retracted %}<span class="badge-novel">Retracted</span>{% endif %}
+        <span class="badge-new">New</span>
       </div>
       <h3>{{ p.title }}</h3>
       {% if p.summary %}<p class="summary">{{ p.summary }}</p>{% endif %}
-      <div class="tags">
+      {% if p.polymers or p.rungs %}<div class="tags">
         {% for poly in p.polymers %}<span class="tag {{ bundle.polymer_class.get(poly, 'other') }}">{{ poly }}</span>{% endfor %}
         {% for r in p.rungs %}<span class="tag rung">{{ vocab.evidence_labels[r|string] }}</span>{% endfor %}
-      </div>
-      <div class="meta">
-        <a class="mono" href="https://pubmed.ncbi.nlm.nih.gov/{{ p.pmid }}/">PMID {{ p.pmid }}</a>
-        {% if p.doi %}<a class="mono" href="https://doi.org/{{ p.doi }}">doi:{{ p.doi }}</a>{% endif %}
+      </div>{% endif %}
+      <div class="foot">
+        <a href="https://pubmed.ncbi.nlm.nih.gov/{{ p.pmid }}/" rel="noopener">PMID {{ p.pmid }}</a>
+        {% if p.doi %}<a href="https://doi.org/{{ p.doi }}" rel="noopener" title="doi:{{ p.doi }}">DOI</a>{% endif %}
         <button class="chip" type="button" data-pmid="{{ p.pmid }}">Detail</button>
       </div>
     </article>

@@ -8,15 +8,13 @@
     organ: document.getElementById('organ'),
     rung: document.getElementById('rung'),
     pet: document.getElementById('pet'),
-    review: document.getElementById('review'),
-    unverified: document.getElementById('unverified'),
   };
 
   // A click-through from the Atlas, Body or Pathways tab arrives as a query string.
   ['polymer', 'organ', 'rung', 'q'].forEach((k) => {
     if (params.get(k) && controls[k]) controls[k].value = params.get(k);
   });
-  ['pet', 'review', 'unverified', 'novel', 'new'].forEach((k) => {
+  ['pet', 'novel', 'new'].forEach((k) => {
     if (params.get(k) === '1' && controls[k]) controls[k].checked = true;
   });
 

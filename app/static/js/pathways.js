@@ -12,24 +12,34 @@
   };
   let sankeySel = null;
 
-  /* Fixed node positions: three columns, largest at the top, each "other" node last. */
-  function positions(links) {
+  /* Fixed node positions: three columns, largest at the top, each "other" node last, and
+     every column spread from the top of the panel to the bottom. Node heights stay true to
+     the papers (one scale for all columns, as Plotly draws them); a column with fewer
+     papers gets wider gaps instead of ending short. */
+  const PAD = 16;
+  function positions(links, heightPx) {
     const value = sankey.labels.map(() => 0);
     const inflow = sankey.labels.map(() => 0);
     links.forEach((l) => { value[l.source] += l.value; inflow[l.target] += l.value; });
     inflow.forEach((v, i) => { value[i] = Math.max(value[i], v); });
     const colX = { polymer: 0.001, pathway: 0.42, disease: 0.999 };
-    const x = [], y = [];
+    const cols = {};
     Object.keys(colX).forEach((kind) => {
-      const ids = sankey.labels.map((_, i) => i).filter((i) => sankey.kinds[i] === kind && value[i] > 0)
+      cols[kind] = sankey.labels.map((_, i) => i).filter((i) => sankey.kinds[i] === kind && value[i] > 0)
         .sort((p, q) => (sankey.keys[p] === '_other') - (sankey.keys[q] === '_other') || value[q] - value[p]);
-      const total = ids.reduce((s, i) => s + value[i], 0) || 1;
-      let at = 0;
-      ids.forEach((i) => {
-        const share = value[i] / total;
+    });
+    // Plotly's own scale: the tightest column decides how tall a paper is.
+    const scale = Math.min(...Object.values(cols).filter((c) => c.length).map((c) =>
+      (heightPx - (c.length - 1) * PAD) / c.reduce((s, i) => s + value[i], 0)));
+    const x = [], y = [];
+    Object.entries(cols).forEach(([kind, ids]) => {
+      const h = ids.map((i) => (value[i] * scale) / heightPx);
+      const gap = ids.length > 1 ? (1 - h.reduce((s, v) => s + v, 0)) / (ids.length - 1) : 0;
+      let top = 0;
+      ids.forEach((i, n) => {
         x[i] = colX[kind];
-        y[i] = Math.min(0.999, Math.max(0.001, 0.02 + 0.92 * (at + share / 2)));
-        at += share;
+        y[i] = Math.min(0.999, Math.max(0.001, top + h[n] / 2));
+        top += h[n] + gap;
       });
     });
     return { x: sankey.labels.map((_, i) => x[i] ?? 0.5), y: sankey.labels.map((_, i) => y[i] ?? 0.5) };
@@ -41,11 +51,11 @@
     if (!links.length) { el.innerHTML = '<p class="empty">No tagged papers yet.</p>'; return; }
     const linkColour = (l) => l.other ? 'rgba(138,147,173,0.16)'
       : l.pet ? 'rgba(200,135,43,0.5)' : 'rgba(56,80,152,0.24)';
-    const pos = positions(links);
+    const pos = positions(links, Math.max(200, el.clientHeight - 16));
     Plotly.newPlot(el, [{
       type: 'sankey', orientation: 'h', arrangement: 'snap',
       node: {
-        label: sankey.labels, color: sankey.colours, pad: 16, thickness: 16,
+        label: sankey.labels, color: sankey.colours, pad: PAD, thickness: 16,
         x: pos.x, y: pos.y,
         line: { color: '#fff', width: 1 },
         hovertemplate: '%{label}<br>%{value} papers<extra></extra>',

@@ -449,3 +449,13 @@ a.kpi:hover,a.kpi:focus-visible{border-color:var(--el-blue);background:var(--el-
 .btn.is-selected,.panel-open.is-selected{background:var(--el-blue);border-color:var(--el-blue);color:#fff;font-weight:800}
 .panel-open.is-selected{padding:3px 8px;border-bottom-color:var(--el-blue)}
 .btn.is-selected:hover,.panel-open.is-selected:hover{background:var(--el-ink);color:#fff}
+/* The rolling-year legend: one button per line, tied to the chart. */
+.serieslegend{display:flex;flex-wrap:wrap;gap:6px 8px;padding:4px 14px 14px}
+.serieslegend .series{display:inline-flex;align-items:center;gap:6px;font:500 11.5px var(--display);
+  color:var(--el-fg);background:var(--el-card);border:1px solid var(--el-line);border-radius:999px;
+  padding:4px 10px;cursor:pointer}
+.serieslegend .series i{width:14px;height:3px;border-radius:2px;display:inline-block}
+.serieslegend .series.off{color:var(--el-muted);opacity:.55}
+.serieslegend .series.off i{opacity:.35}
+.serieslegend .series.lit,.serieslegend .series:hover,.serieslegend .series:focus-visible{
+  border-color:var(--el-blue);background:var(--el-tint);color:var(--el-ink);font-weight:700}

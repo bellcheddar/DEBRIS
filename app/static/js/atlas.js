@@ -602,7 +602,8 @@
       line: { color: colour(k), width: 1.8, shape: 'spline' },
       hovertemplate: `${labelOf(k)}, 12 months to %{x|%d %b %Y}: %{y:,}<extra></extra>`,
     })));
-    DEBRIS.plot('years', traces, { margin: { l: 50, r: 16, t: 8, b: 38 }, showlegend: true,
+    DEBRIS.plot('years', traces, { margin: { l: 50, r: 16, t: 8, b: 38 }, showlegend: false,
+         hovermode: 'closest',
          annotations: tagged ? [] : [{ xref: 'paper', yref: 'paper', x: 0.01, y: 0.97,
            xanchor: 'left', showarrow: false, font: { size: 11, color: T.muted },
            text: 'Polymer lines fill in as the tagger reads the corpus' }],
@@ -630,7 +631,8 @@
     };
     sync();
     if (el.on) {
-      el.on('plotly_restyle', () => { touched = true; sync(); });
+      // Only showing or hiding a line counts as a choice; emphasis does not.
+      el.on('plotly_restyle', (ev) => { if (ev && ev[0] && 'visible' in ev[0]) { touched = true; sync(); } });
       el.on('plotly_click', (ev) => {
         const point = ev.points[0];
         const end = point.x.slice(0, 10);
@@ -643,6 +645,44 @@
         sync();
       });
     }
+
+    /* The legend is the page's own, tied to the lines both ways: hovering an entry or a
+       line brings that line forward and fades the rest; clicking an entry shows or hides
+       its line. */
+    const legend = document.getElementById('years-legend');
+    const series = [{ name: 'All papers', colour: T.blue }]
+      .concat(named.map((k) => ({ name: shortOf(k), colour: colour(k), title: labelOf(k) })));
+    legend.innerHTML = series.map((s, i) => `<button type="button" class="series" data-i="${i}"
+        title="${DEBRIS.esc(s.title || s.name)}"><i style="background:${s.colour}"></i>${DEBRIS.esc(s.name)}</button>`).join('');
+    const items = [...legend.querySelectorAll('.series')];
+    const paintLegend = () => items.forEach((b, i) =>
+      b.classList.toggle('off', !(el.data[i].visible === true || el.data[i].visible === undefined)));
+    const baseWidth = (i) => (i === 0 ? 2.5 : 1.8);
+    let lit = null;
+    const emphasise = (i) => {
+      if (lit === i) return;
+      lit = i;
+      const n = el.data.length;
+      Plotly.restyle(el, {
+        opacity: [...Array(n).keys()].map((j) => (i === null || j === i ? 1 : 0.22)),
+        'line.width': [...Array(n).keys()].map((j) => (j === i ? baseWidth(j) + 1.8 : baseWidth(j))),
+      });
+      items.forEach((b, j) => b.classList.toggle('lit', j === i));
+    };
+    items.forEach((b, i) => {
+      b.addEventListener('mouseenter', () => emphasise(i));
+      b.addEventListener('focus', () => emphasise(i));
+      b.addEventListener('mouseleave', () => emphasise(null));
+      b.addEventListener('blur', () => emphasise(null));
+      b.addEventListener('click', () => {
+        const on = el.data[i].visible === true || el.data[i].visible === undefined;
+        Plotly.restyle(el, { visible: on ? 'legendonly' : true }, [i]);
+        paintLegend();
+      });
+    });
+    el.on('plotly_hover', (ev) => emphasise(ev.points[0].curveNumber));
+    el.on('plotly_unhover', () => emphasise(null));
+    paintLegend();
   }
 
   DEBRIS.chips('.organ-chip', (value) => { organ = value; rebuildAll(); });

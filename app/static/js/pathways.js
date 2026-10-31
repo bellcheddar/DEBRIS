@@ -112,10 +112,14 @@
       const qs = new URLSearchParams();
       ends.forEach((i) => {
         const key = keyFor(i);
-        if (key === '_other') return;
-        if (sankey.kinds[i] === 'polymer') qs.set('polymer', key);
-        if (sankey.kinds[i] === 'pathway') qs.set('pathway', key);
-        if (sankey.kinds[i] === 'disease') qs.set('disease', key);
+        const kind = sankey.kinds[i];
+        if (key === '_other') {
+          // "Other" is every value of its column outside the named nodes on show.
+          const named = sankey.keys.filter((k, j) => sankey.kinds[j] === kind && k !== '_other');
+          qs.set(`${kind}_notin`, named.join(','));
+          return;
+        }
+        qs.set(kind, key);
       });
       const s = qs.toString();
       sankeySel = !s || s === sankeySel ? null : s;

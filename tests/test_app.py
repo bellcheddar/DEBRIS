@@ -139,3 +139,8 @@ def test_every_papers_column_sorts(client):
                 "model_type", "confidence"):
         for d in ("asc", "desc"):
             assert client.get(f"/api/papers?sort={col}&dir={d}").status_code == 200, (col, d)
+
+
+def test_the_sankey_other_nodes_filter(client):
+    for qs in ("disease_notin=liver_disease", "pathway_notin=oxidative_stress", "polymer_notin=PS,PE"):
+        assert client.get("/api/papers?" + qs).status_code == 200, qs

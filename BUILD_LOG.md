@@ -673,3 +673,6 @@
 - 2026-10-31 08:04 lab phase5-enrich-b: done
 - 2026-10-31 08:04 lab report: 22 experiments written to LAB_REPORT.md
 - 2026-10-31 08:06 phase5-enrich-b (3B) vs debris_v2: floor mean -0.007 [-0.022, +0.009]; tissues +0.065 real; model type -0.034 borderline. Gate kept debris_v2 (D60).
+- 2026-10-31 10:24 lab phase6-7b f0 s42: training 1600 iterations
+- 2026-10-31 10:24 train: /Users/dellboy/Documents/Vibe_Coding/debris/.pixi/envs/default/bin/python /Users/dellboy/Documents/Vibe_Coding/debris/pipeline/mlx_capped.py mlx_lm.lora --model Qwen/Qwen2.5-7B-Instruct --train ...
+- 2026-10-31 10:25 Phase 6 started: the Phase 3b recipe on Qwen2.5-7B-Instruct (config/lab/phase6-7b.toml), gate vs debris_v2 on the frozen test split; retag as debris_v3 and deploy if it clearly wins.

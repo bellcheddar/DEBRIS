@@ -1,0 +1,18 @@
+description = "Phase 6: the Phase 3b recipe (adopted recipe plus the relevant enrichment papers) on the 7B, scored once on the frozen test split against debris_v2"
+model = "Qwen/Qwen2.5-7B-Instruct"
+num_layers = 28
+iters = 1600
+save_every = 400
+folds = [0]
+seeds = [42]
+gold = "v2"
+final = true
+compare_to = "phase5-recipe"
+
+[switches]
+mask_prompt = true
+model_type_v2 = true
+pathways_v2 = true
+polymers_v2 = true
+tissues = true
+enrich = "relevant"

@@ -29,7 +29,7 @@
 <rect class="b" x="1058" y="154" width="124" height="28" rx="2"/><text class="n" x="1068" y="172">Pathways</text>
 <rect class="b" x="1058" y="194" width="124" height="28" rx="2"/><text class="n" x="1068" y="212">Papers</text>
 <path class="a" d="M1014,148 L1052,148" marker-end="url(#tip)"/>
-<rect class="band" x="128" y="300" width="886" height="114" rx="3"/><text class="bt" x="142" y="318">THE LANGUAGE MODELS · ALL RUN ON ONE DESKTOP, NO PAID API</text><text class="nm" x="1000" y="318" text-anchor="end">debris_v1</text>
+<rect class="band" x="128" y="300" width="886" height="114" rx="3"/><text class="bt" x="142" y="318">THE LANGUAGE MODELS</text><text class="nm" x="1000" y="318" text-anchor="end">debris_v1</text>
 <rect class="hd" x="142" y="328" width="276" height="74" rx="2"/><text class="ht" x="152" y="347">A · Teach and check</text>
 <text class="hs" x="152" y="362">1,600 abstracts labelled by careful</text><text class="hs" x="152" y="375">reading; Qwen2.5-32B re-reads a sample</text><text class="hs" x="152" y="388">to show how far the labels can be trusted</text>
 <rect class="hd" x="432" y="328" width="276" height="74" rx="2"/><text class="ht" x="442" y="347">B · Tag</text>

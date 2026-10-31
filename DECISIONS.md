@@ -1154,3 +1154,9 @@ Merged: 203 relevant, 111 not. No vocabulary violations; the 56 notes are the va
 ## D53 About tab
 
 Owner's request: a fifth tab with a brief why and how, the architecture diagram made interactive (links to the models, detail on hover and keyboard focus), a software table with DOI-verified links, and key references including Liu et al. (tissues), PETase and FAST-PETase. Built from `config/about.toml` so the tables are data, not markup. Every DOI was resolved at Crossref or DataCite on 2026-10-30 and its title checked: Liu 2026, Marfella 2024, Leslie 2022, Ragusa 2021, Jenner 2022, Nihart 2025, Yoshida 2016 (PETase), Austin 2018, Tournier 2020, Lu 2022 (FAST-PETase); Qwen2.5, LoRA, Transformers, PyTorch, NCBI, RapidFuzz (Zenodo concept DOI), pandas, D3. MLX, Crossref's API, Plotly, Tabulator, W&B and Flask have no DOI and link to their project pages, marked as such. The diagram's SVG is a `role="group"` with focusable boxes, after axe flagged nested-interactive on `role="img"`. QC now covers /about: 10 renders, 0 serious violations.
+
+## D54 phase2-all: the adopted changes combine, with one small cost on evidence rungs
+
+All four v2 switches with rare pathways grouped (1.5B, 3 folds, v2 gold, paired against phase2-base): floor mean +0.044 [+0.036, +0.052]; pathways +0.246 (0.704, against 0.608 for 2b alone, the grouping adding the rest), polymers +0.122 (0.851), model type +0.033 (0.849), tissues 0.728. The changes add rather than interfere.
+
+The cost: evidence rungs, exact -0.024 [-0.039, -0.010] and within one -0.024 [-0.038, -0.010], both real. Every single arm had a small dip there that did not reach significance (2a -0.010 exact, 2b -0.006 and -0.008, 2c -0.008 within one); together they add up. A longer answer for the same training budget is the likely cause, since rungs are not touched by any switch. Recorded for the owner with the Phase 5 result; not a reason to hold the run.

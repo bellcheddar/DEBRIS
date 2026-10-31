@@ -623,8 +623,10 @@
 
     // The button follows the polymer lines on show; a point opens its twelve months.
     const el = document.getElementById('years');
-    const shown = () => (el.data || []).slice(1)
-      .map((t, i) => (t.visible === true || t.visible === undefined ? named[i] : null)).filter(Boolean);
+    let shownState = null;   // set once the legend is built
+    const shown = () => (shownState ? shownState.slice(1).map((on, i) => (on ? named[i] : null))
+      : (el.data || []).slice(1).map((t, i) => (t.visible === true || t.visible === undefined ? named[i] : null)))
+      .filter(Boolean);
     // Until a line is shown or hidden the button opens every paper; after that, the
     // polymers on show (any of them).
     let touched = false;
@@ -642,7 +644,7 @@
     sync();
     if (el.on) {
       // Only showing or hiding a line counts as a choice; emphasis does not.
-      el.on('plotly_restyle', (ev) => { if (ev && ev[0] && 'visible' in ev[0]) { touched = true; sync(); } });
+      // Legend clicks call sync themselves; restyles (hover emphasis, previews) do not count.
       el.on('plotly_click', (ev) => {
         const point = ev.points[0];
         const end = point.x.slice(0, 10);
@@ -665,34 +667,39 @@
     legend.innerHTML = series.map((s, i) => `<button type="button" class="series" data-i="${i}"
         title="${DEBRIS.esc(s.title || s.name)}"><i style="background:${s.colour}"></i>${DEBRIS.esc(s.name)}</button>`).join('');
     const items = [...legend.querySelectorAll('.series')];
-    const paintLegend = () => items.forEach((b, i) =>
-      b.classList.toggle('off', !(el.data[i].visible === true || el.data[i].visible === undefined)));
+    const n = el.data.length;
+    // What the reader has chosen to show; a hover may preview a hidden line on top of it.
+    shownState = el.data.map((t) => t.visible === true || t.visible === undefined);
     const baseWidth = (i) => (i === 0 ? 2.5 : 1.8);
     let lit = null;
-    const emphasise = (i) => {
-      if (lit === i) return;
-      lit = i;
-      const n = el.data.length;
+    const paint = () => {
       Plotly.restyle(el, {
-        opacity: [...Array(n).keys()].map((j) => (i === null || j === i ? 1 : 0.22)),
-        'line.width': [...Array(n).keys()].map((j) => (j === i ? baseWidth(j) + 1.8 : baseWidth(j))),
+        visible: shownState.map((on, j) => (on || j === lit ? true : 'legendonly')),
+        opacity: [...Array(n).keys()].map((j) => (lit === null || j === lit ? 1 : 0.22)),
+        'line.width': [...Array(n).keys()].map((j) => (j === lit ? baseWidth(j) + 1.8 : baseWidth(j))),
       });
-      items.forEach((b, j) => b.classList.toggle('lit', j === i));
+      items.forEach((b, j) => {
+        b.classList.toggle('off', !shownState[j]);
+        b.classList.toggle('lit', j === lit);
+        b.setAttribute('aria-pressed', shownState[j] ? 'true' : 'false');
+      });
     };
+    const emphasise = (i) => { if (lit !== i) { lit = i; paint(); } };
     items.forEach((b, i) => {
       b.addEventListener('mouseenter', () => emphasise(i));
       b.addEventListener('focus', () => emphasise(i));
       b.addEventListener('mouseleave', () => emphasise(null));
       b.addEventListener('blur', () => emphasise(null));
       b.addEventListener('click', () => {
-        const on = el.data[i].visible === true || el.data[i].visible === undefined;
-        Plotly.restyle(el, { visible: on ? 'legendonly' : true }, [i]);
-        paintLegend();
+        shownState[i] = !shownState[i];
+        touched = true;
+        paint();
+        sync();
       });
     });
     el.on('plotly_hover', (ev) => emphasise(ev.points[0].curveNumber));
     el.on('plotly_unhover', () => emphasise(null));
-    paintLegend();
+    paint();
   }
 
   DEBRIS.chips('.organ-chip', (value) => { organ = value; rebuildAll(); });

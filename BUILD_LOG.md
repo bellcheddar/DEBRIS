@@ -594,3 +594,7 @@
 - 2026-10-31 02:05 Pathways tab two by two with Diseases and Mechanisms bars; Sankey and radar catch-alls tamed (D57); 32 papers' plastics mapped back from other:; footer figures removed.
 - 2026-10-31 02:17 qc ui: pass, 10 page renders, 0 serious or critical axe violations, 0 console errors, 0 failed requests
 - 2026-10-31 02:17 app: selecting in any panel now selects instead of navigating; that panel's Open in Papers fills in blue with the selection's count (from /api/papers), and the same click again clears it.
+- 2026-10-31 02:23 qc ui: pass, 10 page renders, 0 serious or critical axe violations, 0 console errors, 0 failed requests
+- 2026-10-31 02:26 lab phase3-a f1 s42: trained in 47.8 min
+- 2026-10-31 02:28 qc ui: pass, 10 page renders, 0 serious or critical axe violations, 0 console errors, 0 failed requests
+- 2026-10-31 02:28 app: every panel has Open in Papers in its own head and on its card header, both with the selection's count; the Atlas year and evidence charts are panels; Pathways gains a card button that follows the last panel picked in.

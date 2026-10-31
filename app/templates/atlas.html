@@ -32,7 +32,11 @@
 <section class="card" id="card-years">
   <h2>Corpus by year</h2>
   <p class="sub">Verified papers entered in PubMed over the previous twelve months, measured at each month end up to today, in all and by polymer. Click a polymer in the legend to show or hide it; click a point to select those twelve months; Open in Papers shows how many papers that is.</p>
-  <div id="years" class="plot" style="min-height:220px"></div>
+  <figure class="panel">
+    <div class="panelhead"><h3>Rolling year</h3><span class="pcount">papers entered in PubMed</span>
+      <a class="panel-open" data-open data-follow href="/papers">Open in Papers</a></div>
+    <div id="years" class="plot" style="min-height:220px"></div>
+  </figure>
 </section>
 
 <section class="card" id="card-field">
@@ -103,8 +107,12 @@
     <button class="chip ladder-chip" type="button" data-value="all" aria-pressed="true">All polymers</button>
     <button class="chip ladder-chip" type="button" data-value="pet" aria-pressed="false">PET only</button>
   </div>
-  <div id="ladder" class="plot" style="min-height:520px"></div>
-  <div class="legend" id="ladder-legend"></div>
+  <figure class="panel">
+    <div class="panelhead"><h3>By disease</h3><span class="pcount">papers by kind of evidence</span>
+      <a class="panel-open" data-open data-follow href="/papers">Open in Papers</a></div>
+    <div id="ladder" class="plot" style="min-height:520px"></div>
+    <div class="legend" id="ladder-legend" style="padding:0 14px 12px"></div>
+  </figure>
 </section>
 
 {% include "_drawer.html" %}

@@ -4,6 +4,12 @@
   const sankey = B.sankey || { labels: [], links: [] };
 
   const hideOther = () => document.getElementById('hide-other').checked;
+  // The card's header button shows whichever panel was picked in last.
+  const setCard = DEBRIS.papersButton(document.getElementById('card-pathways'));
+  const panelSet = (name, qs, sel) => {
+    DEBRIS.setOpen(document.querySelector(`[data-open="${name}"]`), qs, sel);
+    setCard(sel ? qs : '', sel);
+  };
   let sankeySel = null;
 
   /* Fixed node positions: three columns, largest at the top, each "other" node last. */
@@ -103,7 +109,7 @@
       });
       const s = qs.toString();
       sankeySel = !s || s === sankeySel ? null : s;
-      DEBRIS.setOpen(document.querySelector('[data-open="sankey"]'), sankeySel || '', !!sankeySel);
+      panelSet('sankey', sankeySel || '', !!sankeySel);
     }
   }
 
@@ -122,11 +128,14 @@
   const selB = document.getElementById('cat-b');
 
   let radarPick = null;   // a mechanism picked on the radar, or null
-  const setRadar = () => {
+  // The panel always shows the chosen disease's count; the card follows only a choice
+  // the reader made, not the default on load.
+  const setRadar = (byReader) => {
     const qs = new URLSearchParams();
     if (selA.value) qs.set('disease', selA.value);
     if (radarPick) qs.set('pathway', radarPick);
     DEBRIS.setOpen(document.querySelector('[data-open="radar"]'), qs.toString(), !!selA.value);
+    if (byReader) setCard(qs.toString(), true);
   };
   DEBRIS.papersButton(document.getElementById('card-new'))('novel=1&new=1');
 
@@ -181,7 +190,7 @@
     el.on('plotly_click', (ev) => {
       const key = B.axes[pick[ev.points[0].pointNumber % pick.length]];
       radarPick = radarPick === key ? null : key;
-      setRadar();
+      setRadar(true);
     });
   }
 
@@ -233,7 +242,7 @@
       const qs = new URLSearchParams({ [param]: row.key });
       if (ev.points[0].curveNumber === 0) qs.set('pet', '1');
       picked = qs.toString() === picked ? '' : qs.toString();
-      DEBRIS.setOpen(link, picked, !!picked);
+      panelSet(linkName, picked, !!picked);
     });
   }
 
@@ -245,5 +254,6 @@
   drawNewEdges();
   [selA, selB, document.getElementById('pet-trace')].forEach((el) =>
     el.addEventListener('change', drawRadar));
+  selA.addEventListener('change', () => setRadar(true));
   document.getElementById('hide-other').addEventListener('change', () => { drawSankey(); drawRadar(); });
 })();

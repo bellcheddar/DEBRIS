@@ -155,7 +155,11 @@ const DEBRIS = (() => {
     a.href = '/papers';
     section.classList.add('has-open');
     section.insertBefore(a, section.firstChild);
-    return (qs, selected) => setOpen(a, qs, selected);
+    // Links inside the card marked data-follow show the same selection as the header.
+    return (qs, selected) => {
+      setOpen(a, qs, selected);
+      section.querySelectorAll('[data-follow]').forEach((l) => setOpen(l, qs, selected));
+    };
   }
 
   // An evidence level in words; the site never shows the numbers.

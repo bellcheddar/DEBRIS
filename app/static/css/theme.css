@@ -510,3 +510,7 @@ a.kpi:hover,a.kpi:focus-visible{border-color:var(--el-blue);background:var(--el-
 #years-strip{height:84px}
 .serieslegend .series[aria-pressed="true"]{border-color:var(--el-ink);background:var(--el-soft)}
 .serieslegend .series.lit{border-color:var(--el-blue)}
+/* Rolling year: tighter chips so the polymer legend fits on one line. */
+#years-legend{gap:4px;padding:2px 10px 12px}
+#years-legend .series{font-size:10.5px;padding:2px 7px;gap:4px;letter-spacing:0}
+#years-legend .series i{width:10px}

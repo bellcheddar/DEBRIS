@@ -43,21 +43,35 @@
           </td></tr>
         </thead>
         <tbody id="healthpanel">
-          <tr><th scope="row">Verified</th><td class="mono">{{ '{:,}'.format(meta.verified_papers or 0) }}</td>
-              <th scope="row">Tagged</th><td class="mono">{{ '{:,}'.format(meta.tagged_papers or 0) }}</td></tr>
-          <tr><th scope="row">On topic</th><td class="mono">{{ '{:,}'.format(meta.relevant_papers or 0) }}</td>
-              <th scope="row">PET specific</th><td class="mono">{{ '{:,}'.format(meta.pet_papers or 0) }}</td></tr>
-          <tr><th scope="row">New this week</th><td class="mono">{{ '{:,}'.format(meta.new_this_week or 0) }}</td>
-              <th scope="row">Novel</th><td class="mono">{{ '{:,}'.format(meta.novel_this_week or 0) }}</td></tr>
-          <tr><th scope="row">For review</th><td class="mono">{{ '{:,}'.format(meta.review_queue or 0) }}</td>
-              <th scope="row">Updated</th><td class="mono">{{ meta.last_ingest_date or 'pending' }}</td></tr>
-          <tr><th scope="row">Tagger</th><td class="mono txt">{{ meta.model_version or 'pending' }}</td>
-              <th scope="row">Human evidence</th><td class="mono">{{ '{:,}'.format(meta.human_papers or 0) }}</td></tr>
+          <tr><th scope="row" class="hbox" data-box="verified" data-href="/papers">Verified</th><td class="mono hbox" data-box="verified" data-href="/papers"><a href="/papers">{{ '{:,}'.format(meta.verified_papers or 0) }}</a></td>
+              <th scope="row" class="hbox" data-box="tagged" data-href="/papers">Tagged</th><td class="mono hbox" data-box="tagged" data-href="/papers"><a href="/papers">{{ '{:,}'.format(meta.tagged_papers or 0) }}</a></td></tr>
+          <tr><th scope="row" class="hbox" data-box="ontopic" data-href="/papers">On topic</th><td class="mono hbox" data-box="ontopic" data-href="/papers"><a href="/papers">{{ '{:,}'.format(meta.relevant_papers or 0) }}</a></td>
+              <th scope="row" class="hbox" data-box="pet" data-href="/papers?pet=1">PET specific</th><td class="mono hbox" data-box="pet" data-href="/papers?pet=1"><a href="/papers?pet=1">{{ '{:,}'.format(meta.pet_papers or 0) }}</a></td></tr>
+          <tr><th scope="row" class="hbox" data-box="new" data-href="/papers?new=1">New this week</th><td class="mono hbox" data-box="new" data-href="/papers?new=1"><a href="/papers?new=1">{{ '{:,}'.format(meta.new_this_week or 0) }}</a></td>
+              <th scope="row" class="hbox" data-box="novel" data-href="/papers?novel=1">Novel</th><td class="mono hbox" data-box="novel" data-href="/papers?novel=1"><a href="/papers?novel=1">{{ '{:,}'.format(meta.novel_this_week or 0) }}</a></td></tr>
+          <tr><th scope="row" class="hbox" data-box="review" data-href="/papers?review=1">For review</th><td class="mono hbox" data-box="review" data-href="/papers?review=1"><a href="/papers?review=1">{{ '{:,}'.format(meta.review_queue or 0) }}</a></td>
+              <th scope="row" class="hbox" data-box="updated" data-href="/about">Updated</th><td class="mono hbox" data-box="updated" data-href="/about"><a href="/about">{{ meta.last_ingest_date or 'pending' }}</a></td></tr>
+          <tr><th scope="row" class="hbox" data-box="tagger" data-href="/about">Tagger</th><td class="mono txt hbox" data-box="tagger" data-href="/about"><a href="/about">{{ meta.model_version or 'pending' }}</a></td>
+              <th scope="row" class="hbox" data-box="human" data-href="/papers?rungs=1,2">Human evidence</th><td class="mono hbox" data-box="human" data-href="/papers?rungs=1,2"><a href="/papers?rungs=1,2">{{ '{:,}'.format(meta.human_papers or 0) }}</a></td></tr>
         </tbody>
       </table>
     </div>
   </div>
 </header>
+
+<script>
+  /* Status boxes: a label and its figure are one box; hovering lights both and a click on
+     either follows the figure's link. */
+  (() => {
+    const cells = [...document.querySelectorAll('.healthtable .hbox')];
+    const pair = (key) => cells.filter((c) => c.dataset.box === key);
+    cells.forEach((c) => {
+      c.addEventListener('mouseenter', () => pair(c.dataset.box).forEach((x) => x.classList.add('lit')));
+      c.addEventListener('mouseleave', () => pair(c.dataset.box).forEach((x) => x.classList.remove('lit')));
+      c.addEventListener('click', (e) => { if (!e.target.closest('a')) window.location = c.dataset.href; });
+    });
+  })();
+</script>
 
 <nav class="tabs" aria-label="Sections">
   <div class="wrap">

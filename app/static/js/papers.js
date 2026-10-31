@@ -18,7 +18,7 @@
   });
 
   // Filters another tab can send that have no control of their own here.
-  const LINKED = ['pet', 'novel', 'new', 'disease', 'pathway', 'polymers', 'not_polymers', 'organs',
+  const LINKED = ['pet', 'novel', 'new', 'review', 'disease', 'pathway', 'polymers', 'not_polymers', 'organs',
                   'rungs', 'tissue', 'model_type', 'entered_from', 'entered_to',
                   'polymer_notin', 'pathway_notin', 'disease_notin', 'size_class', 'year'];
   DEBRIS.papersButton(document.getElementById('card-newweek'), 'Show in the table')('new=1');

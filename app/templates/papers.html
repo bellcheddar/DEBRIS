@@ -5,7 +5,7 @@
 {% endblock %}
 
 {% block content %}
-<section class="card">
+<section class="card" id="card-newweek">
   <h2>New this week</h2>
   <p class="sub">Papers admitted by the most recent ingest run. NOVEL marks a polymer, organ or pathway combination the corpus had not seen before.</p>
   {% if bundle.new_this_week %}
@@ -40,6 +40,7 @@
 <section class="card">
   <h2>Every verified paper</h2>
   <p class="sub">Click a row for the abstract, the MeSH terms and the tag JSON. Filters and search run client side; the download respects the switches below.</p>
+  <div class="linkfilters" id="linkfilters" role="status" hidden></div>
   <div class="chiprow">
     <input type="search" id="search" placeholder="Search title, journal, summary or PMID" style="flex:1 1 260px" aria-label="Search papers">
     <select id="polymer" aria-label="Filter by polymer">

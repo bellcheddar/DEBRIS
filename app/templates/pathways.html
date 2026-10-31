@@ -2,13 +2,13 @@
 {% block title %}03 Pathways{% endblock %}
 
 {% block content %}
-<section class="card">
+<section class="card" id="card-sankey">
   <h2>Polymers, pathways and disease categories</h2>
   <p class="sub">Ribbon width is the number of verified papers co-tagging the two terms. PET ribbons are drawn in the PET colour. Click a ribbon for those papers.</p>
   <div id="sankey" class="plot" style="min-height:620px"></div>
 </section>
 
-<section class="card">
+<section class="card" id="card-radar">
   <h2>Pathway profile by disease category</h2>
   <p class="sub">Papers per pathway for one disease category, with the PET-specific subset drawn over it. Pick a second category to overlay.</p>
   <div class="chiprow">
@@ -21,7 +21,7 @@
   <div id="radar" class="plot" style="min-height:480px"></div>
 </section>
 
-<section class="card">
+<section class="card" id="card-new">
   <h2>New combinations this week</h2>
   <p class="sub">Polymer, organ and pathway triples the corpus had not seen before the latest ingest run, with the paper that created each.</p>
   <div id="new-edges"></div>

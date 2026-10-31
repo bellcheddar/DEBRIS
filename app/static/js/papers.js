@@ -20,6 +20,24 @@
     if (params.get(k) === '1' && controls[k]) controls[k].checked = true;
   });
 
+  // Filters another tab can send that have no control of their own here. They apply until
+  // cleared, and the banner says what they are, so a click-through never filters silently.
+  const LINKED = ['novel', 'new', 'disease', 'pathway', 'polymers', 'not_polymers', 'organs',
+                  'rungs', 'tissue', 'model_type', 'entered_from', 'entered_to'];
+  const NAMES = { novel: 'novel', new: 'new this week', disease: 'disease', pathway: 'pathway',
+                  polymers: 'polymers', not_polymers: 'without', organs: 'organs', rungs: 'rungs',
+                  tissue: 'tissue', model_type: 'study type', entered_from: 'entered after',
+                  entered_to: 'entered up to' };
+  DEBRIS.papersButton(document.getElementById('card-newweek'), 'Show in the table')('new=1');
+  const linked = LINKED.filter((k) => params.get(k));
+  const banner = document.getElementById('linkfilters');
+  if (banner && linked.length) {
+    banner.innerHTML = '<span>Opened from another tab: '
+      + linked.map((k) => `<b>${DEBRIS.esc(NAMES[k])}</b> ${DEBRIS.esc(params.get(k).replace(/\|/g, ' and ').replace(/,/g, ', '))}`).join(' · ')
+      + '</span><a class="btn ghost" href="/papers">Clear</a>';
+    banner.hidden = false;
+  }
+
   const filters = () => {
     const f = {};
     Object.entries(controls).forEach(([key, el]) => {
@@ -27,9 +45,7 @@
       const value = el.type === 'checkbox' ? (el.checked ? '1' : '') : el.value.trim();
       if (value) f[key] = value;
     });
-    ['novel', 'new', 'disease', 'pathway'].forEach((k) => {
-      if (params.get(k)) f[k] = params.get(k);
-    });
+    LINKED.forEach((k) => { if (params.get(k)) f[k] = params.get(k); });
     return f;
   };
 

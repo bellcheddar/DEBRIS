@@ -124,5 +124,22 @@ const DEBRIS = (() => {
 
   document.addEventListener('DOMContentLoaded', wireDrawer);
   document.addEventListener('DOMContentLoaded', wireHealth);
-  return { T, colourFor, layout, config, plot, fmt, chips, openPaper, esc, label, polymerTagClass };
+  /* Every panel carries the same "Open in Papers" button, top right of its card. It is
+     handed a query string (or a URLSearchParams) whenever the panel's state changes. */
+  function papersButton(section, label = 'Open in Papers') {
+    if (!section) return () => {};
+    const a = document.createElement('a');
+    a.className = 'btn ghost open-papers';
+    a.textContent = label;
+    a.href = '/papers';
+    section.classList.add('has-open');
+    section.insertBefore(a, section.firstChild);
+    return (qs) => {
+      const s = (qs || '').toString();
+      a.href = '/papers' + (s ? '?' + s : '');
+    };
+  }
+
+  return { T, colourFor, layout, config, plot, fmt, chips, openPaper, esc, label, polymerTagClass,
+           papersButton };
 })();

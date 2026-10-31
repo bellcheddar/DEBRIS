@@ -566,3 +566,12 @@
 - 2026-10-31 00:47 qc ui: fail, 10 page renders, 2 serious or critical axe violations, 0 console errors, 0 failed requests
 - 2026-10-31 00:47 qc ui: fail, 10 page renders, 2 serious or critical axe violations, 0 console errors, 0 failed requests
 - 2026-10-31 00:49 front page: eight KPIs over every tagged field (papers, PET Specific, human evidence, polymers, organ systems, tissues, pathways, study types), each following the organ and PET filters; header figures as a table on the right, title, strapline and links on the left; backronym replays every nine seconds; mdeller.com in the footer; badge colours darkened to 4.5:1.
+- 2026-10-31 00:53 tag: done 7552 tagged, 1204 queued for review, 2 failed, 114.2 min, path studio_mlx
+- 2026-10-31 00:53 novelty: no newly admitted relevant papers in harvest-20261029T065911Z
+- 2026-10-31 00:53 aggregate: wrote 5 bundles, 168 kB total; verified 9323, tagged 8983
+- 2026-10-31 00:53 lab phase3-a f0 s42: training 600 iterations
+- 2026-10-31 00:53 train: /Users/dellboy/Documents/Vibe_Coding/debris/.pixi/envs/default/bin/python /Users/dellboy/Documents/Vibe_Coding/debris/pipeline/mlx_capped.py mlx_lm.lora --model Qwen/Qwen2.5-1.5B-Instruct --train ...
+- 2026-10-31 00:57 aggregate: wrote 5 bundles, 168 kB total; verified 9323, tagged 8983
+- 2026-10-31 00:57 qc ui: fail, 10 page renders, 2 serious or critical axe violations, 0 console errors, 0 failed requests
+- 2026-10-31 01:16 qc ui: fail, 10 page renders, 2 serious or critical axe violations, 0 console errors, 0 failed requests
+- 2026-10-31 01:16 app: Open in Papers on every panel and KPI card, reflecting each panel's state; Papers honours every linked filter (polymers, organs, rungs, tissue, study type, entry-date window) and names them in a banner; year chart points open their twelve months; status table adds human evidence.

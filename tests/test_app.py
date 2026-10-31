@@ -120,3 +120,15 @@ def test_health_counts_only_papers_the_tagger_can_read():
             "review_queue": 5, "last_ingest_date": today}
     assert health_of(meta)["state"] == "ok"
     assert health_of({**meta, "tagged_papers": 80})["state"] == "working"
+
+
+def test_click_through_filters_reach_the_api(client):
+    for qs in ("rungs=1,2", "tissue=liver", "model_type=cell_line",
+               "entered_from=2024-01-01&entered_to=2025-01-01", "polymers=PS,PE"):
+        assert client.get("/api/papers?" + qs).status_code == 200, qs
+
+
+def test_click_through_filters_reach_the_api(client):
+    for qs in ("rungs=1,2", "tissue=liver", "model_type=cell_line",
+               "entered_from=2024-01-01&entered_to=2025-01-01", "polymers=PS,PE"):
+        assert client.get("/api/papers?" + qs).status_code == 200, qs

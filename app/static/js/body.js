@@ -32,6 +32,7 @@
     .range([T.soft, T.pet]).clamp(true);
 
   let selected = null;
+  const setBody = DEBRIS.papersButton(document.getElementById('card-body'));
   let petMode = false;
   let railMode = 'count';
   let cardMode = 'count';
@@ -88,6 +89,7 @@
   }
 
   function paintAll() {
+    { const node = nodes.find((n) => n.key === selected); setBody(node ? query(node) : ''); }
     figure.paint(); rail.paint(); cards.paint(); selbar();
     ['panel-figure', 'panel-rail', 'panel-cards'].forEach((id) =>
       document.getElementById(id).classList.toggle('lit', !!selected));

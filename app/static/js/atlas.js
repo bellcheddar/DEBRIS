@@ -85,8 +85,41 @@
   function paintAll() {
     cluster.paint(); packing.paint(); matrix.paint(); bars.paint();
     selbar();
+    links();
     ['panel-cluster', 'panel-packing', 'panel-matrix', 'panel-bars'].forEach((id) =>
       document.getElementById(id).classList.toggle('lit', !!(focus || pair)));
+  }
+
+  /* ------------------------------------------------------------- open in papers */
+  const setField = DEBRIS.papersButton(document.getElementById('card-field'));
+  const setLadder = DEBRIS.papersButton(document.getElementById('card-ladder'));
+  const setYears = DEBRIS.papersButton(document.getElementById('card-years'));
+
+  // The organ chip and the PET switch, which every Atlas figure follows.
+  function scope() {
+    const qs = new URLSearchParams();
+    const organs = (B.organ_map && B.organ_map[organ]) || [];
+    if (organs.length) qs.set('organs', organs.join(','));
+    if (petOnly) qs.set('pet', '1');
+    return qs;
+  }
+
+  function links() {
+    const q = query();
+    setField(q);
+    document.querySelectorAll('#card-field [data-open]').forEach((a) => {
+      a.href = '/papers' + (q ? '?' + q : '');
+    });
+    const kpi = (id, extra) => {
+      const a = document.getElementById('kpilink-' + id);
+      if (!a) return;
+      const qs = scope();
+      Object.entries(extra || {}).forEach(([k, v]) => qs.set(k, v));
+      a.href = '/papers' + (qs.toString() ? '?' + qs.toString() : '');
+    };
+    ['verified', 'polymers', 'organs', 'tissues', 'pathways', 'models'].forEach((id) => kpi(id));
+    kpi('pet', { pet: '1' });
+    kpi('human', { rungs: '1,2' });
   }
 
   function rebuildAll() {
@@ -528,6 +561,7 @@
     document.getElementById('ladder-legend').innerHTML = [1, 2, 3, 4, 5, 6].map((r) =>
       `<span><i style="background:${rungColour(r)}"></i>${r}: ${DEBRIS.esc(rungLabels[r] || '')}</span>`)
       .join('') + '<span style="color:#8A5A14">Rung 6 is the rung an enzyme therapeutic can test.</span>';
+    setLadder(ladderScope === 'pet' ? 'pet=1' : '');
     const el = document.getElementById('ladder');
     el.removeAllListeners && el.removeAllListeners('plotly_click');
     el.on && el.on('plotly_click', (ev) => {
@@ -569,6 +603,31 @@
          xaxis: { type: 'date', dtick: 'M24', tickformat: '%Y', gridcolor: 'rgba(0,0,0,0)',
                   range: [x[0], x[x.length - 1]] },
          yaxis: { title: { text: 'Papers per year', font: { size: 11 } } } });
+
+    // The button follows the polymer lines on show; a point opens its twelve months.
+    const el = document.getElementById('years');
+    const shown = () => (el.data || []).slice(1)
+      .map((t, i) => (t.visible === true || t.visible === undefined ? named[i] : null)).filter(Boolean);
+    // Until a line is shown or hidden the button opens every paper; after that, the
+    // polymers on show (any of them).
+    let touched = false;
+    const sync = () => {
+      const keys = shown();
+      setYears(touched && keys.length && keys.length < named.length ? 'polymers=' + keys.join(',') : '');
+    };
+    sync();
+    if (el.on) {
+      el.on('plotly_restyle', () => { touched = true; sync(); });
+      el.on('plotly_click', (ev) => {
+        const point = ev.points[0];
+        const end = point.x.slice(0, 10);
+        const start = new Date(end + 'T00:00:00Z');
+        start.setUTCDate(start.getUTCDate() - 365);
+        const qs = new URLSearchParams({ entered_from: start.toISOString().slice(0, 10), entered_to: end });
+        if (point.curveNumber > 0) qs.set('polymer', named[point.curveNumber - 1]);
+        window.location = '/papers?' + qs.toString();
+      });
+    }
   }
 
   DEBRIS.chips('.organ-chip', (value) => { organ = value; rebuildAll(); });

@@ -54,6 +54,10 @@
   const selA = document.getElementById('cat-a');
   const selB = document.getElementById('cat-b');
 
+  DEBRIS.papersButton(document.getElementById('card-sankey'));
+  const setRadar = DEBRIS.papersButton(document.getElementById('card-radar'));
+  DEBRIS.papersButton(document.getElementById('card-new'))('novel=1&new=1');
+
   function fillSelects() {
     catKeys.forEach((key) => {
       selA.add(new Option(radar[key].label, key));
@@ -64,6 +68,7 @@
 
   function drawRadar() {
     const el = document.getElementById('radar');
+    setRadar(selA.value ? 'disease=' + encodeURIComponent(selA.value) : '');
     if (!catKeys.length) { el.innerHTML = '<p class="empty">No tagged papers yet.</p>'; return; }
     const axes = (B.axis_labels || []).concat([(B.axis_labels || [])[0]]);
     const close = (arr) => arr.concat([arr[0]]);

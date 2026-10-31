@@ -3,39 +3,39 @@
 
 {% block content %}
 <div class="kpis kpis-8">
-  <div class="kpi"><div class="label">Papers</div>
+  <a class="kpi" id="kpilink-verified" href="/papers"><div class="label">Papers</div>
     <div class="value" id="kpi-verified">{{ '{:,}'.format(meta.relevant_papers or meta.verified_papers or 0) }}</div>
-    <div class="foot">verified and on topic</div></div>
-  <div class="kpi pet"><div class="label">PET Specific</div>
+    <div class="foot">verified and on topic</div></a>
+  <a class="kpi pet" id="kpilink-pet" href="/papers"><div class="label">PET Specific</div>
     <div class="value" id="kpi-pet">{{ '{:,}'.format(meta.pet_papers or 0) }}</div>
-    <div class="foot">PET specifically studied or detected</div></div>
-  <div class="kpi"><div class="label">Human evidence</div>
+    <div class="foot">PET specifically studied or detected</div></a>
+  <a class="kpi" id="kpilink-human" href="/papers"><div class="label">Human evidence</div>
     <div class="value" id="kpi-human">{{ '{:,}'.format(meta.human_papers or 0) }}</div>
-    <div class="foot">found in people, or tied to an outcome in them</div></div>
-  <div class="kpi"><div class="label">Polymers</div>
+    <div class="foot">found in people, or tied to an outcome in them</div></a>
+  <a class="kpi" id="kpilink-polymers" href="/papers"><div class="label">Polymers</div>
     <div class="value" id="kpi-polymers">0</div>
-    <div class="foot">of {{ vocab.polymers|length }} in the vocabulary</div></div>
-  <div class="kpi"><div class="label">Organ systems</div>
+    <div class="foot">of {{ vocab.polymers|length }} in the vocabulary</div></a>
+  <a class="kpi" id="kpilink-organs" href="/papers"><div class="label">Organ systems</div>
     <div class="value" id="kpi-organs">{{ meta.organ_systems_covered or 0 }}</div>
-    <div class="foot">of {{ vocab.organ_systems|length }} in the vocabulary</div></div>
-  <div class="kpi"><div class="label">Tissues</div>
+    <div class="foot">of {{ vocab.organ_systems|length }} in the vocabulary</div></a>
+  <a class="kpi" id="kpilink-tissues" href="/papers"><div class="label">Tissues</div>
     <div class="value" id="kpi-tissues">0</div>
-    <div class="foot">of {{ (vocab.tissues or [])|length }} named sites, after Liu et al.</div></div>
-  <div class="kpi"><div class="label">Pathways</div>
+    <div class="foot">of {{ (vocab.tissues or [])|length }} named sites, after Liu et al.</div></a>
+  <a class="kpi" id="kpilink-pathways" href="/papers"><div class="label">Pathways</div>
     <div class="value" id="kpi-pathways">0</div>
-    <div class="foot">of {{ vocab.pathways|length }} mechanisms</div></div>
-  <div class="kpi"><div class="label">Study types</div>
+    <div class="foot">of {{ vocab.pathways|length }} mechanisms</div></a>
+  <a class="kpi" id="kpilink-models" href="/papers"><div class="label">Study types</div>
     <div class="value" id="kpi-models">0</div>
-    <div class="foot">of {{ (vocab.model_types|length) - 1 }}, from cell-free to cohort</div></div>
+    <div class="foot">of {{ (vocab.model_types|length) - 1 }}, from cell-free to cohort</div></a>
 </div>
 
-<section class="card">
+<section class="card" id="card-years">
   <h2>Corpus by year</h2>
-  <p class="sub">Verified papers entered in PubMed over the previous twelve months, measured at each month end up to today, in all and by polymer (click a polymer in the legend to show or hide it).</p>
+  <p class="sub">Verified papers entered in PubMed over the previous twelve months, measured at each month end up to today, in all and by polymer. Click a polymer in the legend to show or hide it; click a point for the papers from those twelve months.</p>
   <div id="years" class="plot" style="min-height:220px"></div>
 </section>
 
-<section class="card">
+<section class="card" id="card-field">
   <h2>Polymer field</h2>
   <p class="sub">Four readings of the same papers. Select a polymer in any panel and all four
     follow it: the cluster brings it forward, the packing lifts its chemistry, the matrix lights
@@ -51,6 +51,7 @@
   <div class="panelgrid">
     <figure class="panel" id="panel-cluster">
       <div class="panelhead"><h3>Set cluster</h3>
+        <a class="panel-open" data-open href="/papers">Open in Papers</a>
         <span class="pcount">overlap is shared papers</span></div>
       <div class="panelstage">
         <svg id="venn-cluster" viewBox="0 0 620 390" role="group"
@@ -61,6 +62,7 @@
     </figure>
     <figure class="panel" id="panel-packing">
       <div class="panelhead"><h3>By chemistry</h3>
+        <a class="panel-open" data-open href="/papers">Open in Papers</a>
         <span class="pcount">area is papers</span></div>
       <div class="panelstage">
         <svg id="venn-packing" viewBox="0 0 620 390" role="group"
@@ -71,6 +73,7 @@
     </figure>
     <figure class="panel" id="panel-matrix">
       <div class="panelhead"><h3>Pair matrix</h3>
+        <a class="panel-open" data-open href="/papers">Open in Papers</a>
         <span class="pcount">white is nothing published</span></div>
       <div class="panelstage">
         <svg id="venn-matrix" viewBox="0 0 620 420" role="group"
@@ -81,6 +84,7 @@
     </figure>
     <figure class="panel" id="panel-bars">
       <div class="panelhead"><h3>Exact combinations</h3>
+        <a class="panel-open" data-open href="/papers">Open in Papers</a>
         <span class="pcount">papers reporting precisely this set</span></div>
       <div class="panelstage">
         <svg id="venn-bars" viewBox="0 0 620 420" role="group"
@@ -92,7 +96,7 @@
   </div>
 </section>
 
-<section class="card">
+<section class="card" id="card-ladder">
   <h2>Evidence ladder</h2>
   <p class="sub">Papers per disease category by evidence rung. Rung 6 is drawn whether or not it is occupied: it is the rung an enzyme therapeutic can test.</p>
   <div class="chiprow" role="group" aria-label="Ladder scope">

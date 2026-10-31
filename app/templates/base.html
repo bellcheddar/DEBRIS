@@ -50,7 +50,8 @@
               <th scope="row">Novel</th><td class="mono">{{ '{:,}'.format(meta.novel_this_week or 0) }}</td></tr>
           <tr><th scope="row">For review</th><td class="mono">{{ '{:,}'.format(meta.review_queue or 0) }}</td>
               <th scope="row">Updated</th><td class="mono">{{ meta.last_ingest_date or 'pending' }}</td></tr>
-          <tr><th scope="row">Tagger</th><td class="mono" colspan="3">{{ meta.model_version or 'pending' }}</td></tr>
+          <tr><th scope="row">Tagger</th><td class="mono txt">{{ meta.model_version or 'pending' }}</td>
+              <th scope="row">Human evidence</th><td class="mono">{{ '{:,}'.format(meta.human_papers or 0) }}</td></tr>
         </tbody>
       </table>
     </div>

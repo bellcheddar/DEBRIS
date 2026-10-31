@@ -228,6 +228,25 @@ def paper_filters(args) -> tuple[str, list]:
             marks = ",".join("?" * len(members))
             clauses.append(f"p.pmid IN (SELECT pmid FROM tag_organs WHERE organ_system IN ({marks}))")
             params.extend(members)
+    if rungs := args.get("rungs"):
+        members = [int(r) for r in rungs.split(",") if r.strip().isdigit()]
+        if members:
+            marks = ",".join("?" * len(members))
+            clauses.append(f"p.pmid IN (SELECT pmid FROM tag_rungs WHERE rung IN ({marks}))")
+            params.extend(members)
+    if tissue := args.get("tissue"):
+        clauses.append("p.pmid IN (SELECT pmid FROM tag_tissues WHERE tissue = ?)")
+        params.append(tissue)
+    if model := args.get("model_type"):
+        clauses.append("t.model_type = ?")
+        params.append(model)
+    # The year chart's window: papers PubMed entered after one date and up to another.
+    if start := args.get("entered_from"):
+        clauses.append("substr(p.edat, 1, 10) > ?")
+        params.append(start)
+    if end := args.get("entered_to"):
+        clauses.append("substr(p.edat, 1, 10) <= ?")
+        params.append(end)
     if rung := args.get("rung"):
         clauses.append("p.pmid IN (SELECT pmid FROM tag_rungs WHERE rung = ?)")
         params.append(int(rung))

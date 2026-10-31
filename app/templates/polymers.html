@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% block title %}Polymers{% endblock %}
+
+{% block content %}
+<section class="card" id="card-polymers">
+  <h2>Polymers, size and evidence</h2>
+  <div class="panelgrid">
+    <figure class="panel" id="panel-size">
+      <div class="panelhead"><h3>Particle size</h3>
+        <a class="panel-open" data-open="size" href="/papers">Open in Papers</a></div>
+      <div id="size" class="plot" style="min-height:420px"></div>
+    </figure>
+    <figure class="panel" id="panel-multiples">
+      <div class="panelhead"><h3>Each polymer's rolling year</h3>
+        <a class="panel-open" data-open="multiples" href="/papers">Open in Papers</a></div>
+      <div id="multiples" class="multiples" role="group" aria-label="One chart per polymer"></div>
+    </figure>
+    <figure class="panel" id="panel-share">
+      <div class="panelhead"><h3>Share of the corpus</h3>
+        <a class="panel-open" data-open="share" href="/papers">Open in Papers</a></div>
+      <div id="share" class="plot" style="min-height:420px"></div>
+      <div class="serieslegend" id="share-legend" role="group" aria-label="Lines on the chart"></div>
+    </figure>
+    <figure class="panel" id="panel-gap">
+      <div class="panelhead"><h3>Evidence gap map</h3>
+        <a class="panel-open" data-open="gap" href="/papers">Open in Papers</a></div>
+      <div id="gap" class="plot" style="min-height:460px"></div>
+    </figure>
+  </div>
+</section>
+
+{% include "_drawer.html" %}
+{% endblock %}
+
+{% block scripts %}
+<script>window.POLYMERS = {{ bundle|tojson }};</script>
+<script src="{{ url_for('static', filename='js/polymers.js') }}?v={{ asset_version('js/polymers.js') }}"></script>
+{% endblock %}

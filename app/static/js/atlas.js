@@ -591,115 +591,98 @@
   }
 
   /* ------------------------------------------------------------------ years */
+  /* The corpus total sits in a slim strip above; the polymers have their own log-scale
+     axis below, so the total never flattens them. The legend brings polymers forward:
+     hovering previews one, clicking adds it to the chosen set and greys the rest. */
   function years() {
     const rows = B.trend || [];
     if (!rows.length) return;
     const x = rows.map((r) => r.date);
-    // PET and the four most studied polymers show by default; the rest are a legend click away.
-    const named = ORDER.slice();
-    const tagged = rows.some((r) => Object.keys(r.by || {}).length);
-    const top = named.slice().sort((a, b) => ((rows[rows.length - 1].by || {})[b] || 0)
-                                          - ((rows[rows.length - 1].by || {})[a] || 0)).slice(0, 4);
-    const traces = [
-      { type: 'scatter', mode: 'lines', name: 'All papers', x, y: rows.map((r) => r.n),
-        line: { color: T.blue, width: 2.5, shape: 'spline' },
-        fill: 'tozeroy', fillcolor: 'rgba(56,80,152,0.10)',
-        hovertemplate: 'All papers, 12 months to %{x|%d %b %Y}: %{y:,}<extra></extra>' },
-    ].concat(named.map((k) => ({
-      type: 'scatter', mode: 'lines', name: shortOf(k), x,
-      y: rows.map((r) => (r.by || {})[k] || 0),
-      visible: top.includes(k) || k === 'PET' ? true : 'legendonly',
-      line: { color: colour(k), width: 1.8, shape: 'spline' },
-      hovertemplate: `${labelOf(k)}, 12 months to %{x|%d %b %Y}: %{y:,}<extra></extra>`,
-    })));
-    DEBRIS.plot('years', traces, { margin: { l: 50, r: 16, t: 8, b: 38 }, showlegend: false,
-         hovermode: 'closest',
-         annotations: tagged ? [] : [{ xref: 'paper', yref: 'paper', x: 0.01, y: 0.97,
-           xanchor: 'left', showarrow: false, font: { size: 11, color: T.muted },
-           text: 'Polymer lines fill in as the tagger reads the corpus' }],
-         xaxis: { type: 'date', dtick: 'M24', tickformat: '%Y', gridcolor: 'rgba(0,0,0,0)',
-                  range: [x[0], x[x.length - 1]] },
-         yaxis: { title: { text: 'Papers per year', font: { size: 11 } } } });
+    const lastBy = rows[rows.length - 1].by || {};
+    const named = ORDER.filter((k) => rows.some((r) => (r.by || {})[k]))
+      .sort((a, b) => (a === 'mixed_unspecified') - (b === 'mixed_unspecified')
+        || (lastBy[b] || 0) - (lastBy[a] || 0));
+    const GHOST = '#C9CEDC';
+    const xaxis = { type: 'date', dtick: 'M24', tickformat: '%Y', gridcolor: 'rgba(0,0,0,0)',
+                    range: [x[0], x[x.length - 1]] };
 
-    // The button follows the polymer lines on show; a point opens its twelve months.
+    DEBRIS.plot('years-strip', [{
+      type: 'scatter', mode: 'lines', name: 'All papers', x, y: rows.map((r) => r.n),
+      line: { color: T.blue, width: 2, shape: 'spline' }, fill: 'tozeroy', fillcolor: 'rgba(56,80,152,0.12)',
+      hovertemplate: 'All papers, 12 months to %{x|%d %b %Y}: %{y:,}<extra></extra>' }],
+      { margin: { l: 50, r: 16, t: 18, b: 4 }, showlegend: false, hovermode: 'closest',
+        xaxis: Object.assign({}, xaxis, { visible: false }),
+        yaxis: { nticks: 3, tickfont: { size: 10, color: T.muted } },
+        annotations: [{ xref: 'paper', yref: 'paper', x: 0, y: 1.02, xanchor: 'left', yanchor: 'bottom',
+          showarrow: false, text: 'All papers', font: { size: 11, color: T.muted } }] });
+
+    let chosen = new Set();
+    let lit = null;
+    const on = (k) => (lit ? k === lit : (!chosen.size || chosen.has(k)));
+    const style = () => ({
+      'line.color': named.map((k) => (on(k) ? colour(k) : GHOST)),
+      'line.width': named.map((k) => (on(k) && (lit || chosen.size) ? 3.2 : 1.6)),
+    });
+    const s0 = style();
+    DEBRIS.plot('years', named.map((k, i) => ({
+      type: 'scatter', mode: 'lines', name: shortOf(k), x,
+      y: rows.map((r) => (r.by || {})[k] || null),
+      line: { color: s0['line.color'][i], width: s0['line.width'][i], shape: 'spline' },
+      hovertemplate: `${labelOf(k)}, 12 months to %{x|%d %b %Y}: %{y:,}<extra></extra>`,
+    })), { margin: { l: 50, r: 16, t: 8, b: 38 }, showlegend: false, hovermode: 'closest', xaxis,
+      yaxis: { type: 'log', title: { text: 'Papers per year (log scale)', font: { size: 11 } } } });
+
     const el = document.getElementById('years');
-    let shownState = null;   // set once the legend is built
-    const shown = () => (shownState ? shownState.slice(1).map((on, i) => (on ? named[i] : null))
-      : (el.data || []).slice(1).map((t, i) => (t.visible === true || t.visible === undefined ? named[i] : null)))
-      .filter(Boolean);
-    // Until a line is shown or hidden the button opens every paper; after that, the
-    // polymers on show (any of them).
-    let touched = false;
+    const strip = document.getElementById('years-strip');
+    const legend = document.getElementById('years-legend');
+    legend.innerHTML = named.map((k) => `<button type="button" class="series" data-k="${k}" aria-pressed="false"
+        title="${DEBRIS.esc(labelOf(k))}"><i style="background:${colour(k)}"></i>${DEBRIS.esc(shortOf(k))}</button>`).join('');
+    const items = [...legend.querySelectorAll('.series')];
+    const paint = () => {
+      Plotly.restyle(el, style());
+      // Chosen and hovered lines draw on top of the greyed ones.
+      items.forEach((b) => {
+        b.setAttribute('aria-pressed', chosen.has(b.dataset.k) ? 'true' : 'false');
+        b.classList.toggle('lit', b.dataset.k === lit);
+      });
+    };
+    // A point opens its twelve months (of one polymer, or of everything from the strip);
+    // otherwise the button follows the chosen polymers.
     const sync = () => {
       if (yearSel) {
         const qs = new URLSearchParams({ entered_from: yearSel.from, entered_to: yearSel.to });
-        if (yearSel.polymer) qs.set('polymer', yearSel.polymer);
+        if (yearSel.polymer) qs.set('polymers', yearSel.polymer);
         setYears(qs.toString(), true);
         return;
       }
-      const keys = shown();
-      const picked = touched && keys.length && keys.length < named.length;
-      setYears(picked ? 'polymers=' + keys.join(',') : '', picked);
+      setYears(chosen.size ? 'polymers=' + [...chosen].join(',') : '', chosen.size > 0);
     };
-    sync();
-    if (el.on) {
-      // Only showing or hiding a line counts as a choice; emphasis does not.
-      // Legend clicks call sync themselves; restyles (hover emphasis, previews) do not count.
-      el.on('plotly_click', (ev) => {
-        const point = ev.points[0];
-        const end = point.x.slice(0, 10);
-        const start = new Date(end + 'T00:00:00Z');
-        start.setUTCDate(start.getUTCDate() - 365);
-        const pick = { from: start.toISOString().slice(0, 10), to: end,
-                       polymer: point.curveNumber > 0 ? named[point.curveNumber - 1] : '' };
-        const same = yearSel && yearSel.to === pick.to && yearSel.polymer === pick.polymer;
-        yearSel = same ? null : pick;
-        sync();
-      });
-    }
-
-    /* The legend is the page's own, tied to the lines both ways: hovering an entry or a
-       line brings that line forward and fades the rest; clicking an entry shows or hides
-       its line. */
-    const legend = document.getElementById('years-legend');
-    const series = [{ name: 'All papers', colour: T.blue }]
-      .concat(named.map((k) => ({ name: shortOf(k), colour: colour(k), title: labelOf(k) })));
-    legend.innerHTML = series.map((s, i) => `<button type="button" class="series" data-i="${i}"
-        title="${DEBRIS.esc(s.title || s.name)}"><i style="background:${s.colour}"></i>${DEBRIS.esc(s.name)}</button>`).join('');
-    const items = [...legend.querySelectorAll('.series')];
-    const n = el.data.length;
-    // What the reader has chosen to show; a hover may preview a hidden line on top of it.
-    shownState = el.data.map((t) => t.visible === true || t.visible === undefined);
-    const baseWidth = (i) => (i === 0 ? 2.5 : 1.8);
-    let lit = null;
-    const paint = () => {
-      Plotly.restyle(el, {
-        visible: shownState.map((on, j) => (on || j === lit ? true : 'legendonly')),
-        opacity: [...Array(n).keys()].map((j) => (lit === null || j === lit ? 1 : 0.22)),
-        'line.width': [...Array(n).keys()].map((j) => (j === lit ? baseWidth(j) + 1.8 : baseWidth(j))),
-      });
-      items.forEach((b, j) => {
-        b.classList.toggle('off', !shownState[j]);
-        b.classList.toggle('lit', j === lit);
-        b.setAttribute('aria-pressed', shownState[j] ? 'true' : 'false');
-      });
-    };
-    const emphasise = (i) => { if (lit !== i) { lit = i; paint(); } };
-    items.forEach((b, i) => {
-      b.addEventListener('mouseenter', () => emphasise(i));
-      b.addEventListener('focus', () => emphasise(i));
-      b.addEventListener('mouseleave', () => emphasise(null));
-      b.addEventListener('blur', () => emphasise(null));
+    const hover = (k) => { if (lit !== k) { lit = k; paint(); } };
+    items.forEach((b) => {
+      const k = b.dataset.k;
+      b.addEventListener('mouseenter', () => hover(k));
+      b.addEventListener('focus', () => hover(k));
+      b.addEventListener('mouseleave', () => hover(null));
+      b.addEventListener('blur', () => hover(null));
       b.addEventListener('click', () => {
-        shownState[i] = !shownState[i];
-        touched = true;
-        paint();
-        sync();
+        if (chosen.has(k)) chosen.delete(k); else chosen.add(k);
+        yearSel = null;
+        paint(); sync();
       });
     });
-    el.on('plotly_hover', (ev) => emphasise(ev.points[0].curveNumber));
-    el.on('plotly_unhover', () => emphasise(null));
-    paint();
+    const window12 = (end, polymer) => {
+      const start = new Date(end + 'T00:00:00Z');
+      start.setUTCDate(start.getUTCDate() - 365);
+      const pick = { from: start.toISOString().slice(0, 10), to: end, polymer };
+      const same = yearSel && yearSel.to === pick.to && yearSel.polymer === pick.polymer;
+      yearSel = same ? null : pick;
+      sync();
+    };
+    el.on('plotly_hover', (ev) => hover(named[ev.points[0].curveNumber]));
+    el.on('plotly_unhover', () => hover(null));
+    el.on('plotly_click', (ev) => window12(ev.points[0].x.slice(0, 10), named[ev.points[0].curveNumber]));
+    strip.on('plotly_click', (ev) => window12(ev.points[0].x.slice(0, 10), ''));
+    sync();
   }
 
   DEBRIS.chips('.organ-chip', (value) => { organ = value; rebuildAll(); });

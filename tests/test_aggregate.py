@@ -154,3 +154,16 @@ def test_the_year_trend_counts_each_polymer():
             {"day": "2025-10-01", "pet": 0, "polymers": ["PS"]}]
     trend = aggregate.trailing_year(rows, today=dt.date(2026, 3, 1))
     assert trend[-1]["by"] == {"PET": 1, "PS": 2}
+
+
+def test_gap_map_counts_papers_with_evidence_in_people(corpus):
+    """1002 names PET and PS with pulmonary fibrosis at rungs 1 and 4: both cells hold one
+    paper with evidence in people; the negative controls never reach the map."""
+    conn = c.connect()
+    gap = aggregate.polymers_bundle(conn, [])["gap"]
+    cells = {(x["p"], x["d"]): x for x in gap["cells"]}
+    assert cells[("PET", "pulmonary_fibrosis")]["n"] == 1
+    assert cells[("PET", "pulmonary_fibrosis")]["human"] == 1
+    assert cells[("PS", "neuroinflammation_neurodegeneration")]["human"] == 0
+    assert cells[("PS", "neuroinflammation_neurodegeneration")]["best"] == 2   # animals
+    assert sum(x["n"] for x in gap["cells"]) == 7   # 1001, 1002 twice, 1003, 1004 twice, 1005

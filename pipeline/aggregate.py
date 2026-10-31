@@ -527,6 +527,68 @@ def meta_bundle(conn) -> dict:
     }
 
 
+# Evidence tiers for the gap map, strongest first: what a cell's darkest shade means.
+GAP_TIERS = {2: 4, 1: 3, 3: 2, 4: 1}   # rung -> tier (outcomes in people > found in people > animals > cells)
+GAP_POLYMERS = 8
+GAP_DISEASES = 10
+
+
+def polymers_bundle(conn, trend: list[dict]) -> dict:
+    """The Polymers tab: particle size by publication year, the rolling year by polymer
+    (the Atlas trend, shared), and the evidence gap map of polymer against disease, shaded
+    by the share of each cell's papers with evidence in people."""
+    size = collections.defaultdict(lambda: collections.Counter())
+    for row in conn.execute(f"""
+        SELECT p.year AS year, COALESCE(t.size_class, 'unspecified') AS size, COUNT(*) AS n
+        FROM papers p JOIN tags t USING (pmid)
+        WHERE {CORPUS} AND t.relevant = 1 AND p.year IS NOT NULL
+        GROUP BY p.year, t.size_class"""):
+        size[int(row["year"])][row["size"]] += row["n"]
+    size_rows = [{"year": y, **{k: size[y].get(k, 0) for k in V["size_classes"]}}
+                 for y in sorted(size)]
+
+    tiers = collections.defaultdict(lambda: collections.Counter())   # (polymer, disease) -> tier -> papers
+    papers = collections.defaultdict(set)
+    human = collections.defaultdict(set)   # papers with evidence in people (rungs 1 and 2)
+    for row in conn.execute(f"""
+        SELECT DISTINCT tp.polymer AS polymer, d.disease_category AS disease, r.rung AS rung, p.pmid AS pmid
+        FROM papers p JOIN tags t USING (pmid)
+        JOIN tag_polymers tp ON tp.pmid = p.pmid
+        JOIN tag_diseases d ON d.pmid = p.pmid
+        JOIN tag_rungs r ON r.pmid = p.pmid
+        WHERE {CORPUS} AND t.relevant = 1 AND d.disease_category <> 'none'"""):
+        if row["polymer"] not in VOCAB_POLYMERS or row["polymer"] == "mixed_unspecified":
+            continue
+        key = (row["polymer"], row["disease"])
+        papers[key].add(row["pmid"])
+        if row["rung"] in (1, 2):
+            human[key].add(row["pmid"])
+        if row["rung"] in GAP_TIERS:
+            tiers[key][GAP_TIERS[row["rung"]]] += 1
+    by_polymer, by_disease = collections.Counter(), collections.Counter()
+    for (pol, dis), ids in papers.items():
+        by_polymer[pol] += len(ids)
+        by_disease[dis] += len(ids)
+    polys = [k for k, _ in by_polymer.most_common(GAP_POLYMERS)]
+    diseases = [k for k, _ in by_disease.most_common(GAP_DISEASES)]
+    cells = [{"p": pol, "d": dis, "n": len(papers[(pol, dis)]), "human": len(human[(pol, dis)]),
+              "best": max(tiers[(pol, dis)]) if tiers[(pol, dis)] else 0,
+              "tiers": {str(k): v for k, v in sorted(tiers[(pol, dis)].items())}}
+             for pol in polys for dis in diseases if (pol, dis) in papers]
+    return {
+        "trend": trend,
+        "size": size_rows,
+        "size_labels": V.get("size_class_labels", {}),
+        "gap": {"polymers": polys, "diseases": diseases, "cells": cells,
+                "tiers": {"4": V["evidence_labels"]["2"], "3": V["evidence_labels"]["1"],
+                          "2": V["evidence_labels"]["3"], "1": V["evidence_labels"]["4"]}},
+        "polymer_order": V["polymers"],
+        "polymer_labels": V["polymer_labels"],
+        "polymer_short": V["polymer_short"],
+        "disease_labels": V["disease_labels"],
+    }
+
+
 def main() -> None:
     ap = argparse.ArgumentParser(description="Write the app's static aggregates")
     ap.add_argument("--quiet", action="store_true")
@@ -539,6 +601,7 @@ def main() -> None:
         "pathways": pathways_bundle(conn),
         "feed": feed_bundle(conn),
     }
+    bundles["polymers"] = polymers_bundle(conn, bundles["atlas"]["trend"])
     total = 0
     for name, payload in bundles.items():
         path = c.STATIC_DATA / f"{name}.json"

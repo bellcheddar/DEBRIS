@@ -5,7 +5,7 @@ import json
 
 
 def test_all_pages_200(client):
-    for route in ("/", "/body", "/pathways", "/papers", "/about"):
+    for route in ("/", "/body", "/pathways", "/polymers", "/papers", "/about"):
         assert client.get(route).status_code == 200, route
 
 
@@ -92,14 +92,14 @@ def test_pages_name_the_elora_design_system(client):
 def test_no_causal_claim_in_the_copy(client):
     """Spec 0.1: app copy never claims human causation."""
     banned = ("causes", "caused by", "proves", "proven to cause", "leads to disease")
-    for route in ("/", "/body", "/pathways", "/papers", "/about"):
+    for route in ("/", "/body", "/pathways", "/polymers", "/papers", "/about"):
         text = client.get(route).get_data(as_text=True).lower()
         for phrase in banned:
             assert phrase not in text, f"{phrase!r} appears on {route}"
 
 
 def test_no_em_dashes_in_the_copy(client):
-    for route in ("/", "/body", "/pathways", "/papers", "/about"):
+    for route in ("/", "/body", "/pathways", "/polymers", "/papers", "/about"):
         assert "—" not in client.get(route).get_data(as_text=True), route
 
 
@@ -149,3 +149,10 @@ def test_the_sankey_other_nodes_filter(client):
 def test_new_this_week_shows_only_on_the_plain_papers_tab(client):
     assert 'id="card-newweek"' in client.get("/papers").get_data(as_text=True)
     assert 'id="card-newweek"' not in client.get("/papers?polymer=PET").get_data(as_text=True)
+
+
+def test_size_class_and_year_filters(client):
+    every = client.get("/api/papers?size=50").get_json()["last_row"]
+    assert client.get("/api/papers?size_class=nosuch&size=1").get_json()["last_row"] == 0
+    assert client.get("/api/papers?year=1800&size=1").get_json()["last_row"] == 0
+    assert every > 0

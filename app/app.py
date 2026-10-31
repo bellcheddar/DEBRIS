@@ -31,7 +31,8 @@ app = Flask(__name__)
 app.config["JSON_SORT_KEYS"] = False
 
 TABS = [("01", "Atlas", "/"), ("02", "Body", "/body"),
-        ("03", "Pathways", "/pathways"), ("04", "Papers", "/papers"), ("05", "About", "/about")]
+        ("03", "Pathways", "/pathways"), ("04", "Polymers", "/polymers"),
+        ("05", "Papers", "/papers"), ("06", "About", "/about")]
 
 
 # ----------------------------------------------------------------------- plumbing
@@ -166,6 +167,11 @@ def pathways():
     return render_template("pathways.html", active="/pathways", bundle=load_bundle("pathways"))
 
 
+@app.route("/polymers")
+def polymers():
+    return render_template("polymers.html", active="/polymers", bundle=load_bundle("polymers"))
+
+
 @app.route("/papers")
 def papers():
     return render_template("papers.html", active="/papers", bundle=load_bundle("feed"))
@@ -248,6 +254,12 @@ def paper_filters(args) -> tuple[str, list]:
     if tissue := args.get("tissue"):
         clauses.append("p.pmid IN (SELECT pmid FROM tag_tissues WHERE tissue = ?)")
         params.append(tissue)
+    if size := args.get("size_class"):
+        clauses.append("t.size_class = ?")
+        params.append(size)
+    if year := args.get("year"):
+        clauses.append("p.year = ?")
+        params.append(int(year) if year.isdigit() else year)
     if model := args.get("model_type"):
         clauses.append("t.model_type = ?")
         params.append(model)

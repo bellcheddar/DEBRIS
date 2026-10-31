@@ -685,3 +685,5 @@
 - 2026-10-31 11:55 lab phase6-7b f0 s42: training 1600 iterations
 - 2026-10-31 11:55 train: /Users/dellboy/Documents/Vibe_Coding/debris/.pixi/envs/default/bin/python /Users/dellboy/Documents/Vibe_Coding/debris/pipeline/mlx_capped.py mlx_lm.lora --model Qwen/Qwen2.5-7B-Instruct --train ...
 - 2026-10-31 11:55 7B checkpoint 400 (one pass) on the frozen test split: floor mean 0.890 vs debris_v2 0.902, -0.012 [-0.037, +0.013]; vs 3B enrich -0.005 [-0.030, +0.020]; tissues 0.814. Level with debris_v2 within noise after one pass; Phase 6 restarted from scratch at 11:55, alone on the GPU.
+- 2026-10-31 12:52 aggregate: wrote 6 bundles, 204 kB total; verified 9323, tagged 8983
+- 2026-10-31 12:53 Front end: Corpus by year redrawn as design D (total as a strip, polymers on a log axis with a focus legend); new Polymers tab after Pathways (particle size by year, each polymer's rolling year, share of the corpus, evidence gap map shaded by share of papers with evidence in people); size_class and year filters. Tests pass; browser QC and deploy held until the 7B run ends (no browser beside a 7B run).

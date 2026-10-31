@@ -495,3 +495,18 @@ a.kpi:hover,a.kpi:focus-visible{border-color:var(--el-blue);background:var(--el-
 .paper.mini .foot{display:flex;align-items:center;gap:8px;margin-top:auto;font-family:var(--mono);font-size:9.5px}
 .paper.mini .foot a{color:var(--el-blue);white-space:nowrap}
 .paper.mini .foot .chip{margin-left:auto;font-size:9px;padding:3px 8px}
+
+/* Polymers tab: one small chart per polymer, each on its own scale. */
+.multiples{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;padding:4px 14px 14px}
+.multiples .tile{border:1px solid var(--el-line);background:var(--el-card);padding:6px 8px 4px;cursor:pointer;min-width:0}
+.multiples .tile:hover{border-color:var(--el-blue)}
+.multiples .tile:focus-visible{outline:2px solid var(--el-blue);outline-offset:2px}
+.multiples .tile[aria-pressed="true"]{border-color:var(--pet);box-shadow:inset 0 0 0 1px var(--pet);background:var(--el-tint)}
+.multiples .tilehead{display:flex;justify-content:space-between;align-items:baseline;gap:6px;font-size:12px}
+.multiples .tilehead span{color:var(--el-muted);font-size:11px}
+.multiples .tileplot{height:96px}
+@media (max-width:560px){.multiples{grid-template-columns:repeat(2,minmax(0,1fr))}}
+/* Atlas: the corpus total as a slim strip above the polymer lines. */
+#years-strip{height:84px}
+.serieslegend .series[aria-pressed="true"]{border-color:var(--el-ink);background:var(--el-soft)}
+.serieslegend .series.lit{border-color:var(--el-blue)}

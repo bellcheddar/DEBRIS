@@ -64,8 +64,29 @@ def load_bundle(name: str) -> dict:
 
 
 def vocab() -> dict:
+    """vocab.toml with the v2 values overlaid, as pipeline.common.display_vocab builds it
+    (the app is deployed without the pipeline, so the overlay is repeated here)."""
     path = ROOT / "config" / "vocab.toml"
-    return tomllib.loads(path.read_text()) if path.exists() else {}
+    v = tomllib.loads(path.read_text()) if path.exists() else {}
+    path2 = ROOT / "config" / "vocab_v2.toml"
+    if not v or not path2.exists():
+        return v
+    v2 = tomllib.loads(path2.read_text())
+    v["polymers"] = list(v2["polymers"])
+    for table in ("polymer_labels", "polymer_short"):
+        v[table] = {**v.get(table, {}), **v2.get(table, {})}
+    v["polymer_families"] = {**v.get("polymer_families", {}),
+                             "PA6": "Engineering", "PA66": "Engineering", "PBAT": "Polyesters"}
+    extra = {"lipid_metabolism": "Lipid metabolism", "er_stress_autophagy": "ER stress and autophagy",
+             "endocrine_disruption": "Endocrine disruption", "other_pathway": "Other mechanisms"}
+    v["pathways"] = list(v["pathways"]) + [p for p in extra if p not in v["pathways"]]
+    v["pathway_labels"] = {**v.get("pathway_labels", {}), **extra}
+    if "cell_free" not in v["model_types"]:
+        v["model_types"] = [t for t in v["model_types"] if t != "not_applicable"] + ["cell_free", "not_applicable"]
+    v["model_type_labels"] = {**v.get("model_type_labels", {}), "cell_free": "Cell-free (simulated fluids)"}
+    for key in ("tissues", "tissue_labels", "tissue_system", "tissue_parent"):
+        v[key] = v2.get(key, [] if key == "tissues" else {})
+    return v
 
 
 def asset_version(relative: str) -> int:
@@ -282,6 +303,11 @@ def paper_detail(pmid: str):
         "SELECT organ_system FROM tag_organs WHERE pmid=?", (pmid,))]
     item["pathways"] = [r[0] for r in conn.execute(
         "SELECT pathway FROM tag_pathways WHERE pmid=?", (pmid,))]
+    try:   # tag_tissues arrives with the v2 tagger (D55); an older database has none
+        item["tissues"] = [r[0] for r in conn.execute(
+            "SELECT tissue FROM tag_tissues WHERE pmid=?", (pmid,))]
+    except sqlite3.OperationalError:
+        item["tissues"] = []
     item["rungs"] = [r[0] for r in conn.execute(
         "SELECT rung FROM tag_rungs WHERE pmid=? ORDER BY rung", (pmid,))]
     item["diseases"] = [{"category": r[0], "term": r[1]} for r in conn.execute(

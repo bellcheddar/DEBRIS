@@ -1160,3 +1160,12 @@ Owner's request: a fifth tab with a brief why and how, the architecture diagram 
 All four v2 switches with rare pathways grouped (1.5B, 3 folds, v2 gold, paired against phase2-base): floor mean +0.044 [+0.036, +0.052]; pathways +0.246 (0.704, against 0.608 for 2b alone, the grouping adding the rest), polymers +0.122 (0.851), model type +0.033 (0.849), tissues 0.728. The changes add rather than interfere.
 
 The cost: evidence rungs, exact -0.024 [-0.039, -0.010] and within one -0.024 [-0.038, -0.010], both real. Every single arm had a small dip there that did not reach significance (2a -0.010 exact, 2b -0.006 and -0.008, 2c -0.008 within one); together they add up. A longer answer for the same training budget is the likely cause, since rungs are not touched by any switch. Recorded for the owner with the Phase 5 result; not a reason to hold the run.
+
+## D55 Option C: the corpus is first tagged by the new tagger
+
+The owner chose option C: no interim tagging with the round 05 tagger; the first full tagging pass uses the adopted recipe (D50) once Phase 5 confirms it.
+
+- **Tagger** (`pipeline/tag.py`): a `Recipe` carries what the weights were trained on. v1 is unchanged. v2 builds its system prompt with the lab's own `lab_v2.system_prompt`, so it matches training to the byte (tested against `phase5-recipe`), validates with `lab_v2.validate`, keeps the specific rare pathway as `pathway_notes` on the tag, and stores tissues in a new `tag_tissues` table (created by `migrate` on any existing database). `--recipe` or `[tag] recipe` selects it; model version `debris_v2`.
+- **Display** (`common.display_vocab`, mirrored in `app.vocab`): vocab.toml plus PA6, PA66, PBAT, the three promoted pathways, "Other mechanisms", cell-free studies and the 18 tissues. vocab.toml itself is untouched, because the v1 prompt and the lab's prompts are built from its lists. The paper drawer shows tissues.
+- **Order**: Phase 3a was queued straight after Phase 5; it now runs after tagging, so the site fills about 80 minutes sooner. A new controller replaced the supervisor without touching the running Phase 5 training.
+- **Gate**: tagging starts automatically only if the paired floor-mean difference against round 04 on the frozen test split has a lower bound above zero. Otherwise it stops and asks. Then the Phase 5 adapter is copied to `data/adapters/debris_v2`, `[tag]` points at it (Qwen2.5-3B-Instruct plus adapter, hybrid confidence as D45), the corpus is tagged, novelty and the bundles are rebuilt, and the site is deployed.

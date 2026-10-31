@@ -70,6 +70,34 @@ def vocab() -> dict:
     return load_toml("vocab.toml")
 
 
+# What the v2 tagger can write beyond vocab.toml (D50). vocab.toml itself stays as it is,
+# because the tagger's prompt is built from its lists and must not drift from training.
+V2_PATHWAYS = {"lipid_metabolism": "Lipid metabolism", "er_stress_autophagy": "ER stress and autophagy",
+               "endocrine_disruption": "Endocrine disruption", "other_pathway": "Other mechanisms"}
+V2_FAMILIES = {"PA6": "Engineering", "PA66": "Engineering", "PBAT": "Polyesters"}
+
+
+def display_vocab() -> dict:
+    """vocab.toml with the v2 values the app has to show: PA6, PA66 and PBAT, the promoted
+    pathways and the rare-pathway class, cell-free studies, and the 18 tissues."""
+    v = vocab()
+    v2 = load_toml("vocab_v2.toml")
+    v["polymers"] = list(v2["polymers"])
+    for table in ("polymer_labels", "polymer_short"):
+        v[table] = {**v.get(table, {}), **v2.get(table, {})}
+    v["polymer_families"] = {**v.get("polymer_families", {}), **V2_FAMILIES}
+    v["pathways"] = list(v["pathways"]) + [p for p in V2_PATHWAYS if p not in v["pathways"]]
+    v["pathway_labels"] = {**v.get("pathway_labels", {}), **V2_PATHWAYS}
+    if "cell_free" not in v["model_types"]:
+        types = [t for t in v["model_types"] if t != "not_applicable"]
+        v["model_types"] = types + ["cell_free", "not_applicable"]
+    v["model_type_labels"] = {**v.get("model_type_labels", {}),
+                              "cell_free": "Cell-free (simulated fluids)"}
+    for key in ("tissues", "tissue_labels", "tissue_system", "tissue_parent"):
+        v[key] = v2.get(key, {} if key != "tissues" else [])
+    return v
+
+
 def now() -> str:
     return dt.datetime.now(dt.timezone.utc).isoformat(timespec="seconds")
 
@@ -290,6 +318,7 @@ CREATE TABLE IF NOT EXISTS tag_polymers (pmid TEXT, polymer TEXT, PRIMARY KEY (p
 CREATE TABLE IF NOT EXISTS tag_organs   (pmid TEXT, organ_system TEXT, PRIMARY KEY (pmid, organ_system));
 CREATE TABLE IF NOT EXISTS tag_diseases (pmid TEXT, disease_category TEXT, disease_term TEXT);
 CREATE TABLE IF NOT EXISTS tag_pathways (pmid TEXT, pathway TEXT, PRIMARY KEY (pmid, pathway));
+CREATE TABLE IF NOT EXISTS tag_tissues (pmid TEXT, tissue TEXT, PRIMARY KEY (pmid, tissue));
 CREATE TABLE IF NOT EXISTS tag_rungs    (pmid TEXT, rung INTEGER, PRIMARY KEY (pmid, rung));
 CREATE TABLE IF NOT EXISTS review_queue (pmid TEXT PRIMARY KEY, reason TEXT, queued_at TEXT, resolved_at TEXT);
 CREATE TABLE IF NOT EXISTS novelty_events (id INTEGER PRIMARY KEY, pmid TEXT, kind TEXT, key TEXT, ingest_run TEXT);
@@ -340,6 +369,9 @@ ADDED_COLUMNS = (("tags", "token_prob", "REAL"),)   # hybrid confidence (D45)
 
 
 def migrate(conn: sqlite3.Connection) -> None:
+    # Tables added since a database was created (the v2 tissues, D55); every statement in
+    # SCHEMA is IF NOT EXISTS.
+    conn.executescript(SCHEMA)
     for table, column, kind in ADDED_COLUMNS:
         have = {r[1] for r in conn.execute(f"PRAGMA table_info({table})")}
         if have and column not in have:

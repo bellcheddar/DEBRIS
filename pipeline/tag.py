@@ -129,14 +129,52 @@ def local_model_choice(model: str | None, adapter: str | None,
     return base, adapter
 
 
+# ------------------------------------------------------------------------ recipes
+
+class Recipe:
+    """What the tagger was trained to read and write. v1 is the original schema; v2 is the
+    owner's adopted recipe (D50), exactly as the lab trained and scored it: the lab's
+    system prompt with the v2 vocabulary, the same user prompt, v2 cleaning, a tissues
+    field and rare pathways as one class. The prompt must match training to the byte, so
+    it is built by the lab's own functions rather than copied."""
+
+    V2 = {"mask_prompt": True, "model_type_v2": True, "pathways_v2": True,
+          "polymers_v2": True, "tissues": True}
+
+    def __init__(self, name: str = "v1"):
+        from pipeline import lab_v2
+
+        self.name = name
+        self.switches = self.V2 if name == "v2" else {}
+        self.system = lab_v2.system_prompt(self.switches)
+        self.model_version = "debris_v2" if name == "v2" else MODEL_VERSION
+
+    def validate(self, raw) -> tuple[dict | None, list[str], list[tuple[str, str]]]:
+        tag, problems, candidates = schema.validate(raw)
+        if tag is None or self.name != "v2":
+            return tag, problems, candidates
+        from pipeline import lab_v2
+
+        tag, problems = lab_v2.validate(raw, self.switches)
+        # The specific rare pathway the tagger named is kept as a note on the tag.
+        tag["pathway_notes"] = [v for v in (raw.get("pathways") or [])
+                                if isinstance(v, str) and v.startswith("other:")]
+        tag.setdefault("tissues", [])
+        candidates = [(f, v) for f in ("polymers", "pathways", "tissues")
+                      for v in tag.get(f) or [] if str(v).startswith("other:")]
+        return tag, problems, candidates
+
+
 # ------------------------------------------------------------------ local (mlx)
 
 class LocalTagger:
     """One resident mlx model, never reloaded (spec section 2)."""
 
-    def __init__(self, model_path: str, adapter_path: str | None = None):
+    def __init__(self, model_path: str, adapter_path: str | None = None,
+                 recipe: Recipe | None = None):
         from mlx_lm import load
 
+        self.recipe = recipe or Recipe("v1")
         self.model, self.tokenizer = load(model_path, adapter_path=adapter_path)
         self.name = f"{model_path}{'+' + adapter_path if adapter_path else ''}"
 
@@ -147,7 +185,7 @@ class LocalTagger:
 
         if seed is not None:
             mx.random.seed(seed)
-        messages = [{"role": "system", "content": schema.SYSTEM_PROMPT},
+        messages = [{"role": "system", "content": self.recipe.system},
                     {"role": "user", "content": prompt}]
         text = self.tokenizer.apply_chat_template(messages, add_generation_prompt=True,
                                                   tokenize=False)
@@ -167,7 +205,8 @@ class LocalTagger:
 
 
 def generate_many(model, tokenizer, prompts: list[str], batch: int, *, prefix: bool = True,
-                  temperature: float = 0.0, seed: int | None = None) -> list[tuple[str, float]]:
+                  temperature: float = 0.0, seed: int | None = None,
+                  system: str | None = None) -> list[tuple[str, float]]:
     """Answers for many papers in one continuous batch, each with the mean probability of
     the tokens it chose (D45).
 
@@ -182,13 +221,14 @@ def generate_many(model, tokenizer, prompts: list[str], batch: int, *, prefix: b
     from mlx_lm.models import cache as kv
     from mlx_lm.sample_utils import make_sampler
 
+    system = system or schema.SYSTEM_PROMPT
     tokens = [tokenizer.apply_chat_template(
-        [{"role": "system", "content": schema.SYSTEM_PROMPT},
+        [{"role": "system", "content": system},
          {"role": "user", "content": p}], add_generation_prompt=True) for p in prompts]
     caches = None
     if prefix:
         head = tokenizer.apply_chat_template(
-            [{"role": "system", "content": schema.SYSTEM_PROMPT}], add_generation_prompt=False)
+            [{"role": "system", "content": system}], add_generation_prompt=False)
         if all(len(head) < len(t) and t[:len(head)] == head for t in tokens):
             shared = kv.make_prompt_cache(model)
             model(mx.array(head)[None], cache=shared)
@@ -227,8 +267,9 @@ def least_confident(probs: list[float], fraction: float) -> set[int]:
 class BatchedTagger(LocalTagger):
     """The local tagger for a whole corpus: batched, with hybrid confidence (D45)."""
 
-    def __init__(self, model_path: str, adapter_path: str | None, tag_cfg: dict):
-        super().__init__(model_path, adapter_path)
+    def __init__(self, model_path: str, adapter_path: str | None, tag_cfg: dict,
+                 recipe: Recipe | None = None):
+        super().__init__(model_path, adapter_path, recipe)
         self.batch = int(tag_cfg.get("batch_size", 8))
         self.prefix = bool(tag_cfg.get("prefix_cache", True))
         self.fraction = float(tag_cfg.get("sampled_fraction", 0.33))
@@ -237,13 +278,15 @@ class BatchedTagger(LocalTagger):
         """For each paper: the greedy JSON (re-prompted once if unparsable), its token
         probability, and the sampled JSON for the least confident share, else None."""
         prompts = [schema.user_prompt(p) for p in papers]
-        greedy = generate_many(self.model, self.tokenizer, prompts, self.batch, prefix=self.prefix)
+        greedy = generate_many(self.model, self.tokenizer, prompts, self.batch, prefix=self.prefix,
+                                  system=self.recipe.system)
         parsed = [schema.extract_json(text) for text, _ in greedy]
         retry = [i for i, g in enumerate(parsed) if g is None]
         if retry:
             again = generate_many(self.model, self.tokenizer,
                                   [prompts[i] + "\n\nReturn only the JSON object, no prose." for i in retry],
-                                  self.batch, prefix=self.prefix)
+                                  self.batch, prefix=self.prefix,
+                                  system=self.recipe.system)
             for i, (text, _) in zip(retry, again):
                 parsed[i] = schema.extract_json(text)
         probs = [p for _, p in greedy]
@@ -251,7 +294,7 @@ class BatchedTagger(LocalTagger):
         sampled: dict[int, dict | None] = {}
         if chosen:
             texts = generate_many(self.model, self.tokenizer, [prompts[i] for i in chosen],
-                                  self.batch, prefix=self.prefix,
+                                  self.batch, prefix=self.prefix, system=self.recipe.system,
                                   temperature=SAMPLED_TEMPERATURE, seed=SAMPLED_SEED)
             sampled = {i: schema.extract_json(t) for i, (t, _) in zip(chosen, texts)}
         return [{"raw": parsed[i], "sampled": sampled.get(i), "sampled_run": i in sampled,
@@ -300,7 +343,8 @@ def candidates_of(tag: dict) -> set[tuple[str, str]]:
 
 def store(conn, pmid: str, tag: dict, sampled: dict | None, problems: list[str],
           candidates: list[tuple[str, str]], source: str, model_version: str,
-          token_prob: float | None = None, sampled_run: bool = True) -> str:
+          token_prob: float | None = None, sampled_run: bool = True,
+          recipe: Recipe | None = None) -> str:
     """Write one tag and its fan-out tables. Returns the review reason, or ''.
 
     Under hybrid confidence (D45) a paper the tagger was sure of skips the sampled pass:
@@ -344,6 +388,9 @@ def store(conn, pmid: str, tag: dict, sampled: dict | None, problems: list[str],
             conn.execute(f"DELETE FROM {table} WHERE pmid=?", (pmid,))
             conn.executemany(f"INSERT OR IGNORE INTO {table} (pmid,{column}) VALUES (?,?)",
                              [(pmid, v) for v in values])
+        conn.execute("DELETE FROM tag_tissues WHERE pmid=?", (pmid,))
+        conn.executemany("INSERT OR IGNORE INTO tag_tissues (pmid,tissue) VALUES (?,?)",
+                         [(pmid, v) for v in tag.get("tissues") or []])
         conn.execute("DELETE FROM tag_rungs WHERE pmid=?", (pmid,))
         conn.executemany("INSERT OR IGNORE INTO tag_rungs (pmid,rung) VALUES (?,?)",
                          [(pmid, r) for r in tag["evidence_rungs"]])
@@ -400,6 +447,8 @@ def main() -> int:
     ap.add_argument("--model", default=None, help="model path (default: the fused adapter)")
     ap.add_argument("--adapter", default=None)
     ap.add_argument("--run-id", default=None)
+    ap.add_argument("--recipe", choices=["v1", "v2"], default=None,
+                    help="the tag schema the weights were trained on (default: [tag] recipe)")
     args = ap.parse_args()
 
     conn = c.connect()
@@ -415,28 +464,36 @@ def main() -> int:
                               c.api_key("HF_TOKEN"), hf.get("batch_size", 16))
         path = "zerogpu_space"
     else:
-        model_path, adapter = local_model_choice(args.model, args.adapter, tuning)
-        tagger = BatchedTagger(model_path, adapter, tuning.get("tag", {}))
+        tag_cfg = tuning.get("tag", {})
+        recipe = Recipe(args.recipe or tag_cfg.get("recipe", "v1"))
+        if recipe.name == "v2":
+            model_path = args.model or tag_cfg["model"]
+            adapter = args.adapter or tag_cfg.get("adapter")
+        else:
+            model_path, adapter = local_model_choice(args.model, args.adapter, tuning)
+        tagger = BatchedTagger(model_path, adapter, tag_cfg, recipe)
         path = "studio_mlx"
 
     c.log(f"tag: {len(rows)} papers, {tagger.name}, path {path}")
     c.migrate(conn)
     done = c.manifest_done("tag", key="pmid") if not args.retag else set()
     todo = [dict(r) for r in rows if r["pmid"] not in done]
-    source = "debris_v1" if not args.remote else "debris_v1_space"
+    recipe = getattr(tagger, "recipe", Recipe("v1"))
+    version = recipe.model_version
+    source = version if not args.remote else f"{version}_space"
     started = time.monotonic()
     counts = {"tagged": 0, "queued": 0, "failed": 0}
 
     def record(paper: dict, raw, sampled, token_prob=None, sampled_run=True) -> None:
-        tag, problems, candidates = schema.validate(raw)
-        sampled_tag, _, _ = schema.validate(sampled) if sampled else (None, [], [])
+        tag, problems, candidates = recipe.validate(raw)
+        sampled_tag, _, _ = recipe.validate(sampled) if sampled else (None, [], [])
         if tag is None:
             mark_failed(conn, paper["pmid"], "invalid JSON after one re-prompt")
             counts["failed"] += 1
             c.manifest_write("tag", {"pmid": paper["pmid"], "status": "failed", "at": c.now()})
             return
         reason = store(conn, paper["pmid"], tag, sampled_tag, problems, candidates, source,
-                       MODEL_VERSION, token_prob=token_prob, sampled_run=sampled_run)
+                       version, token_prob=token_prob, sampled_run=sampled_run)
         counts["tagged"] += 1
         counts["queued"] += 1 if reason else 0
         c.manifest_write("tag", {"pmid": paper["pmid"], "status": "tagged",
@@ -519,7 +576,7 @@ def main() -> int:
         with conn:
             conn.execute("""UPDATE ingest_runs SET tagged=?, queued=?, model_version=?,
                               inference_path=? WHERE run_id=?""",
-                         (tagged, queued, MODEL_VERSION, path, args.run_id))
+                         (tagged, queued, version, path, args.run_id))
     elapsed = (time.monotonic() - started) / 60
     c.log(f"tag: done {tagged} tagged, {queued} queued for review, {failed} failed, "
           f"{elapsed:.1f} min, path {path}")

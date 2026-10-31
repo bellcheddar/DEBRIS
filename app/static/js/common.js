@@ -77,6 +77,7 @@ const DEBRIS = (() => {
         <dt>Journal</dt><dd>${esc(p.journal || '')} ${p.year ? '(' + p.year + ')' : ''}</dd>
         <dt>Polymers</dt><dd>${chipsHtml(p.polymers, 'poly') || '<span class="empty">untagged</span>'}</dd>
         <dt>Organs</dt><dd>${chipsHtml(p.organ_systems) || 'none'}</dd>
+        ${(p.tissues || []).length ? `<dt>Tissues</dt><dd>${chipsHtml(p.tissues)}</dd>` : ''}
         <dt>Pathways</dt><dd>${chipsHtml(p.pathways) || 'none'}</dd>
         <dt>Rungs</dt><dd>${(p.rungs || []).map((r) => `<span class="tag rung">${r}</span>`).join(' ') || 'none'}</dd>
         <dt>Model</dt><dd>${esc(p.model_type || 'unknown')} · ${esc(p.size_class || 'unknown')}</dd>

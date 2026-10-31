@@ -14,7 +14,7 @@ import datetime as dt
 
 from pipeline import common as c
 
-V = c.vocab()
+V = c.display_vocab()
 CORPUS = c.corpus_clause()
 CORPUS_ANY = c.corpus_clause("")
 

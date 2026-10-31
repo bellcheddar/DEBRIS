@@ -547,3 +547,6 @@
 - 2026-10-30 20:32 qc ui: pass, 10 page renders, 0 serious or critical axe violations, 0 console errors, 0 failed requests
 - 2026-10-30 20:33 qc ui: pass, 10 page renders, 0 serious or critical axe violations, 0 console errors, 0 failed requests
 - 2026-10-30 20:33 Atlas: corpus-by-year moved above the polymer field, drawn as a rolling twelve months by PubMed entry date ending today, with a line per polymer; DEBRIS initials animated in the backronym.
+- 2026-10-30 20:36 qc ui: pass, 10 page renders, 0 serious or critical axe violations, 0 console errors, 0 failed requests
+- 2026-10-30 20:43 aggregate: wrote 5 bundles, 21 kB total; verified 9323, tagged 0
+- 2026-10-30 20:45 D55: v2 recipe in tag.py, tag_tissues table, display vocabulary; controller queues Phase 5 -> gate -> tag corpus with debris_v2 -> deploy -> Phase 3a.

@@ -278,3 +278,27 @@ def test_an_old_database_gains_the_token_prob_column(tmp_path):
     conn = sqlite3.connect(path)
     assert "token_prob" in {r[1] for r in conn.execute("PRAGMA table_info(tags)")}
     conn.close()
+
+
+def test_the_v2_recipe_prompts_exactly_as_the_lab_trained():
+    from pipeline import lab, lab_v2
+
+    recipe = tag.Recipe("v2")
+    cfg = lab.load_config("phase5-recipe")
+    assert recipe.system == lab_v2.system_prompt(cfg["switches"])
+    assert "tissues:" in recipe.system and "other_pathway" in recipe.system
+    assert tag.Recipe("v1").system == schema.SYSTEM_PROMPT
+
+
+def test_the_v2_recipe_keeps_tissues_groups_rare_pathways_and_stores_them(tmp_path):
+    conn = tagged_db(tmp_path)
+    raw = {"relevant": True, "polymers": ["PA6"], "size_class": "micro", "organ_systems": ["hepatic"],
+           "disease_categories": ["liver_disease"], "disease_terms": [], "model_type": "cell_free",
+           "pathways": ["oxidative_stress", "other:ferroptosis"], "tissues": ["liver"],
+           "evidence_rungs": [4], "pet_specific": False, "summary": "s", "confidence": 0.9}
+    v2, problems, candidates = tag.Recipe("v2").validate(raw)
+    assert v2["tissues"] == ["liver"] and v2["polymers"] == ["PA6"] and v2["model_type"] == "cell_free"
+    assert v2["pathways"] == ["oxidative_stress", "other_pathway"]
+    assert v2["pathway_notes"] == ["other:ferroptosis"]
+    tag.store(conn, "1", v2, v2, problems, candidates, "debris_v2", "debris_v2")
+    assert [r[0] for r in conn.execute("SELECT tissue FROM tag_tissues WHERE pmid='1'")] == ["liver"]

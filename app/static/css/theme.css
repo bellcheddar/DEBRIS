@@ -507,7 +507,7 @@ a.kpi:hover,a.kpi:focus-visible{border-color:var(--el-blue);background:var(--el-
 .multiples .tileplot{height:96px}
 @media (max-width:560px){.multiples{grid-template-columns:repeat(2,minmax(0,1fr))}}
 /* Atlas: the corpus total as a slim strip above the polymer lines. */
-#years-strip{height:84px}
+#years-strip{height:90px;min-height:0}   /* .plot's 320px floor made the strip taller than the chart */
 .serieslegend .series[aria-pressed="true"]{border-color:var(--el-ink);background:var(--el-soft)}
 .serieslegend .series.lit{border-color:var(--el-blue)}
 /* Rolling year: tighter chips so the polymer legend fits on one line. */

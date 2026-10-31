@@ -216,15 +216,19 @@ def body_bundle(conn) -> dict:
     run = latest_run(conn)
     nodes = []
     for site in V["body_nodes"]:
-        key, label, organs = site["key"], site["label"], site["organs"]
-        base = {"key": key, "label": label, "organs": organs,
+        key, label, organs = site["key"], site["label"], site.get("organs", [])
+        tissues = site.get("tissues", [])
+        base = {"key": key, "label": label, "organs": organs, "tissues": tissues,
                 "x": site["x"], "y": site["y"], "region": site["region"], "art": site["art"]}
-        marks = ",".join("?" * len(organs))
+        # A site counts papers by organ system, or (tissue pins, owner 2026-10-31) by tissue.
+        column, table, values = (("tissue", "tag_tissues", tissues) if tissues
+                                 else ("organ_system", "tag_organs", organs))
+        marks = ",".join("?" * len(values))
         pmids = [r[0] for r in conn.execute(
             f"""SELECT DISTINCT p.pmid FROM papers p JOIN tags t USING (pmid)
-                JOIN tag_organs o ON o.pmid = p.pmid
+                JOIN {table} o ON o.pmid = p.pmid
                 WHERE {CORPUS} AND t.relevant=1
-                  AND o.organ_system IN ({marks})""", organs)]
+                  AND o.{column} IN ({marks})""", values)]
         if not pmids:
             nodes.append({**base, "count": 0, "pet_count": 0, "polymers": [], "pathways": [],
                           "mix": [], "max_rung": None, "novel": False, "papers": []})

@@ -41,7 +41,7 @@ def test_short_names_are_short_enough_to_draw():
 def test_every_organ_system_is_somewhere_on_the_body():
     """A system with no site is a system whose papers never appear on the map. Systemic
     had exactly that problem: it was not absent from the corpus, only from the picture."""
-    sited = {organ for node in V["body_nodes"] for organ in node["organs"]}
+    sited = {organ for node in V["body_nodes"] for organ in node.get("organs", [])}
     missing = [o for o in V["organ_systems"] if o not in sited]
     assert not missing, f"no anatomical site counts these organ systems: {missing}"
 

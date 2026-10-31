@@ -448,6 +448,48 @@ region = "Systemic"
 art = "skin"
 x = 149.4
 y = 399.2
+# Tissue pins (owner, 2026-10-31): sites the tagger names outside Liu et al.'s 18, counted
+# by tissue rather than organ system. They sit beside the organ-system pins they belong to.
+[[body_nodes]]
+key = "placenta_tissue"
+label = "Placenta"
+tissues = ["other:placenta"]
+region = "Pelvis"
+art = "placenta"
+x = 199
+y = 371
+[[body_nodes]]
+key = "semen"
+label = "Semen"
+tissues = ["other:semen"]
+region = "Pelvis"
+art = "placenta"
+x = 162
+y = 372
+[[body_nodes]]
+key = "colon_tissue"
+label = "Colon"
+tissues = ["other:colon"]
+region = "Abdomen"
+art = "intestine"
+x = 205
+y = 322
+[[body_nodes]]
+key = "faeces"
+label = "Faeces"
+tissues = ["other:faeces"]
+region = "Abdomen"
+art = "intestine"
+x = 158
+y = 337
+[[body_nodes]]
+key = "artery"
+label = "Artery"
+tissues = ["other:artery"]
+region = "Neck"
+art = "vessels"
+x = 168
+y = 146
 # Papers reporting a whole-body or multi-system effect have no one site. They get a node
 # all the same, drawn against the whole figure, because leaving them off the map made
 # them invisible rather than making them absent.

@@ -57,7 +57,8 @@
 
   function query(node) {
     const qs = new URLSearchParams();
-    qs.set('organs', (node.organs || []).join(','));
+    if ((node.tissues || []).length) qs.set('tissue', node.tissues[0]);
+    else qs.set('organs', (node.organs || []).join(','));
     return qs.toString();
   }
 
@@ -346,13 +347,11 @@
     const heading = (text) => `<h3 style="font-size:9.5px;letter-spacing:0.3em;`
       + `text-transform:uppercase;color:var(--el-muted);margin:16px 0 7px">${text}</h3>`;
     const polymers = (node.polymers || []).slice(0, 10).map((p) =>
-      `<a class="tag" href="/papers?polymer=${encodeURIComponent(p.key)}&organs=`
-      + `${encodeURIComponent((node.organs || []).join(','))}"`
+      `<a class="tag" href="/papers?polymer=${encodeURIComponent(p.key)}&${query(node)}"`
       + ` style="border-left:3px solid ${DEBRIS.colourFor(p.key)}">`
       + `${DEBRIS.esc(shortOf(p.key))} ${p.n}</a>`).join(' ');
     const pathways = (node.pathways || []).map((p) =>
-      `<a class="tag" href="/papers?pathway=${encodeURIComponent(p.key)}&organs=`
-      + `${encodeURIComponent((node.organs || []).join(','))}">${DEBRIS.esc(p.label)} ${p.n}</a>`).join(' ');
+      `<a class="tag" href="/papers?pathway=${encodeURIComponent(p.key)}&${query(node)}">${DEBRIS.esc(p.label)} ${p.n}</a>`).join(' ');
     const papers = (node.papers || []).map((p) => `
       <article class="paper" style="padding:11px 12px">
         <div class="meta"><span class="mono">${DEBRIS.esc(p.journal || '')} ${p.year || ''}</span>

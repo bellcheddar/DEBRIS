@@ -615,3 +615,12 @@
 - 2026-10-31 03:14 qc ui: pass, 10 page renders, 0 serious or critical axe violations, 0 console errors, 0 failed requests
 - 2026-10-31 03:17 qc ui: pass, 10 page renders, 0 serious or critical axe violations, 0 console errors, 0 failed requests
 - 2026-10-31 03:17 app: card descriptions and the PET switches removed (owner); Papers table fits the width (shared columns, low-priority columns fold on phones), early-load console error fixed; header status table fits phones; no page scrolls sideways at 1440, 390 or 360.
+- 2026-10-31 03:17 lab phase3-a f2 s42: trained in 46.7 min
+- 2026-10-31 03:21 lab phase3-a f2 s42 @ 600: relevant_f1 0.927, polymers_f1 0.8764, organ_systems_f1 0.7062, pathways_f1 0.6936, rungs_exact 0.7098, rungs_within_one 0.8142, model_type_accuracy 0.8423, valid_json 1.0, 0.54 s/paper
+- 2026-10-31 03:21 lab phase3-a: done
+- 2026-10-31 03:22 lab report: 20 experiments written to LAB_REPORT.md
+- 2026-10-31 03:22 lab report: 20 experiments written to LAB_REPORT.md
+- 2026-10-31 03:22 qc ui: pass, 10 page renders, 0 serious or critical axe violations, 0 console errors, 0 failed requests
+- 2026-10-31 03:29 aggregate: wrote 5 bundles, 156 kB total; verified 9323, tagged 8983
+- 2026-10-31 03:30 qc ui: pass, 10 page renders, 0 serious or critical axe violations, 0 console errors, 0 failed requests
+- 2026-10-31 03:30 body: tissue pins for placenta, semen, colon, faeces and artery (owner), counted by tissue beside the organ-system pins; skin already has its pin.

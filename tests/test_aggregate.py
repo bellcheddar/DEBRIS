@@ -102,12 +102,14 @@ def test_pet_scope_is_a_subset(corpus):
 def test_body_counts_match_sql(corpus):
     conn = c.connect(corpus)
     for node in aggregate.body_bundle(conn)["nodes"]:
-        marks = ",".join("?" * len(node["organs"]))
+        values = node["tissues"] or node["organs"]
+        table, column = ("tag_tissues", "tissue") if node["tissues"] else ("tag_organs", "organ_system")
+        marks = ",".join("?" * len(values))
         expected = conn.execute(
             f"""SELECT COUNT(DISTINCT p.pmid) FROM papers p JOIN tags t USING (pmid)
-                JOIN tag_organs o ON o.pmid=p.pmid
+                JOIN {table} o ON o.pmid=p.pmid
                 WHERE p.doi_status='verified' AND t.relevant=1 AND {NOT_CONTROL}
-                  AND o.organ_system IN ({marks})""", node["organs"]).fetchone()[0]
+                  AND o.{column} IN ({marks})""", values).fetchone()[0]
         assert node["count"] == expected
         assert node["pet_count"] <= node["count"]
 

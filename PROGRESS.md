@@ -95,5 +95,6 @@ Open gates: none.
 - [ ] Phase 3 enrichment, Phase 4, Phase 5 confirmation and retrain on the adopted recipe, full corpus tagging (about 3.5 h)
 
 - [x] Phase 5 confirmation: floor mean 0.902, seven of eight floors (D56)
-- [ ] Full corpus tagging with debris_v2 (running, D55, D56), then Phase 3a
+- [x] Full corpus tagging with debris_v2: 9,343 tagged, 5,068 relevant, deployed 00:53 (D56)
+- [ ] Phase 3a (running)
 - [ ] Tomorrow: promote placenta, colon, faeces, semen, skin and artery to named body-map sites (owner, D56 note); rank the other `other:` tissues for the owner first

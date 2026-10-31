@@ -90,7 +90,6 @@ const DEBRIS = (() => {
       <h3 style="font-size:10px;letter-spacing:0.3em;text-transform:uppercase;color:var(--el-muted);margin-top:18px">Abstract</h3>
       <p class="abstract">${esc(p.abstract || 'No abstract in the PubMed record.')}</p>
       ${p.mesh ? `<h3 style="font-size:10px;letter-spacing:0.3em;text-transform:uppercase;color:var(--el-muted);margin-top:16px">MeSH</h3><p class="abstract">${esc(p.mesh)}</p>` : ''}
-      ${p.tag_json ? `<h3 style="font-size:10px;letter-spacing:0.3em;text-transform:uppercase;color:var(--el-muted);margin-top:16px">Tag JSON</h3><pre>${esc(JSON.stringify(p.tag, null, 1))}</pre>` : ''}
     `;
   }
 

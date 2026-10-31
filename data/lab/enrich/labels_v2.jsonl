@@ -284,7 +284,7 @@
 {"pmid":"40236806","model_type":"animal_in_vivo","pathways":["oxidative_stress","inflammasome_il1b","apoptosis_ferroptosis","nfkb_cytokine","er_stress_autophagy"],"polymers":["PS"],"tissues":["brain"]}
 {"pmid":"36552419","model_type":"not_applicable","pathways":[],"polymers":[],"tissues":[]}
 {"pmid":"42725382","model_type":"review","pathways":[],"polymers":[],"tissues":[]}
-{"pmid":"40542719","model_type":"animal_in_vivo","pathways":[],"polymers":["PS"],"tissues":["intestine","spleen"]}
+{"pmid":"40542719","model_type":"not_applicable","pathways":[],"polymers":[],"tissues":[]}
 {"pmid":"42198568","model_type":"review","pathways":[],"polymers":[],"tissues":[]}
 {"pmid":"40286667","model_type":"animal_in_vivo","pathways":["oxidative_stress","mitochondrial_dysfunction","apoptosis_ferroptosis","other:calcium_homeostasis","other:glucose_metabolism"],"polymers":["PS"],"tissues":["brain"]}
 {"pmid":"33793585","model_type":"not_applicable","pathways":[],"polymers":[],"tissues":[]}

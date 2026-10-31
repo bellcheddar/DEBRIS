@@ -216,7 +216,12 @@ def build_data(cfg: dict, fold: int, records: list[dict], folds: dict[str, int],
     switches = cfg["switches"]
     train_rows = [r for r in records if folds[r["pmid"]] != fold]
     if switches.get("enrich"):
-        train_rows += enrich_records()
+        # enrich = "relevant" adds only the on-topic papers: the 111 negatives in the set
+        # pushed relevant papers to not relevant (D59).
+        extra = enrich_records()
+        if switches["enrich"] == "relevant":
+            extra = [r for r in extra if r["tag"]["relevant"]]
+        train_rows += extra
     held_out = sorted((r for r in records if folds[r["pmid"]] == fold), key=lambda r: r["pmid"])
     random.Random(FOLD_SEED + fold).shuffle(train_rows)
     out.mkdir(parents=True, exist_ok=True)

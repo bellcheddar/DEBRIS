@@ -630,7 +630,8 @@
       line: { color: s0['line.color'][i], width: s0['line.width'][i], shape: 'spline' },
       hovertemplate: `${labelOf(k)}, 12 months to %{x|%d %b %Y}: %{y:,}<extra></extra>`,
     })), { margin: { l: 50, r: 16, t: 8, b: 38 }, showlegend: false, hovermode: 'closest', xaxis,
-      yaxis: { type: 'log', title: { text: 'Papers per year (log scale)', font: { size: 11 } } } });
+      yaxis: { type: 'log', dtick: 1, tickformat: ',d',   // one tick per power of ten
+        title: { text: 'Papers per year (log scale)', font: { size: 11 } } } });
 
     const el = document.getElementById('years');
     const strip = document.getElementById('years-strip');

@@ -428,8 +428,6 @@
       layer.selectAll('text.cl').data(keys, (k) => k).join('text').attr('class', 'cl pinlabel')
         .attr('transform', (k, j) => `translate(${j * side + side / 2},-10) rotate(-54)`)
         .text((k) => shortOf(k));
-      note.attr('fill', T.muted)
-        .text('Diagonal: papers naming that polymer. Dashed: the pair has no published paper.');
       paint();
     }
 
@@ -563,7 +561,7 @@
     });
     document.getElementById('ladder-legend').innerHTML = [1, 2, 3, 4, 5, 6].map((r) =>
       `<span><i style="background:${rungColour(r)}"></i>${DEBRIS.esc(rungLabels[r] || '')}</span>`)
-      .join('') + '<span style="color:#8A5A14">Reversible is the evidence an enzyme therapeutic can test.</span>';
+      .join('');
     const ladderLink = () => {
       const qs = new URLSearchParams(ladderSel || {});
       if (ladderScope === 'pet') qs.set('pet', '1');

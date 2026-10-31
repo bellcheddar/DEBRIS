@@ -607,3 +607,5 @@
 - 2026-10-31 02:38 aggregate: wrote 5 bundles, 140 kB total; verified 9323, tagged 8983
 - 2026-10-31 02:38 tissues written as other: mapped back (101 papers; tag.canon_tissues for new tags); body-map promotion ranking in PROGRESS.md; phase5-enrich queued behind Phase 3a (controller5).
 - 2026-10-31 02:39 qc ui: pass, 10 page renders, 0 serious or critical axe violations, 0 console errors, 0 failed requests
+- 2026-10-31 02:43 qc ui: pass, 10 page renders, 0 serious or critical axe violations, 0 console errors, 0 failed requests
+- 2026-10-31 02:43 app: panel subtitles and in-panel footer notes removed (owner).

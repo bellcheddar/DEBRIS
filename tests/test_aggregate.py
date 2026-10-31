@@ -139,6 +139,16 @@ def test_the_year_trend_ends_today_with_no_future_dates():
     rows = [{"day": "2024-03-01", "pet": 0}, {"day": "2025-06-15", "pet": 1},
             {"day": "2025-10-01", "pet": 0}, {"day": "2027-01-01", "pet": 0}]
     trend = aggregate.trailing_year(rows, today=dt.date(2025, 10, 30))
-    assert trend[-1] == {"date": "2025-10-30", "n": 2, "pet_n": 1}
+    assert trend[-1] == {"date": "2025-10-30", "n": 2, "pet_n": 1, "by": {}}
     assert all(r["date"] <= "2025-10-30" for r in trend)
     assert trend[0]["date"] == "2025-02-28"
+
+
+def test_the_year_trend_counts_each_polymer():
+    import datetime as dt
+    from pipeline import aggregate
+
+    rows = [{"day": "2025-06-15", "pet": 1, "polymers": ["PET", "PS"]},
+            {"day": "2025-10-01", "pet": 0, "polymers": ["PS"]}]
+    trend = aggregate.trailing_year(rows, today=dt.date(2026, 3, 1))
+    assert trend[-1]["by"] == {"PET": 1, "PS": 2}

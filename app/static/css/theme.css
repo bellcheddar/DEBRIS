@@ -376,3 +376,27 @@ footer.site .mono{font-size:11px}
 .reftable tr:hover td{background:var(--el-tint)}
 .reftable .mono{font-family:var(--mono);font-size:12px;word-break:break-all}
 .reftable .muted{color:var(--el-muted)}
+
+/* ---------------------------------------------------------- backronym */
+.titleblock .expand .ac{display:inline-block;font-weight:800;color:var(--el-blue);
+  transform-origin:50% 85%;position:relative}
+.titleblock .expand .ac::after{content:"";position:absolute;left:-1px;right:-1px;bottom:-1px;
+  height:2px;background:var(--pet);transform:scaleX(1);transform-origin:left}
+@media (prefers-reduced-motion:no-preference){
+  .titleblock .expand .ac{animation:ac-grow .9s cubic-bezier(.3,1.6,.5,1) both;
+    animation-delay:calc(.25s + var(--i) * .22s)}
+  .titleblock .expand .ac::after{animation:ac-line .5s ease-out both;
+    animation-delay:calc(.55s + var(--i) * .22s)}
+  .titleblock:hover .expand .ac{animation:ac-pulse .7s ease-in-out both;
+    animation-delay:calc(var(--i) * .08s)}
+}
+@keyframes ac-grow{
+  0%{transform:scale(1);color:var(--el-muted);text-shadow:none}
+  45%{transform:scale(1.75);color:var(--pet);text-shadow:0 0 10px rgba(200,135,43,.45)}
+  100%{transform:scale(1.15);color:var(--el-blue);text-shadow:none}
+}
+@keyframes ac-line{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+@keyframes ac-pulse{
+  0%,100%{transform:scale(1.15)}
+  50%{transform:scale(1.45);color:var(--pet)}
+}

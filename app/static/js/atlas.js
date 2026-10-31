@@ -541,15 +541,23 @@
     const rows = B.trend || [];
     if (!rows.length) return;
     const x = rows.map((r) => r.date);
-    DEBRIS.plot('years', [
-      { type: 'scatter', mode: 'lines', name: 'All polymers', x, y: rows.map((r) => r.n),
+    // PET and the four most studied polymers show by default; the rest are a legend click away.
+    const named = ORDER.filter((k) => rows.some((r) => (r.by || {})[k]));
+    const top = named.slice().sort((a, b) => ((rows[rows.length - 1].by || {})[b] || 0)
+                                          - ((rows[rows.length - 1].by || {})[a] || 0)).slice(0, 4);
+    const traces = [
+      { type: 'scatter', mode: 'lines', name: 'All papers', x, y: rows.map((r) => r.n),
         line: { color: T.blue, width: 2.5, shape: 'spline' },
         fill: 'tozeroy', fillcolor: 'rgba(56,80,152,0.10)',
-        hovertemplate: '12 months to %{x|%d %b %Y}: %{y:,} papers<extra></extra>' },
-      { type: 'scatter', mode: 'lines', name: 'PET-specific', x, y: rows.map((r) => r.pet_n),
-        line: { color: T.pet, width: 2.5, shape: 'spline' },
-        hovertemplate: '12 months to %{x|%d %b %Y}: %{y:,} PET papers<extra></extra>' },
-    ], { margin: { l: 50, r: 16, t: 8, b: 38 },
+        hovertemplate: 'All papers, 12 months to %{x|%d %b %Y}: %{y:,}<extra></extra>' },
+    ].concat(named.map((k) => ({
+      type: 'scatter', mode: 'lines', name: shortOf(k), x,
+      y: rows.map((r) => (r.by || {})[k] || 0),
+      visible: top.includes(k) || k === 'PET' ? true : 'legendonly',
+      line: { color: colour(k), width: 1.8, shape: 'spline' },
+      hovertemplate: `${labelOf(k)}, 12 months to %{x|%d %b %Y}: %{y:,}<extra></extra>`,
+    })));
+    DEBRIS.plot('years', traces, { margin: { l: 50, r: 16, t: 8, b: 38 },
          xaxis: { type: 'date', dtick: 'M24', tickformat: '%Y', gridcolor: 'rgba(0,0,0,0)',
                   range: [x[0], x[x.length - 1]] },
          yaxis: { title: { text: 'Papers per year', font: { size: 11 } } } });

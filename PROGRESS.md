@@ -93,3 +93,7 @@ Open gates: none.
 - [x] Tag bench (D42, D45), transfer check on the 3B, 32B v2 ceiling (D47), batched tagger verified against gold (D46, D49)
 - [x] Phase 2 runs, 5 arms by 3 folds; v2.3 ceiling (D49); owner's rulings applied (D50)
 - [ ] Phase 3 enrichment, Phase 4, Phase 5 confirmation and retrain on the adopted recipe, full corpus tagging (about 3.5 h)
+
+- [x] Phase 5 confirmation: floor mean 0.902, seven of eight floors (D56)
+- [ ] Full corpus tagging with debris_v2 (running, D55, D56), then Phase 3a
+- [ ] Tomorrow: promote placenta, colon, faeces, semen, skin and artery to named body-map sites (owner, D56 note); rank the other `other:` tissues for the owner first

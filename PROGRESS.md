@@ -96,7 +96,7 @@ Open gates: none.
 
 - [x] Phase 5 confirmation: floor mean 0.902, seven of eight floors (D56)
 - [x] Full corpus tagging with debris_v2: 9,343 tagged, 5,068 relevant, deployed 00:53 (D56)
-- [ ] Phase 3a (running)
+- [x] Phase 3a: no gain, model type -0.058 (D58); debris_v2 stays
 - [ ] Tomorrow: promote placenta, colon, faeces, semen, skin and artery to named body-map sites (owner, D56 note); rank the other `other:` tissues for the owner first
 
 ### Body-map promotion: the ranking (2026-10-31, relevant papers per `other:` tissue)

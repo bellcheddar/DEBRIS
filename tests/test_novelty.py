@@ -84,3 +84,17 @@ def test_a_higher_rung_writes_a_ladder_event(corpus):
     run_novelty(corpus, "run-3")
     _, ladder = events(corpus, "run-3")
     assert ("PET", "atherosclerosis_mace", 6) in ladder
+
+
+def test_window_scores_this_weeks_papers_against_everything_earlier(corpus):
+    """1005 (PVC, haematology, thrombosis) is the only paper entered this week, and no
+    earlier paper names PVC, so it brings new combinations; nothing else is scored."""
+    conn = c.connect(readonly=False)
+    with conn:
+        conn.execute("UPDATE papers SET edat = '2020-01-01'")
+        conn.execute("UPDATE papers SET edat = date('now') WHERE pmid = '1005'")
+    assert novelty.score_window(conn) == 1
+    rows = conn.execute("SELECT DISTINCT pmid FROM novelty_events WHERE ingest_run=?",
+                        (novelty.WINDOW_RUN,)).fetchall()
+    assert [r[0] for r in rows] == ["1005"]
+    assert novelty.score_window(conn) == 1, "rescoring the window replaces, never adds"

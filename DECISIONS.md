@@ -1216,3 +1216,9 @@ So the Phase 3a loss was not the labels. Comparing errors, phase3-a turned relev
 **Evidence:** on the 1.5B (3 folds) relevant-only enrichment helped: floor mean +0.013 [+0.002, +0.022], polymers +0.023, evidence within one +0.038, model type flat (-0.004). On the 3B against debris_v2 on the frozen test split: floor mean -0.007 [-0.022, +0.009] (no clear change), tissues +0.065 [+0.026, +0.111] real, tissue parents +0.054 [+0.009, +0.105] real, model type -0.034 [-0.077, +0.000] (borderline loss).
 **Why:** the automatic gate needs a clear floor-mean gain, which the 3B did not show. The tissue gain against a possible study-type loss is a trade-off for the owner.
 **Reverse:** adopt the candidate by copying data/lab/phase5-enrich-b/f0-s42/ckpt-1600 to data/adapters/debris_v3 and re-tagging with --adapter data/adapters/debris_v3 (about 2.5 h).
+
+## D61 Novel uses the rolling seven-day window (2026-10-31)
+
+**Decision (owner):** "Novel" in the header, the NOVEL badges, the novel=1 filter and Pathways' "New combinations this week" count papers PubMed entered in the last seven days that bring a polymer, organ and mechanism triple or a polymer and disease pair no earlier paper had. novelty.score_window rewrites these events (ingest_run "last-7-days") every time aggregate runs.
+**Why:** novelty was per ingest run and had never run; the only run was the initial build, against which every combination is new. The window matches New this week.
+**Reverse:** drop the score_window call in aggregate.main and point the four readers back at latest_run.

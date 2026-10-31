@@ -6,6 +6,10 @@ and writes a novelty_events row. A new maximum rung for a (polymer, disease_cate
 writes a ladder_events row.
 
   pixi run novelty --run <ingest_run>
+
+The app's "Novel" figures use score_window instead (owner, 2026-10-31): the papers PubMed
+entered in the last seven days, the same papers as "New this week", scored against
+everything entered before them. The aggregate step reruns it, so the window rolls daily.
 """
 from __future__ import annotations
 
@@ -75,6 +79,46 @@ def paper_combinations(conn, pmid: str) -> tuple[set[str], set[str], dict[str, i
             GROUP BY pl.polymer, d.disease_category""", (pmid,)):
         own[f"{polymer}|{category}"] = rung
     return triples, pairs, own
+
+
+WINDOW_RUN = "last-7-days"   # the ingest_run key the rolling window's events are stored under
+
+
+def score_window(conn, days: int = 7) -> int:
+    """Rewrite the rolling window's novelty and ladder events; returns the novel papers."""
+    window = f"substr(p.edat, 1, 10) >= date('now', '-{int(days)} days')"
+    new_pmids = [r[0] for r in conn.execute(f"""
+        SELECT p.pmid FROM papers p JOIN tags t USING (pmid)
+        WHERE {window} AND p.doi_status='verified' AND t.relevant=1
+          AND COALESCE(p.hit_strategy, '') <> 'negative'
+        ORDER BY p.edat, p.pmid""")]
+    others = {r[0] for r in conn.execute(f"""
+        SELECT pmid FROM papers p WHERE NOT ({window}) OR p.edat IS NULL OR p.edat = ''""")}
+    seen_triples, seen_pairs = combinations(conn, others)
+    running_rungs = max_rungs(conn, exclude=set(new_pmids))
+    events, ladder, novel = [], [], set()
+    for pmid in new_pmids:
+        triples, pairs, own_rungs = paper_combinations(conn, pmid)
+        for triple in sorted(triples - seen_triples):
+            events.append((pmid, "triple", triple, WINDOW_RUN))
+            novel.add(pmid)
+        for pair in sorted(pairs - seen_pairs):
+            events.append((pmid, "pair", pair, WINDOW_RUN))
+            novel.add(pmid)
+        seen_triples |= triples
+        seen_pairs |= pairs
+        for key, rung in own_rungs.items():
+            if rung > running_rungs.get(key, 0):
+                polymer, category = key.split("|", 1)
+                ladder.append((pmid, polymer, category, rung, WINDOW_RUN))
+                running_rungs[key] = rung
+    with conn:
+        conn.execute("DELETE FROM novelty_events WHERE ingest_run=?", (WINDOW_RUN,))
+        conn.execute("DELETE FROM ladder_events WHERE ingest_run=?", (WINDOW_RUN,))
+        conn.executemany("INSERT INTO novelty_events (pmid,kind,key,ingest_run) VALUES (?,?,?,?)", events)
+        conn.executemany("""INSERT INTO ladder_events (pmid,polymer,disease_category,
+                              new_max_rung,ingest_run) VALUES (?,?,?,?,?)""", ladder)
+    return len(novel)
 
 
 def main() -> None:

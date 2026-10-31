@@ -92,7 +92,7 @@ def corpus(tmp_path, monkeypatch):
         conn.execute("INSERT INTO review_queue (pmid,reason,queued_at) VALUES ('1004','low confidence',?)",
                      (c.now(),))
         conn.execute("""INSERT INTO novelty_events (pmid,kind,key,ingest_run)
-                        VALUES ('1005','triple','PVC|hematologic|oxidative_stress','run-test')""")
+                        VALUES ('1005','triple','PVC|hematologic|oxidative_stress','last-7-days')""")
     conn.close()
     monkeypatch.setattr(c, "DB_PATH", db)
     return db

@@ -281,7 +281,7 @@ def paper_filters(args) -> tuple[str, list]:
         # New this week: entered in PubMed in the last seven days.
         clauses.append("substr(p.edat, 1, 10) >= date('now', '-7 days')")
     if args.get("novel", "0") in ("1", "true"):
-        clauses.append("p.pmid IN (SELECT pmid FROM novelty_events)")
+        clauses.append("p.pmid IN (SELECT pmid FROM novelty_events WHERE ingest_run = 'last-7-days')")
     if search := (args.get("q") or "").strip():
         clauses.append("(p.title LIKE ? OR t.summary LIKE ? OR p.journal LIKE ? OR p.pmid = ?)")
         like = f"%{search}%"

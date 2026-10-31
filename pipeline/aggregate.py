@@ -13,6 +13,7 @@ import collections
 import datetime as dt
 
 from pipeline import common as c
+from pipeline import novelty
 
 V = c.display_vocab()
 CORPUS = c.corpus_clause()
@@ -242,9 +243,9 @@ def body_bundle(conn) -> dict:
         paths = conn.execute(
             f"""SELECT pathway, COUNT(*) n FROM tag_pathways WHERE pmid IN ({pm})
                 GROUP BY pathway ORDER BY n DESC LIMIT 6""", pmids).fetchall()
-        novel = bool(run) and conn.execute(
+        novel = conn.execute(
             f"""SELECT COUNT(*) FROM novelty_events WHERE ingest_run = ? AND pmid IN ({pm})""",
-            [run] + pmids).fetchone()[0] > 0
+            [novelty.WINDOW_RUN] + pmids).fetchone()[0] > 0
         top = conn.execute(
             f"""SELECT p.pmid, p.title, p.journal, p.year, p.doi, t.summary,
                        (SELECT MAX(rung) FROM tag_rungs WHERE pmid=p.pmid) AS max_rung
@@ -426,14 +427,11 @@ def pathways_bundle(conn) -> dict:
         radar[cat] = {"label": V["disease_labels"].get(cat, cat), "all": all_counts,
                       "pet": pet_counts}
 
-    run = latest_run(conn)
-    new_edges = []
-    if run:
-        for row in conn.execute("""
-                SELECT n.key, n.kind, n.pmid, p.title, p.journal, p.year
-                FROM novelty_events n JOIN papers p USING (pmid)
-                WHERE n.ingest_run = ? AND n.kind = 'triple' LIMIT 40""", (run,)):
-            new_edges.append(dict(row))
+    # New combinations this week: the rolling seven-day window, as the header's Novel.
+    new_edges = [dict(row) for row in conn.execute("""
+        SELECT n.key, n.kind, n.pmid, p.title, p.journal, p.year
+        FROM novelty_events n JOIN papers p USING (pmid)
+        WHERE n.ingest_run = ? AND n.kind = 'triple' LIMIT 40""", (novelty.WINDOW_RUN,))]
     return {"sankey": {"labels": labels, "keys": keys, "colours": colours,
                        "kinds": kinds, "links": links,
                        "papers": [papers_with.get((k, key), 0) for k, key in zip(kinds, keys)]},
@@ -455,11 +453,11 @@ def feed_bundle(conn) -> dict:
         SELECT p.pmid, p.title, p.journal, p.year, p.doi, p.retracted, t.summary,
                (SELECT GROUP_CONCAT(polymer) FROM tag_polymers WHERE pmid=p.pmid) AS polymers,
                (SELECT GROUP_CONCAT(rung) FROM tag_rungs WHERE pmid=p.pmid) AS rungs,
-               (SELECT COUNT(*) FROM novelty_events WHERE pmid=p.pmid) AS novel
+               (SELECT COUNT(*) FROM novelty_events WHERE pmid=p.pmid AND ingest_run=?) AS novel
         FROM papers p LEFT JOIN tags t USING (pmid)
         WHERE {NEW_WINDOW} AND {CORPUS}
           AND (t.relevant IS NULL OR t.relevant=1)
-        ORDER BY novel DESC, p.edat DESC LIMIT 36""").fetchall()
+        ORDER BY novel DESC, p.edat DESC LIMIT 36""", (novelty.WINDOW_RUN,)).fetchall()
     feed = []
     for r in rows:
         feed.append({"pmid": r["pmid"], "title": r["title"], "journal": r["journal"],
@@ -494,7 +492,7 @@ def meta_bundle(conn) -> dict:
                                      WHERE {NEW_WINDOW} AND {CORPUS}
                                        AND (t.relevant IS NULL OR t.relevant = 1)""").fetchone()[0]
     novel = conn.execute("SELECT COUNT(DISTINCT pmid) FROM novelty_events WHERE ingest_run=?",
-                         (run,)).fetchone()[0] if run else 0
+                         (novelty.WINDOW_RUN,)).fetchone()[0]
     queued = conn.execute("SELECT COUNT(*) FROM review_queue WHERE resolved_at IS NULL").fetchone()[0]
     first_year = conn.execute(f"""SELECT MIN(year) FROM papers WHERE {CORPUS_ANY}
                                  AND year IS NOT NULL""").fetchone()[0]
@@ -594,6 +592,7 @@ def main() -> None:
     ap.add_argument("--quiet", action="store_true")
     args = ap.parse_args()
     conn = c.connect(readonly=False)
+    novelty.score_window(conn)   # Novel rolls with New this week, so it is rescored every time
     bundles = {
         "meta": meta_bundle(conn),
         "atlas": atlas_bundle(conn),

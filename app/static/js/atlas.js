@@ -542,7 +542,8 @@
     if (!rows.length) return;
     const x = rows.map((r) => r.date);
     // PET and the four most studied polymers show by default; the rest are a legend click away.
-    const named = ORDER.filter((k) => rows.some((r) => (r.by || {})[k]));
+    const named = ORDER.slice();
+    const tagged = rows.some((r) => Object.keys(r.by || {}).length);
     const top = named.slice().sort((a, b) => ((rows[rows.length - 1].by || {})[b] || 0)
                                           - ((rows[rows.length - 1].by || {})[a] || 0)).slice(0, 4);
     const traces = [
@@ -557,7 +558,10 @@
       line: { color: colour(k), width: 1.8, shape: 'spline' },
       hovertemplate: `${labelOf(k)}, 12 months to %{x|%d %b %Y}: %{y:,}<extra></extra>`,
     })));
-    DEBRIS.plot('years', traces, { margin: { l: 50, r: 16, t: 8, b: 38 },
+    DEBRIS.plot('years', traces, { margin: { l: 50, r: 16, t: 8, b: 38 }, showlegend: true,
+         annotations: tagged ? [] : [{ xref: 'paper', yref: 'paper', x: 0.01, y: 0.97,
+           xanchor: 'left', showarrow: false, font: { size: 11, color: T.muted },
+           text: 'Polymer lines fill in as the tagger reads the corpus' }],
          xaxis: { type: 'date', dtick: 'M24', tickformat: '%Y', gridcolor: 'rgba(0,0,0,0)',
                   range: [x[0], x[x.length - 1]] },
          yaxis: { title: { text: 'Papers per year', font: { size: 11 } } } });

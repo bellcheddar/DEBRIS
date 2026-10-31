@@ -38,6 +38,32 @@ def verified_pmids(conn, pet_only: bool = False, organs: list[str] | None = None
     return {r[0] for r in conn.execute(" ".join(sql), params)}
 
 
+def facet_map(conn, sql: str) -> dict[str, set]:
+    """pmid to the set of values one tagged field holds, from a two-column query."""
+    out: dict[str, set] = collections.defaultdict(set)
+    try:
+        for pmid, value in conn.execute(sql):
+            out[pmid].add(value)
+    except Exception:   # a database from before the field existed (tag_tissues, D55)
+        pass
+    return out
+
+
+def facet_kpis(pmids: set[str], pet_pmids: set[str], facets: dict[str, dict]) -> dict:
+    """The Atlas headline figures for one set of papers: how many, how many PET-specific
+    or human, and how much of each tagged field they cover."""
+    covered = {name: set().union(*(m.get(p, set()) for p in pmids)) if pmids else set()
+               for name, m in facets.items()}
+    covered["models"].discard("not_applicable")
+    return {"verified": len(pmids), "pet": len(pmids & pet_pmids),
+            "human": sum(1 for p in pmids if facets["rungs"].get(p, set()) & {1, 2}),
+            "polymer_count": len({v for v in covered["polymer_set"] if v in VOCAB_POLYMERS}),
+            "organs": len(covered["organs"]),
+            "tissues": len({t for t in covered["tissues"] if t in VOCAB_TISSUES}),
+            "pathways": len({v for v in covered["pathways"] if v in VOCAB_PATHWAYS}),
+            "models": len(covered["models"])}
+
+
 def polymer_map(conn) -> dict[str, set[str]]:
     out: dict[str, set[str]] = collections.defaultdict(set)
     for pmid, polymer in conn.execute("SELECT pmid, polymer FROM tag_polymers"):
@@ -48,6 +74,8 @@ def polymer_map(conn) -> dict[str, set[str]]:
 # Controlled polymers only. A tagger may propose `other:<text>`, and an uncontrolled
 # value cannot be a set in a diagram whose sets come from the vocabulary.
 VOCAB_POLYMERS = set(V["polymers"])
+VOCAB_TISSUES = set(V.get("tissues", []))
+VOCAB_PATHWAYS = set(V["pathways"])
 COMBO_LIMIT = 24
 
 
@@ -119,20 +147,21 @@ def ladder_rows(conn, pet_only: bool) -> list[dict]:
 def atlas_bundle(conn) -> dict:
     polymers = polymer_map(conn)
     chips = V["organ_chips"]
+    facets = {"polymer_set": polymers,
+              "organs": facet_map(conn, "SELECT pmid, organ_system FROM tag_organs"),
+              "tissues": facet_map(conn, "SELECT pmid, tissue FROM tag_tissues"),
+              "pathways": facet_map(conn, "SELECT pmid, pathway FROM tag_pathways"),
+              "models": facet_map(conn, "SELECT pmid, model_type FROM tags WHERE relevant = 1"),
+              "rungs": facet_map(conn, "SELECT pmid, rung FROM tag_rungs")}
     cells: dict[str, dict] = {}
     for chip in chips:
         organs = chip["organs"]
         cells[chip["key"]] = {}
         for variant, pet_only in (("all", False), ("pet", True)):
             pmids = verified_pmids(conn, pet_only=pet_only, organs=organs or None)
-            organ_count = conn.execute(f"""SELECT COUNT(DISTINCT organ_system) FROM tag_organs
-                                          WHERE pmid IN (SELECT pmid FROM papers
-                                          WHERE {CORPUS_ANY})""").fetchone()[0]
             pet_pmids = verified_pmids(conn, pet_only=True, organs=organs or None)
             cells[chip["key"]][variant] = {
-                "verified": len(pmids),
-                "pet": len(pmids & pet_pmids),
-                "organs": organ_count,
+                **facet_kpis(pmids, pet_pmids, facets),
                 "polymers": polymer_rows(pmids, polymers, pet_pmids),
                 "pairs": polymer_pairs(pmids, polymers),
                 "combos": polymer_combos(pmids, polymers),
@@ -387,6 +416,9 @@ def meta_bundle(conn) -> dict:
         "verified_papers": verified, "control_papers": controls,
         "tagged_papers": tagged, "relevant_papers": relevant,
         "pet_papers": pet, "organ_systems_covered": organs, "new_this_week": new_this_week,
+        "human_papers": conn.execute(f"""SELECT COUNT(DISTINCT r.pmid) FROM tag_rungs r
+                                         JOIN tags t USING (pmid) JOIN papers p USING (pmid)
+                                         WHERE {CORPUS} AND t.relevant = 1 AND r.rung IN (1, 2)""").fetchone()[0],
         "novel_this_week": novel, "review_queue": queued, "first_year": first_year,
         "model_version": (model_version[0] if model_version else None),
         "inference_path": row["inference_path"] if row else None,

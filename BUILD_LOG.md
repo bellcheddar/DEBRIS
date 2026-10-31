@@ -559,3 +559,10 @@
 - 2026-10-30 22:26 lab report: 19 experiments written to LAB_REPORT.md
 - 2026-10-30 22:26 tag: 9346 papers, Qwen/Qwen2.5-3B-Instruct+data/adapters/debris_v2, path studio_mlx
 - 2026-10-30 22:28 Phase 5: floor mean 0.902, +0.087 [+0.058, +0.117] vs round 04, seven of eight floors (D56). Corpus tagging with debris_v2 started 22:26.
+- 2026-10-30 22:59 tag: 7555 papers, Qwen/Qwen2.5-3B-Instruct+data/adapters/debris_v2, path studio_mlx
+- 2026-10-31 00:46 aggregate: wrote 5 bundles, 167 kB total; verified 9323, tagged 8701
+- 2026-10-31 00:46 aggregate: wrote 5 bundles, 168 kB total; verified 9323, tagged 8701
+- 2026-10-31 00:46 qc ui: fail, 10 page renders, 4 serious or critical axe violations, 0 console errors, 0 failed requests
+- 2026-10-31 00:47 qc ui: fail, 10 page renders, 2 serious or critical axe violations, 0 console errors, 0 failed requests
+- 2026-10-31 00:47 qc ui: fail, 10 page renders, 2 serious or critical axe violations, 0 console errors, 0 failed requests
+- 2026-10-31 00:49 front page: eight KPIs over every tagged field (papers, PET Specific, human evidence, polymers, organ systems, tissues, pathways, study types), each following the organ and PET filters; header figures as a table on the right, title, strapline and links on the left; backronym replays every nine seconds; mdeller.com in the footer; badge colours darkened to 4.5:1.

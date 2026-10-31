@@ -38,6 +38,24 @@ header.site{background:var(--el-card);border-bottom:1px solid var(--el-line)}
 .elora .eyebrow{display:block;font-weight:600;font-size:11px;letter-spacing:0.38em;
   color:var(--el-muted);margin-top:6px}
 .titleblock{flex:1 1 420px;min-width:0;align-self:flex-start}
+/* Status and figures share the right of the header; links run under the title. */
+.statusbox{display:flex;flex-direction:column;align-items:flex-end;gap:8px;flex:0 0 auto}
+.healthtable{border-collapse:collapse;font-size:12px}
+.healthtable th{text-align:left;font-size:9px;font-weight:700;letter-spacing:0.16em;
+  text-transform:uppercase;color:var(--el-muted);padding:3px 8px 3px 14px;white-space:nowrap}
+.healthtable td{color:var(--el-ink);padding:3px 0;text-align:right;white-space:nowrap}
+.healthtable tr+tr th,.healthtable tr+tr td{border-top:1px solid var(--el-line)}
+.healthtable td[colspan]{text-align:right}
+.titleblock .strap{display:inline-block;margin:14px 0 0;background:var(--el-tint);
+  border:1px solid var(--el-line);clip-path:var(--chamfer);padding:8px 18px;
+  font-size:11.5px;letter-spacing:0.04em;color:var(--el-ink)}
+.titleblock .brandlinks{justify-content:flex-start;margin-top:12px}
+.kpis.kpis-8{grid-template-columns:repeat(4,minmax(0,1fr))}
+@media (max-width:768px){
+  .statusbox{align-items:flex-start;width:100%}
+  .healthtable{width:100%}
+  .kpis.kpis-8{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
 /* The title is set exactly as the Elora wordmark beside it: same face, weight, size and tracking. */
 .titleblock h1{font-weight:800;font-size:26px;letter-spacing:0.1em;
   text-transform:uppercase;color:var(--el-ink);line-height:1}
@@ -144,11 +162,12 @@ main{padding:26px 0 60px}
 .switch input{accent-color:var(--el-blue);width:15px;height:15px}
 .tag{font-family:var(--mono);font-size:10.5px;padding:2px 7px;border-radius:2px;
   background:var(--el-soft);color:var(--el-ink);white-space:nowrap}
-.tag.pet{background:var(--pet);color:#fff}
-.tag.ps{background:var(--ps);color:#fff}
+/* Badge fills are darker than the chart colours so white text clears 4.5:1. */
+.tag.pet{background:#9A6416;color:#fff}
+.tag.ps{background:#23726D;color:#fff}
 .tag.pepp{background:var(--pe-pp);color:#fff}
 .tag.pvc{background:var(--pvc);color:#fff}
-.tag.other{background:var(--other);color:#fff}
+.tag.other{background:#5A6180;color:#fff}
 .tag.rung{background:var(--el-tint);border:1px solid var(--el-line);color:var(--el-ink)}
 /* Dark ink on PET amber: white fell to 3.0:1 at this size. */
 .badge-new{background:var(--new);color:var(--el-fg);font-family:var(--display);font-weight:800;
@@ -389,17 +408,17 @@ footer.site .mono{font-size:11px}
 .titleblock .expand .ac::after{content:"";position:absolute;left:-1px;right:-1px;bottom:-1px;
   height:2px;background:var(--pet);transform:scaleX(1);transform-origin:left}
 @media (prefers-reduced-motion:no-preference){
-  .titleblock .expand .ac{animation:ac-grow .9s cubic-bezier(.3,1.6,.5,1) both;
-    animation-delay:calc(.25s + var(--i) * .22s)}
+  .titleblock .expand .ac{animation:ac-grow 9s cubic-bezier(.3,1.6,.5,1) infinite;
+    animation-delay:calc(.25s + var(--i) * .22s);transform:scale(1.15)}
   .titleblock .expand .ac::after{animation:ac-line .5s ease-out both;
     animation-delay:calc(.55s + var(--i) * .22s)}
   .titleblock:hover .expand .ac{animation:ac-pulse .7s ease-in-out both;
     animation-delay:calc(var(--i) * .08s)}
 }
 @keyframes ac-grow{
-  0%{transform:scale(1);color:var(--el-muted);text-shadow:none}
-  45%{transform:scale(1.75);color:var(--pet);text-shadow:0 0 10px rgba(200,135,43,.45)}
-  100%{transform:scale(1.15);color:var(--el-blue);text-shadow:none}
+  0%{transform:scale(1.15);color:var(--el-blue);text-shadow:none}
+  4%{transform:scale(1.75);color:var(--pet);text-shadow:0 0 10px rgba(200,135,43,.45)}
+  10%,100%{transform:scale(1.15);color:var(--el-blue);text-shadow:none}
 }
 @keyframes ac-line{from{transform:scaleX(0)}to{transform:scaleX(1)}}
 @keyframes ac-pulse{

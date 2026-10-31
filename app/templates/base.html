@@ -23,31 +23,32 @@
     <div class="titleblock">
       <h1>Debris</h1>
       <span class="expand"><span class="w"><b class="ac" style="--i:0">D</b>isease</span> <span class="w"><b class="ac" style="--i:1">E</b>vidence</span> from <span class="w"><b class="ac" style="--i:2">B</b>ioaccumulated</span> plastic <span class="w"><b class="ac" style="--i:3">R</b>esidues:</span> <span class="w"><b class="ac" style="--i:4">I</b>ndexed</span> <span class="w"><b class="ac" style="--i:5">S</b>tudies</span></span>
-    </div>
-    <button type="button" class="pulse" data-state="{{ health.state }}"
-            aria-expanded="true" aria-controls="healthpanel" title="{{ health.detail }}">
-      <span class="dot" aria-hidden="true"></span>
-      <span class="pulse-label">{{ health.label }}</span>
-    </button>
-    <div class="healthrow">
-      <dl id="healthpanel" class="healthgrid">
-        <div><dt>Verified</dt><dd class="mono">{{ '{:,}'.format(meta.verified_papers or 0) }}</dd></div>
-        <div><dt>Tagged</dt><dd class="mono">{{ '{:,}'.format(meta.tagged_papers or 0) }}</dd></div>
-        <div><dt>PET</dt><dd class="mono">{{ '{:,}'.format(meta.pet_papers or 0) }}</dd></div>
-        <div><dt>New</dt><dd class="mono">{{ '{:,}'.format(meta.new_this_week or 0) }}</dd></div>
-        <div><dt>Review</dt><dd class="mono">{{ '{:,}'.format(meta.review_queue or 0) }}</dd></div>
-        <div><dt>Updated</dt><dd class="mono">{{ meta.last_ingest_date or 'pending' }}</dd></div>
-        <div><dt>Tagger</dt><dd class="mono">{{ meta.model_version or 'pending' }}</dd></div>
-      </dl>
+      <p class="strap">Micro and nanoplastics in human disease: a DOI-verified, machine-tagged corpus refreshed weekly.</p>
       <nav class="brandlinks" aria-label="Related sites">
         <a href="https://eloratherapeutics.com" rel="noopener">Elora</a>
         <a href="https://github.com/bellcheddar/DEBRIS" rel="noopener">GitHub</a>
       </nav>
     </div>
-  </div>
-  <div class="workshop">
-    <div class="wrap">
-      <span>Micro and nanoplastics in human disease: a DOI-verified, machine-tagged corpus refreshed weekly.</span>
+    <div class="statusbox">
+      <button type="button" class="pulse" data-state="{{ health.state }}"
+              aria-expanded="true" aria-controls="healthpanel" title="{{ health.detail }}">
+        <span class="dot" aria-hidden="true"></span>
+        <span class="pulse-label">{{ health.label }}</span>
+      </button>
+      <table id="healthpanel" class="healthtable">
+        <caption class="sr-only">Corpus figures</caption>
+        <tbody>
+          <tr><th scope="row">Verified</th><td class="mono">{{ '{:,}'.format(meta.verified_papers or 0) }}</td>
+              <th scope="row">Tagged</th><td class="mono">{{ '{:,}'.format(meta.tagged_papers or 0) }}</td></tr>
+          <tr><th scope="row">On topic</th><td class="mono">{{ '{:,}'.format(meta.relevant_papers or 0) }}</td>
+              <th scope="row">PET specific</th><td class="mono">{{ '{:,}'.format(meta.pet_papers or 0) }}</td></tr>
+          <tr><th scope="row">New this week</th><td class="mono">{{ '{:,}'.format(meta.new_this_week or 0) }}</td>
+              <th scope="row">Novel</th><td class="mono">{{ '{:,}'.format(meta.novel_this_week or 0) }}</td></tr>
+          <tr><th scope="row">For review</th><td class="mono">{{ '{:,}'.format(meta.review_queue or 0) }}</td>
+              <th scope="row">Updated</th><td class="mono">{{ meta.last_ingest_date or 'pending' }}</td></tr>
+          <tr><th scope="row">Tagger</th><td class="mono" colspan="3">{{ meta.model_version or 'pending' }}</td></tr>
+        </tbody>
+      </table>
     </div>
   </div>
 </header>
@@ -76,6 +77,7 @@
     <div>
       Built by <b>Marc C. Deller, D.Phil.</b>, Elora Therapeutics ·
       <a href="https://marcdeller.com">marcdeller.com</a> ·
+      <a href="https://mdeller.com">mdeller.com</a> ·
       <a href="https://eloratherapeutics.com">eloratherapeutics.com</a>
     </div>
     <div class="mono">

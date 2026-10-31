@@ -2,19 +2,31 @@
 {% block title %}01 Atlas{% endblock %}
 
 {% block content %}
-<div class="kpis">
-  <div class="kpi"><div class="label">Verified</div>
-    <div class="value" id="kpi-verified">{{ '{:,}'.format(meta.verified_papers or 0) }}</div>
-    <div class="foot">DOI resolved at Crossref with a matching title</div></div>
-  <div class="kpi pet"><div class="label">Name PET</div>
+<div class="kpis kpis-8">
+  <div class="kpi"><div class="label">Papers</div>
+    <div class="value" id="kpi-verified">{{ '{:,}'.format(meta.relevant_papers or meta.verified_papers or 0) }}</div>
+    <div class="foot">verified and on topic</div></div>
+  <div class="kpi pet"><div class="label">PET Specific</div>
     <div class="value" id="kpi-pet">{{ '{:,}'.format(meta.pet_papers or 0) }}</div>
     <div class="foot">PET specifically studied or detected</div></div>
+  <div class="kpi"><div class="label">Human evidence</div>
+    <div class="value" id="kpi-human">{{ '{:,}'.format(meta.human_papers or 0) }}</div>
+    <div class="foot">found in people, or tied to an outcome in them</div></div>
+  <div class="kpi"><div class="label">Polymers</div>
+    <div class="value" id="kpi-polymers">0</div>
+    <div class="foot">of {{ vocab.polymers|length }} in the vocabulary</div></div>
   <div class="kpi"><div class="label">Organ systems</div>
     <div class="value" id="kpi-organs">{{ meta.organ_systems_covered or 0 }}</div>
     <div class="foot">of {{ vocab.organ_systems|length }} in the vocabulary</div></div>
-  <div class="kpi"><div class="label">New this week</div>
-    <div class="value" id="kpi-new">{{ '{:,}'.format(meta.new_this_week or 0) }}</div>
-    <div class="foot">admitted by the latest ingest run</div></div>
+  <div class="kpi"><div class="label">Tissues</div>
+    <div class="value" id="kpi-tissues">0</div>
+    <div class="foot">of {{ (vocab.tissues or [])|length }} named sites, after Liu et al.</div></div>
+  <div class="kpi"><div class="label">Pathways</div>
+    <div class="value" id="kpi-pathways">0</div>
+    <div class="foot">of {{ vocab.pathways|length }} mechanisms</div></div>
+  <div class="kpi"><div class="label">Study types</div>
+    <div class="value" id="kpi-models">0</div>
+    <div class="foot">of {{ (vocab.model_types|length) - 1 }}, from cell-free to cohort</div></div>
 </div>
 
 <section class="card">

@@ -94,7 +94,11 @@
     const c = cell();
     document.getElementById('kpi-verified').textContent = DEBRIS.fmt(c.verified ?? 0);
     document.getElementById('kpi-pet').textContent = DEBRIS.fmt(c.pet ?? 0);
-    document.getElementById('kpi-organs').textContent = DEBRIS.fmt(c.organs ?? 0);
+    document.getElementById('kpi-polymers').textContent = DEBRIS.fmt(c.polymer_count ?? 0);
+    ['organs', 'human', 'tissues', 'pathways', 'models'].forEach((k) => {
+      const el = document.getElementById('kpi-' + k);
+      if (el) el.textContent = DEBRIS.fmt(c[k] ?? 0);
+    });
     paintAll();
   }
 
@@ -523,7 +527,7 @@
     });
     document.getElementById('ladder-legend').innerHTML = [1, 2, 3, 4, 5, 6].map((r) =>
       `<span><i style="background:${rungColour(r)}"></i>${r}: ${DEBRIS.esc(rungLabels[r] || '')}</span>`)
-      .join('') + '<span style="color:var(--pet)">Rung 6 is the rung an enzyme therapeutic can test.</span>';
+      .join('') + '<span style="color:#8A5A14">Rung 6 is the rung an enzyme therapeutic can test.</span>';
     const el = document.getElementById('ladder');
     el.removeAllListeners && el.removeAllListeners('plotly_click');
     el.on && el.on('plotly_click', (ev) => {

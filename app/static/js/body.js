@@ -343,8 +343,7 @@
     title.textContent = node.label;
     const share = node.count ? Math.round((node.pet_count / node.count) * 100) : 0;
     sub.innerHTML = `<span class="mono">${DEBRIS.fmt(node.count)}</span> verified papers · `
-      + `<span class="mono" style="color:var(--pet)">${share}%</span> name PET`
-      + (node.max_rung ? ` · evidence reaches <b>${DEBRIS.esc(DEBRIS.evidence(node.max_rung).toLowerCase())}</b>` : '');
+      + `<span class="mono" style="color:var(--pet)">${share}%</span> name PET`;
 
     const heading = (text) => `<h3 style="font-size:9.5px;letter-spacing:0.3em;`
       + `text-transform:uppercase;color:var(--el-muted);margin:16px 0 7px">${text}</h3>`;

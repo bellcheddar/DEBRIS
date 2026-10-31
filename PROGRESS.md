@@ -98,3 +98,22 @@ Open gates: none.
 - [x] Full corpus tagging with debris_v2: 9,343 tagged, 5,068 relevant, deployed 00:53 (D56)
 - [ ] Phase 3a (running)
 - [ ] Tomorrow: promote placenta, colon, faeces, semen, skin and artery to named body-map sites (owner, D56 note); rank the other `other:` tissues for the owner first
+
+### Body-map promotion: the ranking (2026-10-31, relevant papers per `other:` tissue)
+
+| tissue | papers | pin? |
+|---|---|---|
+| gill | 311 | no: fish and shellfish, counts to respiratory already |
+| hepatopancreas | 169 | no: crustaceans and molluscs, counts to hepatic already |
+| colon | 118 | yes (owner's list) |
+| placenta | 96 | yes (owner's list) |
+| faeces | 86 | yes (owner's list) |
+| skin | 52 | yes (owner's list) |
+| semen | 52 | yes (owner's list) |
+| artery | 47 | yes (owner's list) |
+| eye | 38 | candidate |
+| gonad | 33 | no: mostly invertebrate gonad, counts to reproductive |
+| bone | 28 | candidate |
+| nasal cavity | 19 | candidate |
+
+101 papers' named tissues written as `other:` (ovary, uterus, brain and others) were mapped back first, so these counts are the genuine extras.

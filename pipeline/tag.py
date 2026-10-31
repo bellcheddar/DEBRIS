@@ -132,6 +132,19 @@ def local_model_choice(model: str | None, adapter: str | None,
 
 # ------------------------------------------------------------------------ recipes
 
+def canon_tissues(values: list[str]) -> list[str]:
+    """Map other:<name> back to a named tissue when the name is one (other:ovary is ovary)."""
+    from pipeline import labels_v2 as L
+
+    out = []
+    for v in values:
+        if isinstance(v, str) and v.startswith("other:"):
+            v = L.canonical(v[6:], L.V2["tissues"], L.V2["synonyms"]["tissues"]) or v
+        if v not in out:
+            out.append(v)
+    return out
+
+
 def canon_polymers(values: list[str]) -> list[str]:
     """Map other:<name> back to the vocabulary when the name is a known plastic or synonym."""
     from pipeline import labels_v2 as L
@@ -176,6 +189,7 @@ class Recipe:
                                 if isinstance(v, str) and v.startswith("other:")]
         # other:polystyrene is PS: a named plastic written as "other" is mapped back.
         tag["polymers"] = canon_polymers(tag["polymers"])
+        tag["tissues"] = canon_tissues(tag.get("tissues") or [])
         tag.setdefault("tissues", [])
         candidates = [(f, v) for f in ("polymers", "pathways", "tissues")
                       for v in tag.get(f) or [] if str(v).startswith("other:")]

@@ -306,3 +306,7 @@ def test_the_v2_recipe_keeps_tissues_groups_rare_pathways_and_stores_them(tmp_pa
 
 def test_a_named_plastic_written_as_other_is_mapped_back():
     assert tag.canon_polymers(["other:polystyrene", "PS", "other:abs", "other:pet"]) == ["PS", "other:abs", "PET"]
+
+
+def test_a_named_tissue_written_as_other_is_mapped_back():
+    assert tag.canon_tissues(["other:ovary", "liver", "other:gill"]) == ["ovary", "liver", "other:gill"]

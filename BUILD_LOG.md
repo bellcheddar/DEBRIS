@@ -603,3 +603,7 @@
 - 2026-10-31 02:30 train: /Users/dellboy/Documents/Vibe_Coding/debris/.pixi/envs/default/bin/python /Users/dellboy/Documents/Vibe_Coding/debris/pipeline/mlx_capped.py mlx_lm.lora --model Qwen/Qwen2.5-1.5B-Instruct --train ...
 - 2026-10-31 02:33 qc ui: pass, 10 page renders, 0 serious or critical axe violations, 0 console errors, 0 failed requests
 - 2026-10-31 02:33 app: panel captions removed across the site (owner).
+- 2026-10-31 02:38 normalise: 0 papers' polymers and 101 papers' tissues mapped back from other:
+- 2026-10-31 02:38 aggregate: wrote 5 bundles, 140 kB total; verified 9323, tagged 8983
+- 2026-10-31 02:38 tissues written as other: mapped back (101 papers; tag.canon_tissues for new tags); body-map promotion ranking in PROGRESS.md; phase5-enrich queued behind Phase 3a (controller5).
+- 2026-10-31 02:39 qc ui: pass, 10 page renders, 0 serious or critical axe violations, 0 console errors, 0 failed requests

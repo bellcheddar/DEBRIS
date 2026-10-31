@@ -92,7 +92,7 @@ def run(headed: bool = False) -> dict:
     try:
         with sync_playwright() as p:
             try:
-                browser = p.chromium.launch(headless=not headed)
+                browser = p.chromium.launch(headless=not headed, args=["--disable-gpu"])  # never contend with training on the GPU
             except Exception as exc:
                 c.log(f"qc ui: Chromium unavailable ({type(exc).__name__}), skipped (degraded)")
                 return {"status": "skipped", "reason": "chromium absent"}

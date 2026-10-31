@@ -538,17 +538,21 @@
 
   /* ------------------------------------------------------------------ years */
   function years() {
-    const rows = B.years || [];
+    const rows = B.trend || [];
     if (!rows.length) return;
+    const x = rows.map((r) => r.date);
     DEBRIS.plot('years', [
-      { type: 'scatter', mode: 'lines', name: 'All polymers', x: rows.map((r) => r.year),
-        y: rows.map((r) => r.n), line: { color: T.blue, width: 2.5, shape: 'spline' },
-        fill: 'tozeroy', fillcolor: 'rgba(56,80,152,0.10)' },
-      { type: 'scatter', mode: 'lines', name: 'PET-specific', x: rows.map((r) => r.year),
-        y: rows.map((r) => r.pet_n), line: { color: T.pet, width: 2.5, shape: 'spline' } },
+      { type: 'scatter', mode: 'lines', name: 'All polymers', x, y: rows.map((r) => r.n),
+        line: { color: T.blue, width: 2.5, shape: 'spline' },
+        fill: 'tozeroy', fillcolor: 'rgba(56,80,152,0.10)',
+        hovertemplate: '12 months to %{x|%d %b %Y}: %{y:,} papers<extra></extra>' },
+      { type: 'scatter', mode: 'lines', name: 'PET-specific', x, y: rows.map((r) => r.pet_n),
+        line: { color: T.pet, width: 2.5, shape: 'spline' },
+        hovertemplate: '12 months to %{x|%d %b %Y}: %{y:,} PET papers<extra></extra>' },
     ], { margin: { l: 50, r: 16, t: 8, b: 38 },
-         xaxis: { dtick: 2, gridcolor: 'rgba(0,0,0,0)' },
-         yaxis: { title: { text: 'Papers', font: { size: 11 } } } });
+         xaxis: { type: 'date', dtick: 'M24', tickformat: '%Y', gridcolor: 'rgba(0,0,0,0)',
+                  range: [x[0], x[x.length - 1]] },
+         yaxis: { title: { text: 'Papers per year', font: { size: 11 } } } });
   }
 
   DEBRIS.chips('.organ-chip', (value) => { organ = value; rebuildAll(); });

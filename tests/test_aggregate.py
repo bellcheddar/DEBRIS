@@ -130,3 +130,15 @@ def test_unverified_and_irrelevant_papers_are_excluded(corpus):
         f"""SELECT COUNT(*) FROM papers p LEFT JOIN tags t USING (pmid)
            WHERE p.doi_status='verified' AND (t.relevant IS NULL OR t.relevant=1)
              AND {NOT_CONTROL}""").fetchone()[0]
+
+
+def test_the_year_trend_ends_today_with_no_future_dates():
+    import datetime as dt
+    from pipeline import aggregate
+
+    rows = [{"day": "2024-03-01", "pet": 0}, {"day": "2025-06-15", "pet": 1},
+            {"day": "2025-10-01", "pet": 0}, {"day": "2027-01-01", "pet": 0}]
+    trend = aggregate.trailing_year(rows, today=dt.date(2025, 10, 30))
+    assert trend[-1] == {"date": "2025-10-30", "n": 2, "pet_n": 1}
+    assert all(r["date"] <= "2025-10-30" for r in trend)
+    assert trend[0]["date"] == "2025-02-28"

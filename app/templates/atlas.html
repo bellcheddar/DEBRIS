@@ -18,6 +18,12 @@
 </div>
 
 <section class="card">
+  <h2>Corpus by year</h2>
+  <p class="sub">Verified papers entered in PubMed over the previous twelve months, measured at each month end up to today, with the PET-specific share. A rolling year has no cliff at the end from a year still in progress.</p>
+  <div id="years" class="plot" style="min-height:220px"></div>
+</section>
+
+<section class="card">
   <h2>Polymer field</h2>
   <p class="sub">Four readings of the same papers. Select a polymer in any panel and all four
     follow it: the cluster brings it forward, the packing lifts its chemistry, the matrix lights
@@ -83,12 +89,6 @@
   </div>
   <div id="ladder" class="plot" style="min-height:520px"></div>
   <div class="legend" id="ladder-legend"></div>
-</section>
-
-<section class="card">
-  <h2>Corpus by year</h2>
-  <p class="sub">Verified papers by publication year, {{ meta.first_year or 2004 }} to now, with the PET-specific share.</p>
-  <div id="years" class="plot" style="min-height:220px"></div>
 </section>
 
 {% include "_drawer.html" %}

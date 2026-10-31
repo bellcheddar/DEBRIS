@@ -137,13 +137,11 @@ def atlas_bundle(conn) -> dict:
                 "pairs": polymer_pairs(pmids, polymers),
                 "combos": polymer_combos(pmids, polymers),
             }
-    years = conn.execute(f"""
-        SELECT p.year AS year, COUNT(*) AS n,
-               SUM(CASE WHEN t.pet_specific = 1 THEN 1 ELSE 0 END) AS pet_n
+    entered = conn.execute(f"""
+        SELECT substr(p.edat, 1, 10) AS day, COALESCE(t.pet_specific, 0) AS pet
         FROM papers p LEFT JOIN tags t USING (pmid)
-        WHERE {CORPUS} AND p.year IS NOT NULL
-          AND (t.relevant IS NULL OR t.relevant = 1)
-        GROUP BY p.year ORDER BY p.year""").fetchall()
+        WHERE {CORPUS} AND p.edat IS NOT NULL AND p.edat <> ''
+          AND (t.relevant IS NULL OR t.relevant = 1)""").fetchall()
     return {
         "cells": cells,
         "organ_map": {chip["key"]: chip["organs"] for chip in chips},
@@ -153,8 +151,31 @@ def atlas_bundle(conn) -> dict:
         "polymer_families": V["polymer_families"],
         "ladder": {"all": ladder_rows(conn, False), "pet": ladder_rows(conn, True)},
         "rung_labels": {str(r["rung"]): r["label"] for r in V["rungs"]},
-        "years": [{"year": r["year"], "n": r["n"], "pet_n": r["pet_n"] or 0} for r in years],
+        "trend": trailing_year(entered),
     }
+
+
+def trailing_year(rows, today: dt.date | None = None) -> list[dict]:
+    """Papers entered in PubMed over the trailing twelve months, at each month end and at
+    today. PubMed's entry date is never in the future and the last point is today, so the
+    series has no cliff from a partial year or from issues dated ahead of print."""
+    today = today or dt.date.today()
+    days = sorted((dt.date.fromisoformat(r["day"]), bool(r["pet"])) for r in rows
+                  if r["day"] and dt.date.fromisoformat(r["day"]) <= today)
+    if not days:
+        return []
+    ends, d = [], dt.date(days[0][0].year + 1, days[0][0].month, 1)
+    while d <= today:
+        ends.append(d - dt.timedelta(days=1))
+        d = dt.date(d.year + d.month // 12, d.month % 12 + 1, 1)
+    if not ends or ends[-1] != today:
+        ends.append(today)
+    out = []
+    for end in ends:
+        start = end - dt.timedelta(days=365)
+        window = [pet for day, pet in days if start < day <= end]
+        out.append({"date": end.isoformat(), "n": len(window), "pet_n": sum(window)})
+    return out
 
 
 def body_bundle(conn) -> dict:

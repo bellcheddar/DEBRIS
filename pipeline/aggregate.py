@@ -338,11 +338,36 @@ def pathways_bundle(conn) -> dict:
     OTHER = "_other"
     fold = lambda kind, key: key if key in top[kind] else OTHER
 
-    flows: collections.Counter = collections.Counter()
-    for r in poly_path:
-        flows[("polymer", fold("polymer", r["a"]), "pathway", fold("pathway", r["b"]))] += r["n"]
-    for r in path_dis:
-        flows[("pathway", fold("pathway", r["a"]), "disease", fold("disease", r["b"]))] += r["n"]
+    # Every figure counts distinct papers, as the Papers tab does: a ribbon is the papers
+    # linking its two ends, and a node's figure is the papers carrying that value. Summing
+    # pair counts instead counted a paper once per pairing, so "Other" nodes overstated.
+    values: dict[str, dict] = {"polymer": collections.defaultdict(set),
+                               "pathway": collections.defaultdict(set),
+                               "disease": collections.defaultdict(set)}
+    for kind, table, column, extra in (("polymer", "tag_polymers", "polymer", ""),
+                                       ("pathway", "tag_pathways", "pathway", ""),
+                                       ("disease", "tag_diseases", "disease_category",
+                                        "AND x.disease_category <> 'none'")):
+        for pmid, value in conn.execute(f"""
+                SELECT x.pmid, x.{column} FROM {table} x
+                JOIN tags t ON t.pmid = x.pmid JOIN papers p ON p.pmid = x.pmid
+                WHERE {CORPUS} AND t.relevant = 1 {extra}"""):
+            values[kind][pmid].add(fold(kind, value))
+    pairs: dict[tuple, set] = collections.defaultdict(set)
+    for pmid, polys in values["polymer"].items():
+        for a in polys:
+            for b in values["pathway"].get(pmid, ()):
+                pairs[("polymer", a, "pathway", b)].add(pmid)
+    for pmid, paths in values["pathway"].items():
+        for a in paths:
+            for b in values["disease"].get(pmid, ()):
+                pairs[("pathway", a, "disease", b)].add(pmid)
+    flows = {k: len(v) for k, v in pairs.items()}
+    papers_with = {(kind, key): 0 for kind in values for key in top[kind] | {OTHER}}
+    for kind, by_pmid in values.items():
+        for keys_ in by_pmid.values():
+            for key in keys_:
+                papers_with[(kind, key)] = papers_with.get((kind, key), 0) + 1
 
     # Short names for the flows only: the panel is half the page wide, so the longest
     # disease and mechanism names would run into each other.
@@ -410,7 +435,8 @@ def pathways_bundle(conn) -> dict:
                 WHERE n.ingest_run = ? AND n.kind = 'triple' LIMIT 40""", (run,)):
             new_edges.append(dict(row))
     return {"sankey": {"labels": labels, "keys": keys, "colours": colours,
-                       "kinds": kinds, "links": links},
+                       "kinds": kinds, "links": links,
+                       "papers": [papers_with.get((k, key), 0) for k, key in zip(kinds, keys)]},
             "radar": radar, "axis_labels": [SANKEY_SHORT.get(a) or V["pathway_labels"].get(a, a) for a in axes],
             "axes": axes, "new_edges": new_edges,
             "diseases": counts_by(conn, "tag_diseases", "disease_category", V["disease_labels"], {"none"}),

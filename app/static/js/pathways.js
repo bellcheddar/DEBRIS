@@ -58,7 +58,8 @@
         label: sankey.labels, color: sankey.colours, pad: PAD, thickness: 16,
         x: pos.x, y: pos.y,
         line: { color: '#fff', width: 1 },
-        hovertemplate: '%{label}<br>%{value} papers<extra></extra>',
+        customdata: sankey.papers || [],
+        hovertemplate: '%{label}<br>%{customdata:,} papers<extra></extra>',
       },
       link: {
         source: links.map((l) => l.source),

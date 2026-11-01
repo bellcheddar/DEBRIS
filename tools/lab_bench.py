@@ -9,9 +9,12 @@ config/tuning.toml, which tools/hwprobe.py keeps across re-probes:
   overlap_scoring  true only when scoring beside training slows the training by under a tenth
 
   pixi run python tools/lab_bench.py
+  pixi run python tools/lab_bench.py --model Qwen/Qwen3-4B-Instruct-2507 --layers 36 \
+      --grad-checkpoint --iters 60 --train-only --no-write     # a pair of 4B runs (D70)
 """
 from __future__ import annotations
 
+import argparse
 import json
 import os
 import re
@@ -44,16 +47,22 @@ def caps(jobs: int) -> dict:
     return caps_env(share, round(share / 4, 1))
 
 
+ARGS = argparse.Namespace(model="Qwen/Qwen2.5-1.5B-Instruct", layers=16, grad_checkpoint=False,
+                          iters=ITERS, data=None)
+
+
 def start_training(tag: str, jobs: int) -> subprocess.Popen:
-    data = lab.unit_dir(SOURCE, 0, 42) / "data"
+    data = Path(ARGS.data) if ARGS.data else lab.unit_dir(SOURCE, 0, 42) / "data"
     out = WORK / tag
     out.mkdir(parents=True, exist_ok=True)
     cmd = [sys.executable, str(c.ROOT / "pipeline" / "mlx_capped.py"), "mlx_lm.lora",
-           "--model", "Qwen/Qwen2.5-1.5B-Instruct", "--train", "--data", str(data),
-           "--fine-tune-type", "lora", "--num-layers", "16", "--batch-size", "4",
-           "--iters", str(ITERS), "--learning-rate", "1e-5", "--adapter-path", str(out),
+           "--model", ARGS.model, "--train", "--data", str(data),
+           "--fine-tune-type", "lora", "--num-layers", str(ARGS.layers), "--batch-size", "4",
+           "--iters", str(ARGS.iters), "--learning-rate", "1e-5", "--adapter-path", str(out),
            "--seed", "42", "--save-every", "100000", "--steps-per-eval", "100000",
-           "--steps-per-report", "20", "--val-batches", "1"]
+           "--steps-per-report", "10", "--val-batches", "1", "--mask-prompt"]
+    if ARGS.grad_checkpoint:
+        cmd.append("--grad-checkpoint")
     env = {**os.environ, "PYTHONUNBUFFERED": "1", "TOKENIZERS_PARALLELISM": "false",
            **caps(jobs)}
     return subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
@@ -70,7 +79,7 @@ def start_scoring(jobs: int) -> subprocess.Popen:
 def training_rate(output: str) -> dict:
     """Steady-state iterations a second, leaving out the first report's warm-up."""
     rates = [float(m.group(2)) for m in re.finditer(r"Iter (\d+): Train loss [\d.]+.*?It/sec ([\d.]+)", output)
-             if int(m.group(1)) > 20]
+             if int(m.group(1)) > min(20, ARGS.iters // 3)]
     peak = re.findall(r"Peak mem ([\d.]+) GB", output)
     return {"it_per_s": round(sum(rates) / len(rates), 3) if rates else None,
             "peak_gb": float(peak[-1]) if peak else None,
@@ -110,6 +119,16 @@ def main() -> int:
     if len(sys.argv) > 1 and sys.argv[1] == "--score-worker":
         score_worker()
         return 0
+    ap = argparse.ArgumentParser(description="Measure how many lab jobs the GPU runs at once")
+    ap.add_argument("--model", default=ARGS.model)
+    ap.add_argument("--layers", type=int, default=ARGS.layers)
+    ap.add_argument("--grad-checkpoint", action="store_true")
+    ap.add_argument("--iters", type=int, default=ITERS)
+    ap.add_argument("--data", default=None, help="a lab data dir (default: the Phase 0 baseline's)")
+    ap.add_argument("--train-only", action="store_true", help="skip the scoring arrangements")
+    ap.add_argument("--no-write", action="store_true", help="report only; leave tuning.toml alone")
+    args = ap.parse_args()
+    vars(ARGS).update(vars(args))
     adapters = lab.unit_dir(SOURCE, 0, 42) / "adapters"
     if not (adapters / f"{lab.load_config(SOURCE)['iters']:07d}_adapters.safetensors").exists():
         raise SystemExit("the Phase 0 baseline's fold 0 is not trained yet")
@@ -125,6 +144,17 @@ def main() -> int:
     results["train_pair"] = {"jobs": pair,
                              "it_per_s_total": round(sum(j["it_per_s"] or 0 for j in pair), 3),
                              "failed": any(j["failed"] for j in pair)}
+
+    if args.train_only:
+        alone = results["train_alone"]["it_per_s"] or 0
+        total = results["train_pair"]["it_per_s_total"]
+        c.log(f"lab bench ({args.model}, {args.layers} layers, grad checkpoint "
+              f"{args.grad_checkpoint}): one training {alone} it/s, peak "
+              f"{results['train_alone']['peak_gb']} GB; two together {total} it/s "
+              f"({round(total / alone, 2) if alone else 0}x), peaks "
+              f"{[j['peak_gb'] for j in results['train_pair']['jobs']]} GB")
+        print(json.dumps(results, indent=1))
+        return 0
 
     c.log("lab bench: one scoring alone")
     results["score_alone"] = scoring_rate(finish({"s": start_scoring(2)})["s"])
@@ -143,6 +173,9 @@ def main() -> int:
     jobs = 2 if speedup >= 1.25 and not failures else 1
     overlap = slowdown < 0.10 and not failures
 
+    if args.no_write:
+        print(json.dumps(results, indent=1))
+        return 0
     tuning = tomllib.loads(TUNING.read_text())
     lab_cfg = tuning.setdefault("lab", {})
     lab_cfg.update({"parallel_jobs": jobs, "overlap_scoring": overlap,

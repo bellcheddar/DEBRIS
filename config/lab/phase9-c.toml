@@ -1,0 +1,24 @@
+description = "Phase 9 (D70): one-hour Qwen3-4B runs. Learning rate 3e-5, LoRA on the top 18 of 36 layers, 450 steps, gradient checkpointing, one validation pass. Fold 0 of the cross-validation split, scored on a seeded 240-paper dev sample of the held-out fold at 150, 300 and 450 steps; the test split is not touched"
+model = "Qwen/Qwen3-4B-Instruct-2507"
+num_layers = 18
+learning_rate = 3e-5
+iters = 450
+save_every = 150
+steps_per_eval = 450
+val_batches = 8
+grad_checkpoint = true
+dev_papers = 240
+folds = [0]
+seeds = [42]
+score_iters = [450]
+curve_iters = [150, 300]
+gold = "v2"
+compare_to = "phase9-a"
+
+[switches]
+mask_prompt = true
+model_type_v2 = true
+pathways_v2 = true
+polymers_v2 = true
+tissues = true
+enrich = "relevant"

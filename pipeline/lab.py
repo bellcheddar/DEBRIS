@@ -184,6 +184,10 @@ def load_config(name: str) -> dict:
     cfg.setdefault("save_every", 100)
     cfg.setdefault("learning_rate", 1e-5)
     cfg.setdefault("batch_size", 4)
+    # Validation loss every 100 steps cost the 4B 16 minutes of its 213 (17 passes of 55 s);
+    # short runs set these to one pass at the end (D70).
+    cfg.setdefault("steps_per_eval", 100)
+    cfg.setdefault("val_batches", 16)
     cfg.setdefault("folds", list(range(N_FOLDS)))
     cfg.setdefault("seeds", [42])
     cfg.setdefault("score_iters", [cfg["iters"]])
@@ -250,7 +254,8 @@ def train_unit(cfg: dict, fold: int, seed: int, records: list[dict],
            "--batch-size", str(cfg["batch_size"]), "--iters", str(cfg["iters"]),
            "--learning-rate", str(cfg["learning_rate"]), "--adapter-path", str(adapters),
            "--seed", str(seed), "--save-every", str(cfg["save_every"]),
-           "--steps-per-eval", "100", "--steps-per-report", "20", "--val-batches", "16"]
+           "--steps-per-eval", str(cfg["steps_per_eval"]), "--steps-per-report", "20",
+           "--val-batches", str(cfg["val_batches"])]
     if cfg["switches"].get("mask_prompt"):
         cmd.append("--mask-prompt")
     # Recomputes activations in the backward pass: same gradients, a fraction of the
@@ -316,6 +321,12 @@ def score_unit(cfg: dict, fold: int, seed: int, iteration: int, records: list[di
     held_out = sorted((r for r in records if folds[r["pmid"]] == fold), key=lambda r: r["pmid"])
     # Only the smoke test sets this: a partial fold is never a lab result.
     held_out = held_out[:cfg["score_limit"]] if cfg.get("score_limit") else held_out
+    if cfg.get("dev_papers"):
+        # A seeded sample of the held-out fold, the same papers for every arm that sets the
+        # same number, so dev comparisons stay paired (D70). Never used on a final arm.
+        assert not cfg.get("final"), "dev_papers is for development arms, not the test split"
+        held_out = sorted(random.Random(FOLD_SEED).sample(held_out, min(cfg["dev_papers"], len(held_out))),
+                          key=lambda r: r["pmid"])
     model, tokenizer = load(cfg["model"], adapter_path=str(checkpoint(home / "adapters", iteration)))
     started = time.monotonic()
     texts = generate_batch(model, tokenizer,

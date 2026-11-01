@@ -480,8 +480,14 @@ def main() -> int:
     ap.add_argument("--run-id", default=None)
     ap.add_argument("--recipe", choices=["v1", "v2"], default=None,
                     help="the tag schema the weights were trained on (default: [tag] recipe)")
+    ap.add_argument("--db", default=None,
+                    help="tag a copy of the database (a shadow re-tag, D68); its manifest is kept apart")
     args = ap.parse_args()
 
+    if args.db:
+        c.DB_PATH = Path(args.db).resolve()
+        c.MANIFESTS = c.DB_PATH.parent / f"manifests_{c.DB_PATH.stem}"
+        c.MANIFESTS.mkdir(parents=True, exist_ok=True)
     conn = c.connect()
     tuning = c.tuning()
     rows = pending(conn, args.limit, args.tier, args.retag)
@@ -507,13 +513,17 @@ def main() -> int:
 
     c.log(f"tag: {len(rows)} papers, {tagger.name}, path {path}")
     c.migrate(conn)
-    done = c.manifest_done("tag", key="pmid") if not args.retag else set()
-    todo = [dict(r) for r in rows if r["pmid"] not in done]
     recipe = getattr(tagger, "recipe", Recipe("v1"))
     version = recipe.model_version
     # A named adapter (data/adapters/debris_v3) names the tags it writes.
     if not args.remote and adapter and Path(adapter).name.startswith("debris_v"):
         version = Path(adapter).name
+    if args.retag:
+        # A re-tag resumes too: papers already carrying this model's tags are done.
+        done = {r[0] for r in conn.execute("SELECT pmid FROM tags WHERE model_version = ?", (version,))}
+    else:
+        done = c.manifest_done("tag", key="pmid")
+    todo = [dict(r) for r in rows if r["pmid"] not in done]
     source = version if not args.remote else f"{version}_space"
     started = time.monotonic()
     counts = {"tagged": 0, "queued": 0, "failed": 0}

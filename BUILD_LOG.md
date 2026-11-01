@@ -729,3 +729,7 @@
 - 2026-11-01 01:45 qc ui: pass, 14 page renders, 0 serious or critical axe violations, 0 console errors, 0 failed requests
 - 2026-11-01 01:46 qc ui: pass, 14 page renders, 0 serious or critical axe violations, 0 console errors, 0 failed requests
 - 2026-11-01 01:46 D67: 7B 0.906 and Qwen3-4B 0.915 vs debris_v2 0.902; neither clear, debris_v2 kept. UI QC now covers Polymers and PET Watch (scope chip check); PET rise-head contrast fixed; phone labels shortened.
+- 2026-11-01 08:14 tag: 8 papers, Qwen/Qwen3-4B-Instruct-2507+data/adapters/debris_v3, path studio_mlx
+- 2026-11-01 08:14 tag: done 8 tagged, 2 queued for review, 0 failed, 0.2 min, path studio_mlx
+- 2026-11-01 08:14 tag: 9346 papers, Qwen/Qwen3-4B-Instruct-2507+data/adapters/debris_v3, path studio_mlx
+- 2026-11-01 08:15 D68 (owner): shadow re-tag with Qwen3-4B as debris_v3 into data/debris_v3_shadow.sqlite started; tag.py gains --db and a resumable --retag; tools/compare_tags.py reports what a switch would change.

@@ -25,7 +25,8 @@ from pipeline import common as c
 
 QC = c.ROOT / "qc"
 VIEWPORTS = {"desktop": (1440, 900), "mobile": (390, 844)}
-PAGES = [("atlas", "/"), ("body", "/body"), ("pathways", "/pathways"), ("papers", "/papers"),
+PAGES = [("atlas", "/"), ("body", "/body"), ("pathways", "/pathways"), ("polymers", "/polymers"),
+         ("pet", "/pet"), ("papers", "/papers"),
          ("about", "/about")]
 AXE_CDN = "https://cdnjs.cloudflare.com/ajax/libs/axe-core/4.10.2/axe.min.js"
 IGNORED_CONSOLE = ("favicon",)
@@ -154,31 +155,33 @@ def run(headed: bool = False) -> dict:
 
 
 def click_throughs(page, base: str) -> list[dict]:
-    """Atlas region -> Papers, Body node -> panel."""
+    """Atlas region -> Papers, Body node -> panel, PET Watch scope chip -> PET-specific links."""
     out = []
     page.goto(base + "/", wait_until="networkidle")
-    region = page.locator("svg .venn-region").first
+    region = page.locator("#kpilink-pet")
     if region.count():
         try:
             region.scroll_into_view_if_needed(timeout=5000)
             region.click(timeout=5000)
             page.wait_for_load_state("networkidle")
-            out.append({"from": "atlas region", "url": page.url,
+            out.append({"from": "atlas kpi", "url": page.url,
                         "ok": "/papers" in page.url})
         except Exception as exc:
-            out.append({"from": "atlas region", "ok": False,
+            out.append({"from": "atlas kpi", "ok": False,
                         "note": f"{type(exc).__name__}: {str(exc).splitlines()[0]}"})
     else:
-        out.append({"from": "atlas region", "ok": False, "note": "no clickable region"})
+        out.append({"from": "atlas kpi", "ok": False, "note": "no clickable region"})
     page.goto(base + "/body", wait_until="networkidle")
-    node = page.locator("svg .node").first
+    node = page.locator("svg [role=button]:visible").first
     if node.count():
         try:
             node.scroll_into_view_if_needed(timeout=5000)
             node.click(timeout=5000)
         except Exception as exc:
-            return out + [{"from": "body node", "ok": False,
-                           "note": f"{type(exc).__name__}: {str(exc).splitlines()[0]}"}]
+            out.append({"from": "body node", "ok": False,
+                        "note": f"{type(exc).__name__}: {str(exc).splitlines()[0]}"})
+            node = None
+    if node is not None and node.count():
         page.wait_for_timeout(600)
         title = page.locator("#panel-title")
         body = page.locator("#panel-body")
@@ -186,8 +189,20 @@ def click_throughs(page, base: str) -> list[dict]:
                     "title": title.inner_text() if title.count() else None,
                     "ok": bool(title.count() and title.inner_text().strip()
                                and body.count() and body.inner_text().strip())})
-    else:
+    elif node is not None:
         out.append({"from": "body node", "ok": False, "note": "no organ node"})
+    page.goto(base + "/pet", wait_until="networkidle")
+    try:
+        page.locator('.pet-chip[data-value="specific"]').click(timeout=5000)
+        page.wait_for_timeout(800)
+        href = page.locator('[data-open="tissues"]').get_attribute("href") or ""
+        out.append({"from": "pet scope chip", "href": href,
+                    "scope": page.locator("#pet-scope").inner_text(),
+                    "ok": "pet=1" in href and page.locator(
+                        '.pet-chip[data-value="specific"]').get_attribute("aria-pressed") == "true"})
+    except Exception as exc:
+        out.append({"from": "pet scope chip", "ok": False,
+                    "note": f"{type(exc).__name__}: {str(exc).splitlines()[0]}"})
     return out
 
 

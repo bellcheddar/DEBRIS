@@ -530,5 +530,5 @@ a.kpi:hover,a.kpi:focus-visible{border-color:var(--el-blue);background:var(--el-
 .readlist a:hover{color:var(--el-blue);text-decoration:underline}
 .readlist .src{color:var(--el-muted);font-size:11px;white-space:nowrap}
 .risehead{padding:2px 14px 0;font-size:12px;color:var(--el-muted)}
-.risehead b{color:var(--pet)}
+.risehead b{color:#9A6416}   /* the PET tone darkened to AA contrast for text */
 .petscope{font-size:11px;color:var(--el-muted);margin-left:6px}

@@ -1,11 +1,11 @@
 {
-  "base": "http://127.0.0.1:55959",
+  "base": "http://127.0.0.1:62531",
   "pages": [
     {
       "page": "atlas",
       "viewport": "desktop",
       "status": 200,
-      "seconds": 0.594,
+      "seconds": 0.581,
       "screenshot": "qc/atlas-desktop.png",
       "violations": 0,
       "serious_or_critical": 0
@@ -14,7 +14,7 @@
       "page": "body",
       "viewport": "desktop",
       "status": 200,
-      "seconds": 0.6,
+      "seconds": 0.584,
       "screenshot": "qc/body-desktop.png",
       "violations": 0,
       "serious_or_critical": 0
@@ -23,8 +23,26 @@
       "page": "pathways",
       "viewport": "desktop",
       "status": 200,
-      "seconds": 0.542,
+      "seconds": 0.538,
       "screenshot": "qc/pathways-desktop.png",
+      "violations": 0,
+      "serious_or_critical": 0
+    },
+    {
+      "page": "polymers",
+      "viewport": "desktop",
+      "status": 200,
+      "seconds": 0.537,
+      "screenshot": "qc/polymers-desktop.png",
+      "violations": 0,
+      "serious_or_critical": 0
+    },
+    {
+      "page": "pet",
+      "viewport": "desktop",
+      "status": 200,
+      "seconds": 0.625,
+      "screenshot": "qc/pet-desktop.png",
       "violations": 0,
       "serious_or_critical": 0
     },
@@ -32,7 +50,7 @@
       "page": "papers",
       "viewport": "desktop",
       "status": 200,
-      "seconds": 0.832,
+      "seconds": 0.59,
       "screenshot": "qc/papers-desktop.png",
       "violations": 0,
       "serious_or_critical": 0
@@ -41,7 +59,7 @@
       "page": "about",
       "viewport": "desktop",
       "status": 200,
-      "seconds": 0.616,
+      "seconds": 0.544,
       "screenshot": "qc/about-desktop.png",
       "violations": 0,
       "serious_or_critical": 0
@@ -50,7 +68,7 @@
       "page": "atlas",
       "viewport": "mobile",
       "status": 200,
-      "seconds": 0.582,
+      "seconds": 0.569,
       "screenshot": "qc/atlas-mobile.png",
       "violations": 0,
       "serious_or_critical": 0
@@ -59,7 +77,7 @@
       "page": "body",
       "viewport": "mobile",
       "status": 200,
-      "seconds": 0.581,
+      "seconds": 0.574,
       "screenshot": "qc/body-mobile.png",
       "violations": 0,
       "serious_or_critical": 0
@@ -68,8 +86,26 @@
       "page": "pathways",
       "viewport": "mobile",
       "status": 200,
-      "seconds": 0.609,
+      "seconds": 0.543,
       "screenshot": "qc/pathways-mobile.png",
+      "violations": 0,
+      "serious_or_critical": 0
+    },
+    {
+      "page": "polymers",
+      "viewport": "mobile",
+      "status": 200,
+      "seconds": 0.539,
+      "screenshot": "qc/polymers-mobile.png",
+      "violations": 0,
+      "serious_or_critical": 0
+    },
+    {
+      "page": "pet",
+      "viewport": "mobile",
+      "status": 200,
+      "seconds": 0.619,
+      "screenshot": "qc/pet-mobile.png",
       "violations": 0,
       "serious_or_critical": 0
     },
@@ -77,7 +113,7 @@
       "page": "papers",
       "viewport": "mobile",
       "status": 200,
-      "seconds": 0.615,
+      "seconds": 0.587,
       "screenshot": "qc/papers-mobile.png",
       "violations": 0,
       "serious_or_critical": 0
@@ -86,7 +122,7 @@
       "page": "about",
       "viewport": "mobile",
       "status": 200,
-      "seconds": 0.563,
+      "seconds": 0.542,
       "screenshot": "qc/about-mobile.png",
       "violations": 0,
       "serious_or_critical": 0
@@ -97,14 +133,20 @@
   "network": [],
   "interactions": [
     {
-      "from": "atlas region",
-      "ok": false,
-      "note": "no clickable region"
+      "from": "atlas kpi",
+      "url": "http://127.0.0.1:62531/papers?pet=1",
+      "ok": true
     },
     {
       "from": "body node",
-      "ok": false,
-      "note": "TimeoutError: Locator.click: Timeout 5000ms exceeded."
+      "title": "Brain",
+      "ok": true
+    },
+    {
+      "from": "pet scope chip",
+      "href": "/papers?polymers=PET&pet=1",
+      "scope": "274 papers name PET; 191 of them are PET specific",
+      "ok": true
     }
   ],
   "status": "pass",

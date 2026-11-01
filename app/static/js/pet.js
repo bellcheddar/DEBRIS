@@ -11,8 +11,10 @@
   const PET_PALE = '#E9C99A';
   // On a phone the category labels get less room so the bars keep some.
   const narrow = () => window.matchMedia('(max-width:600px)').matches;
-  const left = (wide) => (narrow() ? Math.min(wide, 118) : wide);
+  const left = (wide) => (narrow() ? Math.min(wide, 128) : wide);
   const tick = () => ({ size: narrow() ? 9.5 : 11 });
+  // Phones shorten long labels rather than letting the plot clip them; hovers keep the full name.
+  const short = (t) => (narrow() && t.length > 20 ? `${t.slice(0, 19)}…` : t);
 
   const setCard = DEBRIS.papersButton(document.getElementById('card-pet'));
   // Every link carries the scope: PET named, plus the PET-specific flag in that scope.
@@ -32,9 +34,10 @@
     let pick = null;
     const draw = () => {
       DEBRIS.plot(id, [{
-        type: 'bar', orientation: 'h', x: r.map((d) => d.n), y: r.map((d) => d.label),
+        type: 'bar', orientation: 'h', x: r.map((d) => d.n), y: r.map((d) => short(d.label)),
+        customdata: r.map((d) => d.label),
         marker: { color: r.map((d) => (!pick || d.key === pick ? PET : PET_PALE)) },
-        hovertemplate: '%{y}: %{x:,} PET papers<extra></extra>',
+        hovertemplate: '%{customdata}: %{x:,} PET papers<extra></extra>',
       }], { margin: { l: left(170), r: 18, t: 8, b: 34 }, hovermode: 'closest',
         yaxis: { automargin: !narrow(), gridcolor: 'rgba(0,0,0,0)', tickfont: tick() },
         xaxis: { title: { text: scope === 'specific' ? 'PET-specific papers' : 'Papers naming PET', font: { size: 11 } } } });
@@ -59,9 +62,9 @@
     const draw = () => {
       DEBRIS.plot('pet-evidence', [{
         type: 'bar', orientation: 'h', x: keys.map((k) => (B.rungs || {})[k] || 0),
-        y: keys.map((k) => LAB[k] || k),
+        y: keys.map((k) => short(LAB[k] || k)), customdata: keys.map((k) => LAB[k] || k),
         marker: { color: keys.map((k) => (pick && k !== pick ? PET_PALE : strong.has(k) ? T.ink : PET)) },
-        hovertemplate: '%{y}: %{x:,} PET papers<extra></extra>',
+        hovertemplate: '%{customdata}: %{x:,} PET papers<extra></extra>',
       }], { margin: { l: left(190), r: 18, t: 8, b: 30 }, hovermode: 'closest',
         yaxis: { automargin: !narrow(), gridcolor: 'rgba(0,0,0,0)', tickfont: tick() } });
       if (el.removeAllListeners) el.removeAllListeners('plotly_click');
@@ -98,7 +101,7 @@
     const rows = (B.rising || []).slice().reverse();
     const el = document.getElementById('pet-rising');
     if (!rows.length) { el.innerHTML = '<p class="empty">No data yet.</p>'; return; }
-    const y = rows.map((r) => (narrow() ? r.label
+    const y = rows.map((r) => (narrow() ? short(r.label)
       : `${r.label} <span style="color:${T.muted}">${r.kind === 'tissue' ? 'tissue' : 'mechanism'}</span>`));
     let pick = null;   // {key, kind}
     const draw = () => {

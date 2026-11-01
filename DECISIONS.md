@@ -1256,3 +1256,8 @@ So the Phase 3a loss was not the labels. Comparing errors, phase3-a turned relev
 - **PET Watch:** keeps "naming PET" as the default scope (mixed-polymer tissue studies are still PET evidence) and adds chips to switch every panel to the PET-specific subset, with the two counts shown beside them. Links in the specific scope add `pet=1`.
 - **Alternatives:** switch PET Watch to PET specific only (loses the 83 mixed studies); add PET wherever the flag was set (wrong for 12 of 14).
 - **Reverse:** remove the rule at the end of `schema.validate` and restore the backup's `tags`/`tag_polymers` rows.
+
+## D67 Overnight results: neither the 7B nor the Qwen3-4B clears the swap rule; debris_v2 stays (2026-11-01)
+- **Qwen3-4B-Instruct-2507** (phase7-qwen3-4b): floor mean 0.915 vs 0.902, +0.013 [-0.007, +0.035]; pathways +0.082 [+0.029, +0.131] real; organ systems +0.043 [-0.001, +0.089]; study type -0.023 n.s. Best arm so far, not clear overall.
+- **Qwen2.5-7B with gradient checkpointing** (phase6-7b): floor mean 0.906, +0.004 [-0.023, +0.032]; organ systems literal +0.052 real; polymers -0.017 n.s. Peak memory 29.7 GB, 0.07 it/s, about 6 h.
+- **Decision:** controller rule applied (lower bound must be above 0): production stays debris_v2. Adopting the 4B for its pathways gain is open to the owner.

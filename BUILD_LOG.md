@@ -711,3 +711,21 @@
 - 2026-10-31 17:54 aggregate: wrote 7 bundles, 213 kB total; verified 9323, tagged 8983
 - 2026-10-31 17:54 PET Watch tab (owner): papers naming PET by tissue, mechanism and evidence with the dose-response and reversibility reading list, and a Rising panel folding in trends (past 12 months against the 12 before, within PET).
 - 2026-10-31T23:22Z D66: pet_specific made a subset of naming PET (13 flags cleared, 1 polymer added); PET Watch gains Naming PET / PET specific scope chips.
+- 2026-10-31 19:43 lab phase7-qwen3-4b f0 s42: trained in 213.5 min
+- 2026-10-31 19:47 lab phase7-qwen3-4b f0 s42 @ 1600: relevant_f1 0.9829, polymers_f1 0.9535, organ_systems_f1 0.8374, pathways_f1 0.88, rungs_exact 0.858, rungs_within_one 0.9012, model_type_accuracy 0.9091, valid_json 1.0, 1.37 s/paper
+- 2026-10-31 19:47 lab phase7-qwen3-4b: done
+- 2026-10-31 19:47 lab report: 24 experiments written to LAB_REPORT.md
+- 2026-10-31 19:48 lab report: 24 experiments written to LAB_REPORT.md
+- 2026-10-31 19:48 lab phase6-7b f0 s42: training 1600 iterations
+- 2026-10-31 19:48 train: /Users/dellboy/Documents/Vibe_Coding/debris/.pixi/envs/default/bin/python /Users/dellboy/Documents/Vibe_Coding/debris/pipeline/mlx_capped.py mlx_lm.lora --model Qwen/Qwen2.5-7B-Instruct --train ...
+- 2026-10-31 19:48 wandb live: phase6-7b f0 s42 -> https://forge.coreweave.com/wandb/dellboy-none/debris/runs/52d8ffd6
+- 2026-11-01 01:35 lab phase6-7b f0 s42: trained in 407.7 min
+- 2026-11-01 01:41 lab phase6-7b f0 s42 @ 1600: relevant_f1 0.977, polymers_f1 0.9249, organ_systems_f1 0.8288, pathways_f1 0.8338, rungs_exact 0.8642, rungs_within_one 0.9136, model_type_accuracy 0.9091, valid_json 1.0, 2.09 s/paper
+- 2026-11-01 01:41 lab phase6-7b: done
+- 2026-11-01 01:41 lab report: 25 experiments written to LAB_REPORT.md
+- 2026-11-01 01:43 qc ui: playwright not installed, screenshots skipped (degraded)
+- 2026-11-01 01:44 qc ui: fail, 14 page renders, 2 serious or critical axe violations, 0 console errors, 0 failed requests
+- 2026-11-01 01:45 qc ui: pass, 14 page renders, 0 serious or critical axe violations, 0 console errors, 0 failed requests
+- 2026-11-01 01:45 qc ui: pass, 14 page renders, 0 serious or critical axe violations, 0 console errors, 0 failed requests
+- 2026-11-01 01:46 qc ui: pass, 14 page renders, 0 serious or critical axe violations, 0 console errors, 0 failed requests
+- 2026-11-01 01:46 D67: 7B 0.906 and Qwen3-4B 0.915 vs debris_v2 0.902; neither clear, debris_v2 kept. UI QC now covers Polymers and PET Watch (scope chip check); PET rise-head contrast fixed; phone labels shortened.

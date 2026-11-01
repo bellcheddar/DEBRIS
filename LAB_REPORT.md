@@ -1,6 +1,6 @@
 # DEBRIS lab report
 
-Generated 2026-10-31T19:13:17+00:00 by `pixi run lab report` from the predictions under `data/lab/`. The plan and the rules for adopting an idea are in LAB_PLAN.md. Every interval is a 95 % paired bootstrap over papers (2000 resamples); `floor_mean` is the plain mean of the eight floor metrics.
+Generated 2026-11-01T06:41:39+00:00 by `pixi run lab report` from the predictions under `data/lab/`. The plan and the rules for adopting an idea are in LAB_PLAN.md. Every interval is a 95 % paired bootstrap over papers (2000 resamples); `floor_mean` is the plain mean of the eight floor metrics.
 
 ## Experiments
 
@@ -27,6 +27,8 @@ Generated 2026-10-31T19:13:17+00:00 by `pixi run lab report` from the prediction
 | phase5-enrich-b | round27 | 162 | 0.971 ±0.025 | 0.935 ±0.049 | 0.779 ±0.050 | 0.807 ±0.038 | 0.852 ±0.052 | 0.920 ±0.040 | 0.898 ±0.065 | 1.000 ±0.000 | 0.895 ±0.023 |
 | phase5-recipe | round24 | 162 | 0.971 ±0.025 | 0.942 ±0.043 | 0.795 ±0.049 | 0.798 ±0.040 | 0.870 ±0.052 | 0.907 ±0.046 | 0.932 ±0.052 | 1.000 ±0.000 | 0.902 ±0.022 |
 | phase5-round04 |  | 162 | 0.971 ±0.026 | 0.733 ±0.099 | 0.804 ±0.044 | 0.494 ±0.057 | 0.852 ±0.052 | 0.870 ±0.052 | 0.795 ±0.086 | 1.000 ±0.000 | 0.815 ±0.026 |
+| phase6-7b | round28 | 162 | 0.977 ±0.022 | 0.925 ±0.058 | 0.829 ±0.043 | 0.834 ±0.042 | 0.864 ±0.052 | 0.914 ±0.040 | 0.909 ±0.060 | 1.000 ±0.000 | 0.906 ±0.023 |
+| phase7-qwen3-4b | round30 | 162 | 0.983 ±0.020 | 0.953 ±0.051 | 0.837 ±0.044 | 0.880 ±0.037 | 0.858 ±0.053 | 0.901 ±0.046 | 0.909 ±0.062 | 1.000 ±0.000 | 0.915 ±0.021 |
 | transfer-a | round17 | 480 | 0.947 ±0.019 | 0.816 ±0.048 | 0.739 ±0.032 | 0.651 ±0.041 | 0.815 ±0.035 | 0.863 ±0.030 | 0.865 ±0.040 | 1.000 ±0.000 | 0.837 ±0.017 |
 | transfer-base | round16 | 480 | 0.943 ±0.020 | 0.823 ±0.045 | 0.699 ±0.037 | 0.607 ±0.040 | 0.806 ±0.035 | 0.856 ±0.030 | 0.850 ±0.043 | 1.000 ±0.000 | 0.823 ±0.017 |
 
@@ -78,6 +80,8 @@ Effect of each experiment over its reference. **real** marks an interval that ex
 | phase3-b vs phase2-all | +0.009 [-0.003, +0.022] | +0.023 [+0.004, +0.041] **real** | +0.007 [-0.012, +0.025] | +0.005 [-0.012, +0.023] | +0.022 [-0.001, +0.043] | +0.038 [+0.017, +0.057] **real** | -0.004 [-0.026, +0.016] | +0.002 [+0.000, +0.005] | +0.013 [+0.002, +0.022] **real** |
 | phase5-enrich-b vs phase5-recipe | -0.000 [-0.017, +0.016] | -0.007 [-0.036, +0.014] | -0.016 [-0.058, +0.025] | +0.010 [-0.036, +0.050] | -0.019 [-0.062, +0.025] | +0.012 [-0.025, +0.049] | -0.034 [-0.077, +0.000] | +0.000 [+0.000, +0.000] | -0.007 [-0.022, +0.009] |
 | phase5-recipe vs phase5-round04 | +0.000 [-0.027, +0.028] | +0.209 [+0.119, +0.306] **real** | -0.010 [-0.066, +0.044] | +0.304 [+0.235, +0.375] **real** | +0.019 [-0.037, +0.074] | +0.037 [-0.012, +0.093] | +0.136 [+0.060, +0.220] **real** | +0.000 [+0.000, +0.000] | +0.087 [+0.058, +0.117] **real** |
+| phase6-7b vs phase5-recipe | +0.006 [-0.019, +0.031] | -0.017 [-0.070, +0.022] | +0.034 [-0.021, +0.092] | +0.036 [-0.016, +0.084] | -0.006 [-0.068, +0.049] | +0.006 [-0.049, +0.062] | -0.023 [-0.083, +0.035] | +0.000 [+0.000, +0.000] | +0.004 [-0.023, +0.032] |
+| phase7-qwen3-4b vs phase5-recipe | +0.011 [+0.000, +0.028] | +0.012 [-0.025, +0.048] | +0.043 [-0.001, +0.089] | +0.082 [+0.029, +0.131] **real** | -0.012 [-0.074, +0.043] | -0.006 [-0.056, +0.043] | -0.023 [-0.079, +0.034] | +0.000 [+0.000, +0.000] | +0.013 [-0.007, +0.035] |
 | transfer-a vs transfer-base | +0.004 [-0.011, +0.021] | -0.007 [-0.034, +0.019] | +0.040 [+0.011, +0.073] **real** | +0.044 [+0.008, +0.079] **real** | +0.008 [-0.013, +0.029] | +0.006 [-0.015, +0.027] | +0.015 [-0.015, +0.045] | +0.000 [+0.000, +0.000] | +0.014 [+0.000, +0.027] **real** |
 
 ## Phase 1: main effects
@@ -109,6 +113,8 @@ Scored against v2 gold. Organ systems three ways: tagged directly (the floor met
 | phase5-enrich-b | 0.871 | 0.871 | 0.935 | 0.553 | 0.752 | 0.917 |
 | phase5-recipe | 0.806 | 0.818 | 0.942 | 0.554 | 0.767 | 0.894 |
 | phase5-round04 | 0.000 | 0.000 | 0.733 | 0.000 | 0.804 | 0.000 |
+| phase6-7b | 0.865 | 0.865 | 0.925 | 0.569 | 0.786 | 0.946 |
+| phase7-qwen3-4b | 0.850 | 0.850 | 0.953 | 0.547 | 0.798 | 0.922 |
 
 | comparison | tissues_f1 | tissues_parent_f1 | polymers_parent_f1 | organ_systems_derived_f1 | organ_systems_union_f1 | organ_systems_literal_f1 |
 |---|---|---|---|---|---|---|
@@ -122,6 +128,8 @@ Scored against v2 gold. Organ systems three ways: tagged directly (the floor met
 | phase3-b vs phase2-all | +0.018 [-0.006, +0.042] | +0.017 [-0.007, +0.041] | +0.022 [+0.003, +0.040] **real** | +0.007 [-0.007, +0.022] | -0.001 [-0.017, +0.016] | +0.008 [-0.014, +0.029] |
 | phase5-enrich-b vs phase5-recipe | +0.065 [+0.026, +0.111] **real** | +0.054 [+0.009, +0.105] **real** | -0.007 [-0.036, +0.014] | -0.001 [-0.025, +0.020] | -0.016 [-0.050, +0.016] | +0.023 [-0.002, +0.054] |
 | phase5-recipe vs phase5-round04 | +0.806 [+0.737, +0.862] **real** | +0.818 [+0.748, +0.877] **real** | +0.209 [+0.119, +0.306] **real** | +0.554 [+0.477, +0.629] **real** | -0.037 [-0.095, +0.021] | +0.894 [+0.838, +0.938] **real** |
+| phase6-7b vs phase5-recipe | +0.059 [-0.007, +0.133] | +0.047 [-0.022, +0.124] | -0.017 [-0.070, +0.022] | +0.015 [-0.020, +0.049] | +0.019 [-0.026, +0.067] | +0.052 [+0.013, +0.097] **real** |
+| phase7-qwen3-4b vs phase5-recipe | +0.044 [-0.016, +0.099] | +0.032 [-0.028, +0.090] | +0.012 [-0.025, +0.048] | -0.007 [-0.036, +0.019] | +0.030 [-0.006, +0.066] | +0.027 [-0.010, +0.069] |
 
 ### Per tissue, encoder-mbert
 
@@ -281,6 +289,52 @@ Scored against v2 gold. Organ systems three ways: tagged directly (the floor met
 | skeletal_muscle | 2 | 1.0 |
 | adipose | 0 | None |
 | testis | 2 | 0.5 |
+| ovary | 2 | 1.0 |
+| uterus | 1 | 1.0 |
+
+### Per tissue, phase6-7b
+
+| tissue | support | recall |
+|---|---|---|
+| blood | 14 | 0.929 |
+| adrenal | 0 | None |
+| thyroid | 1 | 1.0 |
+| pancreas | 1 | 1.0 |
+| frontal_lobe | 0 | None |
+| medulla_oblongata | 0 | None |
+| kidney | 5 | 0.6 |
+| liver | 15 | 1.0 |
+| lung | 5 | 1.0 |
+| spleen | 1 | 1.0 |
+| stomach | 2 | 1.0 |
+| small_intestine | 4 | 0.5 |
+| myocardium | 6 | 1.0 |
+| skeletal_muscle | 2 | 1.0 |
+| adipose | 0 | None |
+| testis | 2 | 1.0 |
+| ovary | 2 | 1.0 |
+| uterus | 1 | 1.0 |
+
+### Per tissue, phase7-qwen3-4b
+
+| tissue | support | recall |
+|---|---|---|
+| blood | 14 | 0.786 |
+| adrenal | 0 | None |
+| thyroid | 1 | 0.0 |
+| pancreas | 1 | 1.0 |
+| frontal_lobe | 0 | None |
+| medulla_oblongata | 0 | None |
+| kidney | 5 | 0.8 |
+| liver | 15 | 1.0 |
+| lung | 5 | 1.0 |
+| spleen | 1 | 1.0 |
+| stomach | 2 | 1.0 |
+| small_intestine | 4 | 0.75 |
+| myocardium | 6 | 0.833 |
+| skeletal_muscle | 2 | 0.5 |
+| adipose | 0 | None |
+| testis | 2 | 1.0 |
 | ovary | 2 | 1.0 |
 | uterus | 1 | 1.0 |
 

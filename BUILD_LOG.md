@@ -738,3 +738,14 @@
 - 2026-11-01 09:44 qc ui: pass, 16 page renders, 0 serious or critical axe violations, 0 console errors, 0 failed requests
 - 2026-11-01 09:45 qc ui: pass, 16 page renders, 0 serious or critical axe violations, 0 console errors, 0 failed requests
 - 2026-11-01 09:45 D69: DEBRIS LLM tab (fill the sentence) live with counted leads and paper lists; model readings to be written after the shadow re-tag frees the GPU. UI QC 16 renders pass.
+- 2026-11-01 09:46 ask: 298 questions with papers, 8 to write
+- 2026-11-01 09:46 ask: kept 4, dropped 4 by the checks, 0.2 min with Qwen/Qwen3-4B-Instruct-2507
+- 2026-11-01 09:46 ask: 298 questions with papers, 4 to write
+- 2026-11-01 09:46 ask: kept 2, dropped 2 by the checks, 0.1 min with Qwen/Qwen3-4B-Instruct-2507
+- 2026-11-01 09:46 ask: 298 questions with papers, 290 to write
+- 2026-11-01 09:49 ask: kept 234, dropped 56 by the checks, 2.7 min with Qwen/Qwen3-4B-Instruct-2507
+- 2026-11-01 09:50 ask: 298 questions with papers, 58 to write
+- 2026-11-01 09:51 ask: kept 10, dropped 48 by the checks, 1.0 min with Qwen/Qwen3-4B-Instruct-2507
+- 2026-11-01 09:51 aggregate: wrote 8 bundles, 494 kB total; verified 9323, tagged 8983
+- 2026-11-01 09:51 qc ui: pass, 16 page renders, 0 serious or critical axe violations, 0 console errors, 0 failed requests
+- 2026-11-01 09:51 D69: DEBRIS LLM readings written by Qwen3-4B-Instruct-2507: 250 of 298 kept after the checks and one sampled retry (causal wording about people, stray figures, length); the rest show the counted lead and papers.

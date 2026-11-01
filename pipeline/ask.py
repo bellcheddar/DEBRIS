@@ -65,12 +65,19 @@ SYSTEM = (
     "to three papers. Say what those papers report, in British English, for a general reader. "
     "Use only facts in the summaries. Do not give advice. Never say that plastics cause, lead "
     "to or are responsible for disease or harm in people: findings in people are associations "
-    "or detections. Findings in animals or cells must be described as being in animals or "
-    "cells. No em dashes, no lists, no headings, no citations, at most 60 words.")
+    "or detections. Findings in animals or cells must say they were in animals or cells, "
+    "naming the animal or cell type. No em dashes, no lists, no headings, no citations, at most 60 words.")
 
 # A reading is dropped (and the tab shows the lead alone) when it matches any of these.
 CAUSAL = re.compile(r"\b(caus(e|es|ed|ing)|leads? to|led to|responsible for|results? in|"
                     r"triggers?|proves?|proven)\b", re.I)
+# Causal wording is allowed only in a sentence about animals or cells that names no people.
+PEOPLE = re.compile(r"\b(human|humans|people|person|patients?|wom[ae]n|m[ae]n|child(ren)?|"
+                    r"infants?|adults?|participants?|population|pregnan\w*|mothers?)\b", re.I)
+MODELS = re.compile(r"\b(mice|mouse|rats?|murine|rodents?|zebrafish|fish|larvae|animals?|"
+                    r"drosophila|flies|worms?|c\. elegans|cells?|cell lines?|organoids?|"
+                    r"in vitro|in vivo|tissue cultures?|piglets?|pigs?|rabbits?|chickens?|"
+                    r"oysters?|mussels?|shrimp|daphnia)\b", re.I)
 BANNED = re.compile(r"\b(groundbreaking|revolutionary|paradigm-shifting|game-changing|"
                     r"cutting-edge|unprecedented|seamless|leverag(e|es|ing)|delve)\b|—", re.I)
 
@@ -141,12 +148,20 @@ def input_hash(text: str) -> str:
     return hashlib.sha1(text.encode()).hexdigest()[:16]
 
 
-def check(reading: str, source: str) -> tuple[str | None, str]:
+def causal_ok(sentence: str, rung: int) -> bool:
+    """Findings in people (rungs 1 and 2) are never causal; elsewhere a causal verb is
+    allowed in a sentence about animals or cells that names no people."""
+    if not CAUSAL.search(sentence):
+        return True
+    return rung >= 3 and bool(MODELS.search(sentence)) and not PEOPLE.search(sentence)
+
+
+def check(reading: str, source: str, rung: int = 1) -> tuple[str | None, str]:
     """The reading as it will be shown, or None with the reason it was dropped."""
     text = re.sub(r"\s+", " ", reading or "").strip().strip('"')
     if not text:
         return None, "empty"
-    if CAUSAL.search(text):
+    if not all(causal_ok(x, rung) for x in re.split(r"(?<=[.!?])\s+", text)):
         return None, "causal wording"
     if BANNED.search(text):
         return None, "house style"
@@ -170,7 +185,7 @@ def jobs(conn) -> list[dict]:
                 if not papers:
                     continue
                 text = prompt(po, pl, q, papers)
-                out.append({"key": key(po["k"], pl["k"], q["r"]), "prompt": text,
+                out.append({"key": key(po["k"], pl["k"], q["r"]), "prompt": text, "rung": q["r"],
                             "hash": input_hash(text)})
     return out
 
@@ -179,23 +194,27 @@ def stored(conn) -> dict[str, dict]:
     return {r["key"]: dict(r) for r in conn.execute("SELECT * FROM ask_answers")}
 
 
-def write(conn, todo: list[dict], cfg: dict) -> dict:
-    """Write readings with the local mlx model, in batches, keeping only those that pass."""
+def write(conn, todo: list[dict], cfg: dict, loaded=None, temperature: float = 0.0) -> dict:
+    """Write readings with the local mlx model, in batches, keeping only those that pass.
+    Returns the counts and the jobs whose reading was dropped."""
     from mlx_lm import load
 
     from pipeline.tag import generate_many
 
-    model, tokenizer = load(cfg["model"])
-    counts = {"kept": 0, "dropped": 0}
+    model, tokenizer = loaded or load(cfg["model"])
+    counts = {"kept": 0, "dropped": 0, "retry": [], "loaded": (model, tokenizer)}
     batch = int(cfg.get("batch_size", 16))
     for start in range(0, len(todo), batch):
         chunk = todo[start:start + batch]
         answers = generate_many(model, tokenizer, [j["prompt"] for j in chunk], batch,
-                                system=SYSTEM)
+                                system=SYSTEM, temperature=temperature,
+                                seed=7 if temperature else None)
         with conn:
             for job, (raw, _) in zip(chunk, answers):
-                text, why = check(raw, job["prompt"])
+                text, why = check(raw, job["prompt"], job["rung"])
                 counts["kept" if text else "dropped"] += 1
+                if not text:
+                    counts["retry"].append(job)
                 conn.execute("""INSERT INTO ask_answers (key, input_hash, reading, status, model, written_at)
                                 VALUES (?,?,?,?,?,?) ON CONFLICT(key) DO UPDATE SET
                                 input_hash=excluded.input_hash, reading=excluded.reading,
@@ -262,6 +281,11 @@ def main() -> int:
         return 0
     started = time.monotonic()
     counts = write(conn, todo, cfg)
+    if counts["retry"]:
+        # One sampled second try for the readings the checks dropped.
+        again = write(conn, counts["retry"], cfg, counts["loaded"], temperature=0.7)
+        counts["kept"] += again["kept"]
+        counts["dropped"] = again["dropped"]
     c.log(f"ask: kept {counts['kept']}, dropped {counts['dropped']} by the checks, "
           f"{(time.monotonic() - started) / 60:.1f} min with {cfg['model']}")
     return 0

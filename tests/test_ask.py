@@ -24,6 +24,11 @@ def test_check_drops_causal_wording_stray_figures_and_house_style():
     assert ask.check("Found in 40 samples.", src)[1].startswith("figures not in the input")
     assert ask.check("A seamless finding.", src)[1] == "house style"
     assert ask.check("", src) == (None, "empty")
+    # In animals or cells a causal verb may stand, but never beside people.
+    assert ask.check("PS caused liver damage in mice.", src, 3)[0]
+    assert ask.check("PS caused liver damage in mice and in people.", src, 3)[1] == "causal wording"
+    assert ask.check("PS caused liver damage in mice.", src, 1)[1] == "causal wording"
+    assert ask.check("PS caused liver damage.", src, 4)[1] == "causal wording"
 
 
 def test_bundle_shows_a_reading_only_for_the_papers_it_was_written_from(corpus):

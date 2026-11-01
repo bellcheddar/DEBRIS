@@ -76,6 +76,9 @@ def main() -> None:
     stage("tag", [mode, "--run-id", run])
     stage("novelty", ["--run", run, "--reset"])
     stage("drift", ["--run", run])
+    # DEBRIS LLM readings (D69): written on the Studio; on the droplet (path A) the tab
+    # keeps last week's readings where the papers behind them are unchanged.
+    stage("ask", ["--local"] if mode == "--local" else ["--check"])
     stage("aggregate", [])
 
     row = conn.execute("""SELECT harvested, verified, tagged, queued, novel

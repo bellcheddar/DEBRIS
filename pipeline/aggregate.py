@@ -12,6 +12,7 @@ import argparse
 import collections
 import datetime as dt
 
+from pipeline import ask
 from pipeline import common as c
 from pipeline import novelty
 
@@ -688,6 +689,7 @@ def main() -> None:
     }
     bundles["polymers"] = polymers_bundle(conn, bundles["atlas"]["trend"])
     bundles["pet"] = pet_bundle(conn)
+    bundles["ask"] = ask.bundle(conn)
     total = 0
     for name, payload in bundles.items():
         path = c.STATIC_DATA / f"{name}.json"

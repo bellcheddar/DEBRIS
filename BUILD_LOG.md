@@ -733,3 +733,8 @@
 - 2026-11-01 08:14 tag: done 8 tagged, 2 queued for review, 0 failed, 0.2 min, path studio_mlx
 - 2026-11-01 08:14 tag: 9346 papers, Qwen/Qwen3-4B-Instruct-2507+data/adapters/debris_v3, path studio_mlx
 - 2026-11-01 08:15 D68 (owner): shadow re-tag with Qwen3-4B as debris_v3 into data/debris_v3_shadow.sqlite started; tag.py gains --db and a resumable --retag; tools/compare_tags.py reports what a switch would change.
+- 2026-11-01 09:43 aggregate: wrote 8 bundles, 412 kB total; verified 9323, tagged 8983
+- 2026-11-01 09:44 qc ui: pass, 16 page renders, 0 serious or critical axe violations, 0 console errors, 0 failed requests
+- 2026-11-01 09:44 qc ui: pass, 16 page renders, 0 serious or critical axe violations, 0 console errors, 0 failed requests
+- 2026-11-01 09:45 qc ui: pass, 16 page renders, 0 serious or critical axe violations, 0 console errors, 0 failed requests
+- 2026-11-01 09:45 D69: DEBRIS LLM tab (fill the sentence) live with counted leads and paper lists; model readings to be written after the shadow re-tag frees the GPU. UI QC 16 renders pass.

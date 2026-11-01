@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% block title %}DEBRIS LLM{% endblock %}
+
+{% block content %}
+<section class="card" id="card-ask">
+  <h2>DEBRIS LLM</h2>
+  <p class="asksentence" id="ask-sentence">What do we know about
+    <span class="nw"><select id="ask-po" aria-label="Plastic"></select> and</span>
+    <span class="nw"><select id="ask-pl" aria-label="Part of the body"></select>:</span>
+    <span class="nw"><select id="ask-q" aria-label="Question"></select>?</span></p>
+  <div class="askanswer" id="ask-answer" aria-live="polite"><p class="empty">Loading the answers…</p></div>
+</section>
+
+{% include "_drawer.html" %}
+{% endblock %}
+
+{% block scripts %}
+<script>window.ASK_URL = "{{ url_for('static', filename='data/ask.json') }}?v={{ asset_version('data/ask.json') }}";</script>
+<script src="{{ url_for('static', filename='js/ask.js') }}?v={{ asset_version('js/ask.js') }}"></script>
+{% endblock %}

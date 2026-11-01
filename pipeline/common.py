@@ -337,6 +337,8 @@ CREATE TABLE IF NOT EXISTS gold_set (key TEXT PRIMARY KEY, pmid TEXT, expect TEX
 CREATE INDEX IF NOT EXISTS idx_papers_status    ON papers(status);
 CREATE INDEX IF NOT EXISTS idx_papers_doistatus ON papers(doi_status);
 CREATE INDEX IF NOT EXISTS idx_papers_year      ON papers(year);
+CREATE TABLE IF NOT EXISTS ask_answers (key TEXT PRIMARY KEY, input_hash TEXT,
+  reading TEXT, status TEXT, model TEXT, written_at TEXT);
 CREATE INDEX IF NOT EXISTS idx_papers_edat      ON papers(edat);
 CREATE INDEX IF NOT EXISTS idx_papers_run       ON papers(ingest_run);
 CREATE INDEX IF NOT EXISTS idx_tags_relevant    ON tags(relevant);

@@ -33,3 +33,9 @@ recipe = "v2"
 model = "Qwen/Qwen2.5-3B-Instruct"
 adapter = "data/adapters/debris_v2"
 recipe_status = "owner chose option C 2026-10-30, adopted recipe from Phase 5 (D55)"
+
+[ask]
+# DEBRIS LLM (D69): the model that writes the one or two sentences under each answer,
+# offline after the weekly run. A general instruct model, not the tagger's adapter.
+model = "Qwen/Qwen3-4B-Instruct-2507"
+batch_size = 16

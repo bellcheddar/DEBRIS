@@ -32,7 +32,8 @@ app.config["JSON_SORT_KEYS"] = False
 
 TABS = [("01", "Atlas", "/"), ("02", "Body", "/body"),
         ("03", "Pathways", "/pathways"), ("04", "Polymers", "/polymers"),
-        ("05", "PET Watch", "/pet"), ("06", "Papers", "/papers"), ("07", "About", "/about")]
+        ("05", "PET Watch", "/pet"), ("06", "DEBRIS LLM", "/ask"), ("07", "Papers", "/papers"),
+        ("08", "About", "/about")]
 
 
 # ----------------------------------------------------------------------- plumbing
@@ -175,6 +176,12 @@ def polymers():
 @app.route("/pet")
 def pet():
     return render_template("pet.html", active="/pet", bundle=load_bundle("pet"))
+
+
+@app.route("/ask")
+def ask():
+    # The answers are a 200 kB bundle, fetched by the page rather than inlined (D69).
+    return render_template("ask.html", active="/ask")
 
 
 @app.route("/papers")

@@ -815,3 +815,10 @@
 - 2026-11-01 18:29 lab report: 30 experiments written to LAB_REPORT.md
 - 2026-11-01 18:31 Phase 9 done: phase9-final floor mean 0.912 on test; vs debris_v2 +0.010 [-0.011, +0.032], vs 3.5-hour 4B -0.003; debris_v2 stays (D70)
 - 2026-11-01 18:31 lab report: 30 experiments written to LAB_REPORT.md
+- 2026-11-01 18:33 qc ui: pass, 16 page renders, 0 serious or critical axe violations, 0 console errors, 0 failed requests
+- 2026-11-01 18:35 ask: 298 questions with papers, 14 to write
+- 2026-11-01 18:35 ask: kept 2, dropped 12 by the checks, 0.2 min with Qwen/Qwen3-4B-Instruct-2507
+- 2026-11-01 18:36 ask: 298 questions with papers, 60 to write
+- 2026-11-01 18:37 ask: kept 22, dropped 38 by the checks, 1.0 min with Qwen/Qwen3-4B-Instruct-2507
+- 2026-11-01 18:37 ask: effect-in-people check (D71); 260 of 298 readings kept
+- 2026-11-01 18:38 aggregate: wrote 8 bundles, 503 kB total; verified 9336, tagged 8996

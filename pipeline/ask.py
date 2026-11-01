@@ -78,6 +78,18 @@ MODELS = re.compile(r"\b(mice|mouse|rats?|murine|rodents?|zebrafish|fish|larvae|
                     r"drosophila|flies|worms?|c\. elegans|cells?|cell lines?|organoids?|"
                     r"in vitro|in vivo|tissue cultures?|piglets?|pigs?|rabbits?|chickens?|"
                     r"oysters?|mussels?|shrimp|daphnia)\b", re.I)
+# An effect verb about people is allowed only as an association. People named as the source
+# of a lab model ("human lung cells", "a human-relevant mixture", "adult male rats") are a
+# model, not people, so those phrases are set aside before the check.
+EFFECT = re.compile(r"\b(impair\w*|induc\w*|damag\w*|disrupt\w*|compromis\w*|reduc(e|es|ed|ing)|"
+                    r"increas(e|es|ed|ing)|decreas(e|es|ed|ing)|lower(s|ed|ing)?|rais(e|es|ed|ing)|"
+                    r"alter(s|ed|ing)?|worsen\w*|promot(e|es|ed|ing)|elevat(e|es|ed|ing)|"
+                    r"exacerbat\w*|harm(s|ed|ing)?|affect(s|ed|ing)?|activat\w*|inhibit\w*|"
+                    r"suppress\w*|enhanc\w*|provok\w*|drives?|drove|driven)\b", re.I)
+ASSOC = re.compile(r"\b(associat\w*|linked|links?|correlat\w*|related to|relationship)\b", re.I)
+AS_MODEL = re.compile(r"\bhuman-relevant\b|\b(human|adult|young|male|female|pregnant)\s+((?!and\b|or\b|with\b|in\b)[\w-]+\s+){0,3}?"
+                      r"(cells?|cell lines?|cell cultures?|cultures?|cocultures?|organoids?|"
+                      r"spheroids?|albumin|proteins?|mice|mouse|rats?|animals?|models?)\b", re.I)
 BANNED = re.compile(r"\b(groundbreaking|revolutionary|paradigm-shifting|game-changing|"
                     r"cutting-edge|unprecedented|seamless|leverag(e|es|ing)|delve)\b|—", re.I)
 
@@ -156,13 +168,23 @@ def causal_ok(sentence: str, rung: int) -> bool:
     return rung >= 3 and bool(MODELS.search(sentence)) and not PEOPLE.search(sentence)
 
 
+def people_ok(sentence: str) -> bool:
+    """An effect on people is said only as an association: "impaired sperm function in
+    humans" is dropped, "was associated with reduced sperm quality in men" is kept."""
+    bare = AS_MODEL.sub(" ", sentence)
+    return not (PEOPLE.search(bare) and EFFECT.search(bare) and not ASSOC.search(bare))
+
+
 def check(reading: str, source: str, rung: int = 1) -> tuple[str | None, str]:
     """The reading as it will be shown, or None with the reason it was dropped."""
     text = re.sub(r"\s+", " ", reading or "").strip().strip('"')
     if not text:
         return None, "empty"
-    if not all(causal_ok(x, rung) for x in re.split(r"(?<=[.!?])\s+", text)):
+    sentences = re.split(r"(?<=[.!?])\s+", text)
+    if not all(causal_ok(x, rung) for x in sentences):
         return None, "causal wording"
+    if not all(people_ok(x) for x in sentences):
+        return None, "effect in people"
     if BANNED.search(text):
         return None, "house style"
     if len(text.split()) > MAX_WORDS:
@@ -194,6 +216,22 @@ def stored(conn) -> dict[str, dict]:
     return {r["key"]: dict(r) for r in conn.execute("SELECT * FROM ask_answers")}
 
 
+FEEDBACK = {
+    "causal wording": "it said plastics cause an effect; say what was found, and say any effect "
+                      "was in animals or cells, naming them",
+    "effect in people": "it stated an effect in people or human tissue; say findings in people "
+                        "only as detections or associations (\"was associated with\"), and put "
+                        "any effect in its own sentence about the animals or cells it was seen in",
+    "too long": "it was over 60 words",
+    "house style": "it used a banned word or an em dash",
+}
+
+
+def redraft(prompt: str, draft: str, why: str) -> str:
+    reason = FEEDBACK.get(why, "it gave figures that are not in the summaries; give none")
+    return f"{prompt}\n\nA first draft was rejected because {reason}:\n{draft.strip()}\n\nWrite it again."
+
+
 def write(conn, todo: list[dict], cfg: dict, loaded=None, temperature: float = 0.0) -> dict:
     """Write readings with the local mlx model, in batches, keeping only those that pass.
     Returns the counts and the jobs whose reading was dropped."""
@@ -206,7 +244,9 @@ def write(conn, todo: list[dict], cfg: dict, loaded=None, temperature: float = 0
     batch = int(cfg.get("batch_size", 16))
     for start in range(0, len(todo), batch):
         chunk = todo[start:start + batch]
-        answers = generate_many(model, tokenizer, [j["prompt"] for j in chunk], batch,
+        # A retry carries its rejected draft and the reason (`ask`); the checks always run
+        # against the original prompt, so a draft's own figures never count as input.
+        answers = generate_many(model, tokenizer, [j.get("ask") or j["prompt"] for j in chunk], batch,
                                 system=SYSTEM, temperature=temperature,
                                 seed=7 if temperature else None)
         with conn:
@@ -214,7 +254,7 @@ def write(conn, todo: list[dict], cfg: dict, loaded=None, temperature: float = 0
                 text, why = check(raw, job["prompt"], job["rung"])
                 counts["kept" if text else "dropped"] += 1
                 if not text:
-                    counts["retry"].append(job)
+                    counts["retry"].append({**job, "ask": redraft(job["prompt"], raw, why)})
                 conn.execute("""INSERT INTO ask_answers (key, input_hash, reading, status, model, written_at)
                                 VALUES (?,?,?,?,?,?) ON CONFLICT(key) DO UPDATE SET
                                 input_hash=excluded.input_hash, reading=excluded.reading,
@@ -266,7 +306,12 @@ def main() -> int:
     conn = c.connect()
     have = stored(conn)
     all_jobs = jobs(conn)
-    todo = [j for j in all_jobs if args.force or have.get(j["key"], {}).get("input_hash") != j["hash"]]
+    # A stored reading is rewritten when its papers change, or when it no longer passes the
+    # checks (they have tightened since it was written).
+    todo = [j for j in all_jobs if args.force
+            or have.get(j["key"], {}).get("input_hash") != j["hash"]
+            or (have[j["key"]]["status"] == "ok"
+                and check(have[j["key"]]["reading"], j["prompt"], j["rung"])[0] is None)]
     if args.limit:
         todo = todo[:args.limit]
     c.log(f"ask: {len(all_jobs)} questions with papers, {len(todo)} to write")
@@ -282,7 +327,7 @@ def main() -> int:
     started = time.monotonic()
     counts = write(conn, todo, cfg)
     if counts["retry"]:
-        # One sampled second try for the readings the checks dropped.
+        # One second try for the readings the checks dropped, told why the draft failed.
         again = write(conn, counts["retry"], cfg, counts["loaded"], temperature=0.7)
         counts["kept"] += again["kept"]
         counts["dropped"] = again["dropped"]

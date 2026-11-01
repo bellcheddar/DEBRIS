@@ -29,6 +29,13 @@ def test_check_drops_causal_wording_stray_figures_and_house_style():
     assert ask.check("PS caused liver damage in mice and in people.", src, 3)[1] == "causal wording"
     assert ask.check("PS caused liver damage in mice.", src, 1)[1] == "causal wording"
     assert ask.check("PS caused liver damage.", src, 4)[1] == "causal wording"
+    # An effect in people stands only as an association; human cells are a lab model.
+    assert ask.check("PET impaired erectile function in human tissue and rats.", src, 4)[1] == "effect in people"
+    assert ask.check("PS reduced sperm function in humans.", src, 4)[1] == "effect in people"
+    assert ask.check("Levels were associated with reduced ovarian reserve in women.", src)[0]
+    assert ask.check("In human brain organoids, PS induced DNA damage.", src, 4)[0]
+    assert ask.check("Low-dose PS reduced sperm motility in adult male rats.", src, 5)[0]
+    assert ask.check("A human-relevant mixture promoted tumours in the mouse colon.", src, 5)[0]
 
 
 def test_bundle_shows_a_reading_only_for_the_papers_it_was_written_from(corpus):

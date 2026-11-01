@@ -1,0 +1,22 @@
+description = "Phase 9 confirmation (D70): phase9-a at 450 steps (best dev floor mean 0.9122), learning rate 3e-05, top 36 layers, on the full training set, scored once on the frozen test split against the 3.5-hour Qwen3-4B run"
+model = "Qwen/Qwen3-4B-Instruct-2507"
+num_layers = 36
+learning_rate = 3e-05
+iters = 450
+save_every = 450
+steps_per_eval = 450
+val_batches = 8
+grad_checkpoint = false
+folds = [0]
+seeds = [42]
+gold = "v2"
+final = true
+compare_to = "phase7-qwen3-4b"
+
+[switches]
+mask_prompt = true
+model_type_v2 = true
+pathways_v2 = true
+polymers_v2 = true
+tissues = true
+enrich = "relevant"

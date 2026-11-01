@@ -749,3 +749,69 @@
 - 2026-11-01 09:51 aggregate: wrote 8 bundles, 494 kB total; verified 9323, tagged 8983
 - 2026-11-01 09:51 qc ui: pass, 16 page renders, 0 serious or critical axe violations, 0 console errors, 0 failed requests
 - 2026-11-01 09:51 D69: DEBRIS LLM readings written by Qwen3-4B-Instruct-2507: 250 of 298 kept after the checks and one sampled retry (causal wording about people, stray figures, length); the rest show the counted lead and papers.
+- 2026-11-01 12:11 tag: done 9338 tagged, 1276 queued for review, 0 failed, 236.8 min, path studio_mlx
+- 2026-11-01 12:11 lab bench: one training alone
+- 2026-11-01 12:21 lab bench: two trainings together
+- 2026-11-01 12:40 lab bench (Qwen/Qwen3-4B-Instruct-2507, 36 layers, grad checkpoint True): one training 0.107 it/s, peak 20.103 GB; two together 0.108 it/s (1.01x), peaks [20.103, 20.103] GB
+- 2026-11-01 12:40 lab bench: one training alone
+- 2026-11-01 12:46 lab bench: two trainings together
+- 2026-11-01 12:57 lab bench (Qwen/Qwen3-4B-Instruct-2507, 18 layers, grad checkpoint True): one training 0.155 it/s, peak 19.402 GB; two together 0.195 it/s (1.26x), peaks [19.402, 19.402] GB
+- 2026-11-01 12:58 lab phase9-a f0 s42: training 450 iterations
+- 2026-11-01 12:58 train: /Users/dellboy/Documents/Vibe_Coding/debris/.pixi/envs/default/bin/python /Users/dellboy/Documents/Vibe_Coding/debris/pipeline/mlx_capped.py mlx_lm.lora --model Qwen/Qwen3-4B-Instruct-2507 --train ...
+- 2026-11-01 13:54 lab phase9-a f0 s42: trained in 55.8 min
+- 2026-11-01 13:59 lab phase9-a f0 s42 @ 150: relevant_f1 0.9562, polymers_f1 0.9109, organ_systems_f1 0.7216, pathways_f1 0.8327, rungs_exact 0.8458, rungs_within_one 0.9, model_type_accuracy 0.9398, valid_json 1.0, 1.34 s/paper
+- 2026-11-01 14:05 lab phase9-a f0 s42 @ 300: relevant_f1 0.9851, polymers_f1 0.9485, organ_systems_f1 0.8184, pathways_f1 0.8124, rungs_exact 0.8583, rungs_within_one 0.9, model_type_accuracy 0.9398, valid_json 1.0, 1.36 s/paper
+- 2026-11-01 14:10 lab phase9-a f0 s42 @ 450: relevant_f1 0.9813, polymers_f1 0.9655, organ_systems_f1 0.8256, pathways_f1 0.8522, rungs_exact 0.8375, rungs_within_one 0.8958, model_type_accuracy 0.9398, valid_json 1.0, 1.33 s/paper
+- 2026-11-01 14:10 lab phase9-a: done
+- 2026-11-01 14:10 lab phase9-b f0 s42: training 450 iterations
+- 2026-11-01 14:10 train: /Users/dellboy/Documents/Vibe_Coding/debris/.pixi/envs/default/bin/python /Users/dellboy/Documents/Vibe_Coding/debris/pipeline/mlx_capped.py mlx_lm.lora --model Qwen/Qwen3-4B-Instruct-2507 --train ...
+- 2026-11-01 15:11 lab phase9-b f0 s42: trained in 60.7 min
+- 2026-11-01 15:17 lab phase9-b f0 s42 @ 150: relevant_f1 0.6987, polymers_f1 0.621, organ_systems_f1 0.475, pathways_f1 0.4949, rungs_exact 0.5167, rungs_within_one 0.7417, model_type_accuracy 0.4887, valid_json 0.7583, 1.38 s/paper
+- 2026-11-01 15:22 lab phase9-b f0 s42 @ 300: relevant_f1 0.9462, polymers_f1 0.9043, organ_systems_f1 0.7718, pathways_f1 0.8162, rungs_exact 0.8208, rungs_within_one 0.8833, model_type_accuracy 0.9098, valid_json 1.0, 1.31 s/paper
+- 2026-11-01 15:27 lab phase9-b f0 s42 @ 450: relevant_f1 0.981, polymers_f1 0.9441, organ_systems_f1 0.8041, pathways_f1 0.8529, rungs_exact 0.8708, rungs_within_one 0.9125, model_type_accuracy 0.9248, valid_json 1.0, 1.34 s/paper
+- 2026-11-01 15:27 lab phase9-b: done
+- 2026-11-01 15:27 lab phase9-c f0 s42: training 450 iterations
+- 2026-11-01 15:27 train: /Users/dellboy/Documents/Vibe_Coding/debris/.pixi/envs/default/bin/python /Users/dellboy/Documents/Vibe_Coding/debris/pipeline/mlx_capped.py mlx_lm.lora --model Qwen/Qwen3-4B-Instruct-2507 --train ...
+- 2026-11-01 16:13 lab phase9-c f0 s42: trained in 45.6 min
+- 2026-11-01 16:18 lab phase9-c f0 s42 @ 150: relevant_f1 0.9438, polymers_f1 0.9017, organ_systems_f1 0.7359, pathways_f1 0.7553, rungs_exact 0.7875, rungs_within_one 0.8542, model_type_accuracy 0.8947, valid_json 1.0, 1.18 s/paper
+- 2026-11-01 16:23 lab phase9-c f0 s42 @ 300: relevant_f1 0.9362, polymers_f1 0.8803, organ_systems_f1 0.7342, pathways_f1 0.7897, rungs_exact 0.8042, rungs_within_one 0.8542, model_type_accuracy 0.9098, valid_json 1.0, 1.19 s/paper
+- 2026-11-01 16:25 weekly: start weekly-20261101T212508Z, looking back 10 days
+- 2026-11-01 16:25 weekly: harvest --since 10 --run-id weekly-20261101T212508Z
+- 2026-11-01 16:25 harvest: start weekly-20261101T212508Z (no NCBI key, 3 req/s)
+- 2026-11-01 16:25 harvest: strategy A (MeSH) returned 9 PMIDs (last 10 days)
+- 2026-11-01 16:25 harvest: strategy B (text word) returned 72 PMIDs (last 10 days)
+- 2026-11-01 16:25 harvest: union 74 PMIDs, 74 to fetch
+- 2026-11-01 16:25 harvest: done weekly-20261101T212508Z: fetched 74, new 13, updated 61, table {'failed:invalid JSON after one re-prompt': 3, 'harvested': 396, 'no_abstract': 404, 'tagged': 9343}
+- 2026-11-01 16:25 weekly: verify_doi --run weekly-20261101T212508Z
+- 2026-11-01 16:25 verify: 13 papers to check at Crossref (polite pool, 10 req/s)
+- 2026-11-01 16:25 verify: funnel {'missing': 248, 'title_mismatch': 134, 'unresolved': 66, 'verified': 9698}, retracted 13, verified total 9698
+- 2026-11-01 16:25 weekly: tag --local --run-id weekly-20261101T212508Z
+- 2026-11-01 16:25 tag: 16 papers, Qwen/Qwen2.5-3B-Instruct+data/adapters/debris_v2, path studio_mlx
+- 2026-11-01 16:25 tag: done 13 tagged, 4 queued for review, 0 failed, 0.6 min, path studio_mlx
+- 2026-11-01 16:25 weekly: novelty --run weekly-20261101T212508Z --reset
+- 2026-11-01 16:25 novelty: weekly-20261101T212508Z: 1 papers with a new combination, 1 events (1 triples), 0 new maximum rungs
+- 2026-11-01 16:25 weekly: drift --run weekly-20261101T212508Z
+- 2026-11-01 16:25 drift: weekly-20261101T212508Z by self-consistency (no ANTHROPIC_API_KEY): {'self_consistency_mean': 0.962, 'self_consistency_p10': 0.857, 'review_rate': 0.146}, review rate 14.7%
+- 2026-11-01 16:25 weekly: ask --local
+- 2026-11-01 16:25 ask: 298 questions with papers, 0 to write
+- 2026-11-01 16:25 weekly: aggregate 
+- 2026-11-01 16:26 aggregate: wrote 8 bundles, 499 kB total; verified 9336, tagged 8996
+- 2026-11-01 16:26 weekly: done weekly-20261101T212508Z: {'harvested': 74, 'verified': 13, 'tagged': 13, 'queued': 4, 'novel': 1}
+- 2026-11-01 16:27 lab phase9-c f0 s42 @ 450: relevant_f1 0.9509, polymers_f1 0.9116, organ_systems_f1 0.7368, pathways_f1 0.821, rungs_exact 0.8333, rungs_within_one 0.8833, model_type_accuracy 0.9023, valid_json 1.0, 1.22 s/paper
+- 2026-11-01 16:28 lab phase9-c: done
+- 2026-11-01 16:28 lab phase9-d f0 s42: training 450 iterations
+- 2026-11-01 16:28 train: /Users/dellboy/Documents/Vibe_Coding/debris/.pixi/envs/default/bin/python /Users/dellboy/Documents/Vibe_Coding/debris/pipeline/mlx_capped.py mlx_lm.lora --model Qwen/Qwen3-4B-Instruct-2507 --train ...
+- 2026-11-01 17:15 lab phase9-d f0 s42: trained in 47.2 min
+- 2026-11-01 17:20 lab phase9-d f0 s42 @ 150: relevant_f1 0.7368, polymers_f1 0.6731, organ_systems_f1 0.5882, pathways_f1 0.7111, rungs_exact 0.55, rungs_within_one 0.675, model_type_accuracy 0.8947, valid_json 0.9958, 1.22 s/paper
+- 2026-11-01 17:25 lab phase9-d f0 s42 @ 300: relevant_f1 0.9268, polymers_f1 0.875, organ_systems_f1 0.7294, pathways_f1 0.7928, rungs_exact 0.8125, rungs_within_one 0.8708, model_type_accuracy 0.9323, valid_json 1.0, 1.17 s/paper
+- 2026-11-01 17:30 lab phase9-d f0 s42 @ 450: relevant_f1 0.9658, polymers_f1 0.931, organ_systems_f1 0.7742, pathways_f1 0.8319, rungs_exact 0.8458, rungs_within_one 0.9042, model_type_accuracy 0.9098, valid_json 1.0, 1.18 s/paper
+- 2026-11-01 17:30 lab phase9-d: done
+- 2026-11-01 17:30 lab report: 29 experiments written to LAB_REPORT.md
+- 2026-11-01 17:30 lab phase9-final f0 s42: training 450 iterations
+- 2026-11-01 17:30 train: /Users/dellboy/Documents/Vibe_Coding/debris/.pixi/envs/default/bin/python /Users/dellboy/Documents/Vibe_Coding/debris/pipeline/mlx_capped.py mlx_lm.lora --model Qwen/Qwen3-4B-Instruct-2507 --train ...
+- 2026-11-01 18:25 lab phase9-final f0 s42: trained in 54.8 min
+- 2026-11-01 18:29 lab phase9-final f0 s42 @ 450: relevant_f1 0.9827, polymers_f1 0.9467, organ_systems_f1 0.8444, pathways_f1 0.8499, rungs_exact 0.858, rungs_within_one 0.9074, model_type_accuracy 0.9091, valid_json 1.0, 1.37 s/paper
+- 2026-11-01 18:29 lab phase9-final: done
+- 2026-11-01 18:29 lab report: 30 experiments written to LAB_REPORT.md
+- 2026-11-01 18:31 Phase 9 done: phase9-final floor mean 0.912 on test; vs debris_v2 +0.010 [-0.011, +0.032], vs 3.5-hour 4B -0.003; debris_v2 stays (D70)
+- 2026-11-01 18:31 lab report: 30 experiments written to LAB_REPORT.md

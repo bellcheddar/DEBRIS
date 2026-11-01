@@ -534,8 +534,8 @@ a.kpi:hover,a.kpi:focus-visible{border-color:var(--el-blue);background:var(--el-
 .petscope{font-size:11px;color:var(--el-muted);margin-left:6px}
 /* 06 DEBRIS LLM (D69): the question is a sentence with three drop-downs in it. */
 .asksentence{font-size:17px;font-weight:600;line-height:2;color:var(--el-ink);margin:6px 0 18px;max-width:46em;text-wrap:balance}
-/* One line on desktop; the longest choices need about 1,050px, so narrower screens wrap. */
-@media (min-width:1100px){.asksentence{white-space:nowrap;max-width:none;text-wrap:nowrap}}
+/* One line on desktop; the longest choices need about 1,090px of text, so narrower screens wrap. */
+@media (min-width:1240px){.asksentence{white-space:nowrap;max-width:none;text-wrap:nowrap}}
 .asksentence select{appearance:none;-webkit-appearance:none;border:0;border-bottom:2px solid var(--pet);border-radius:0;
   background-color:var(--el-tint);color:var(--el-ink);font:inherit;font-weight:700;padding:0 28px 0 8px;margin:0 2px;cursor:pointer;max-width:calc(100% - 1.2em);
   background-image:linear-gradient(45deg,transparent 50%,var(--pet) 50%),linear-gradient(135deg,var(--pet) 50%,transparent 50%);

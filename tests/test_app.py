@@ -5,7 +5,7 @@ import json
 
 
 def test_all_pages_200(client):
-    for route in ("/", "/body", "/pathways", "/polymers", "/pet", "/ask", "/papers", "/about"):
+    for route in ("/", "/body", "/pathways", "/polymers", "/pet", "/llm", "/papers", "/about"):
         assert client.get(route).status_code == 200, route
 
 
@@ -92,14 +92,14 @@ def test_pages_name_the_elora_design_system(client):
 def test_no_causal_claim_in_the_copy(client):
     """Spec 0.1: app copy never claims human causation."""
     banned = ("causes", "caused by", "proves", "proven to cause", "leads to disease")
-    for route in ("/", "/body", "/pathways", "/polymers", "/pet", "/ask", "/papers", "/about"):
+    for route in ("/", "/body", "/pathways", "/polymers", "/pet", "/llm", "/papers", "/about"):
         text = client.get(route).get_data(as_text=True).lower()
         for phrase in banned:
             assert phrase not in text, f"{phrase!r} appears on {route}"
 
 
 def test_no_em_dashes_in_the_copy(client):
-    for route in ("/", "/body", "/pathways", "/polymers", "/pet", "/ask", "/papers", "/about"):
+    for route in ("/", "/body", "/pathways", "/polymers", "/pet", "/llm", "/papers", "/about"):
         assert "—" not in client.get(route).get_data(as_text=True), route
 
 
@@ -156,3 +156,10 @@ def test_size_class_and_year_filters(client):
     assert client.get("/api/papers?size_class=nosuch&size=1").get_json()["last_row"] == 0
     assert client.get("/api/papers?year=1800&size=1").get_json()["last_row"] == 0
     assert every > 0
+
+
+def test_ask_redirects_to_llm(client):
+    """The DEBRIS LLM tab moved from /ask to /llm; old links keep their choices."""
+    r = client.get("/ask?plastic=PET&body=renal&q=2")
+    assert r.status_code == 301
+    assert r.headers["Location"].endswith("/llm?plastic=PET&body=renal&q=2")

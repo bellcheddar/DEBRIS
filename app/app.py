@@ -18,7 +18,7 @@ import sqlite3
 import tomllib
 from pathlib import Path
 
-from flask import Flask, Response, abort, g, jsonify, render_template, request
+from flask import Flask, Response, abort, g, jsonify, redirect, render_template, request, url_for
 
 ROOT = Path(__file__).resolve().parents[1]
 DB_PATH = Path(os.environ.get("DEBRIS_DB", ROOT / "data" / "debris.sqlite"))
@@ -32,7 +32,7 @@ app.config["JSON_SORT_KEYS"] = False
 
 TABS = [("01", "Atlas", "/"), ("02", "Body", "/body"),
         ("03", "Pathways", "/pathways"), ("04", "Polymers", "/polymers"),
-        ("05", "PET Watch", "/pet"), ("06", "DEBRIS LLM", "/ask"), ("07", "Papers", "/papers"),
+        ("05", "PET Watch", "/pet"), ("06", "DEBRIS LLM", "/llm"), ("07", "Papers", "/papers"),
         ("08", "About", "/about")]
 
 
@@ -178,10 +178,16 @@ def pet():
     return render_template("pet.html", active="/pet", bundle=load_bundle("pet"))
 
 
-@app.route("/ask")
-def ask():
+@app.route("/llm")
+def llm():
     # The answers are a 200 kB bundle, fetched by the page rather than inlined (D69).
-    return render_template("ask.html", active="/ask")
+    return render_template("ask.html", active="/llm")
+
+
+@app.route("/ask")
+def ask_moved():
+    # The tab's first address; links shared before the rename keep working.
+    return redirect(url_for("llm", **request.args), code=301)
 
 
 @app.route("/papers")
